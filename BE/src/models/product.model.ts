@@ -12,7 +12,7 @@ interface ProductAttributes {
     stock: number; // quantity in stock
 }
 
-interface ProductCreationAttributes
+export interface ProductCreationAttributes
     extends Optional<
         ProductAttributes,
         "id" | "finalPrice" | "imageUrl" | "stock"

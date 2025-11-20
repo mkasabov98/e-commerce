@@ -1,8 +1,8 @@
 import { Sequelize } from 'sequelize';
 
-const sequelize = new Sequelize('ecommerce', 'ecommerce_user', 'userpassword', {
-    host: 'localhost',
-    port: 3306,
+const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
+    host: process.env.DB_HOST,
+    port: Number(process.env.DB_PORT),
     dialect: 'mysql'
 });
 

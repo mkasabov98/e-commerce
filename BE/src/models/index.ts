@@ -5,17 +5,24 @@ import { OrderProduct } from "./orderProduct.model";
 import { Cart } from "./cart.model";
 import { CartProduct } from "./cartProduct.model";
 
+void Product;
+void User;
+void Cart;
+void CartProduct;
+void Order;
+void OrderProduct;
+
 CartProduct.belongsTo(Cart, { foreignKey: "cartId", onUpdate: "CASCADE" });
 Cart.hasMany(CartProduct, { foreignKey: "cartId", onDelete: "CASCADE" });
 
 CartProduct.belongsTo(Product, { foreignKey: "productId" });
 Product.hasMany(CartProduct, { foreignKey: "productId", onDelete: "RESTRICT" });
 
-Cart.belongsTo(User, { foreignKey: "userId" });
+Cart.belongsTo(User, { foreignKey: "userId", onDelete: "CASCADE" });
 User.hasOne(Cart, { foreignKey: "userId" });
 
 Order.belongsTo(User, { foreignKey: "userId", onDelete: "CASCADE" });
-User.hasMany(Order, { foreignKey: "userId" });
+User.hasMany(Order, { foreignKey: "userId", onDelete: "CASCADE" });
 
 OrderProduct.belongsTo(Product, { foreignKey: "productId" });
 Product.hasMany(OrderProduct, {
