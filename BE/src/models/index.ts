@@ -15,7 +15,7 @@ void OrderProduct;
 CartProduct.belongsTo(Cart, { foreignKey: "cartId", onUpdate: "CASCADE" });
 Cart.hasMany(CartProduct, { foreignKey: "cartId", onDelete: "CASCADE" });
 
-CartProduct.belongsTo(Product, { foreignKey: "productId" });
+CartProduct.belongsTo(Product, { foreignKey: "productId", as: "Product" });
 Product.hasMany(CartProduct, { foreignKey: "productId", onDelete: "RESTRICT" });
 
 Cart.belongsTo(User, { foreignKey: "userId", onDelete: "CASCADE" });

@@ -1,5 +1,6 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import sequelize from "../config/database";
+import { Product } from "./product.model";
 
 interface CartProductAttributes {
     id: number;
@@ -19,6 +20,8 @@ export class CartProduct
     public cartId!: number;
     public productId!: number;
     public quantity!: number;
+
+    public Product?: Product;
 
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
