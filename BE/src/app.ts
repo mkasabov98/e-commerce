@@ -7,8 +7,9 @@ import "./models/index";
 //Routes
 import productRoutes from "./routes/products.routes";
 import userRoutes from "./routes/user.routes";
-import adminRoutes from "./routes/admin.routes"
-import cartRoutes from "./routes/cart.routes"
+import adminRoutes from "./routes/admin.routes";
+import cartRoutes from "./routes/cart.routes";
+import orderRoutes from "./routes/order.routes";
 //Middlewares
 import { errorHandler } from "./middlewares/errorHandler";
 
@@ -21,17 +22,15 @@ app.use(express.json());
 //Routes
 app.use("/app/products", productRoutes);
 app.use("/app/user", userRoutes);
-app.use("/app/admin", adminRoutes)
-app.use("/app/cart", cartRoutes)
+app.use("/app/admin", adminRoutes);
+app.use("/app/cart", cartRoutes);
+app.use("/app/order", orderRoutes);
 
-app.use(errorHandler)
+app.use(errorHandler);
 
 sequelize
-    .sync({ alter: true })
-    .then((res) => {
-        console.log(res);
-        console.log("DB synced");
-    })
+    .sync({})
+    .then((res) => {})
     .catch((err) => console.log(err));
 
 export default app;

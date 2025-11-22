@@ -7,7 +7,7 @@ interface OrderProductAttributes {
     id: number;
     orderId: number;
     productId: number;
-    purchasePrice: number;
+    priceAtPurchase: number;
     quantity: number;
 }
 
@@ -21,7 +21,7 @@ export class OrderProduct
     public id!: number;
     public orderId!: number;
     public productId!: number;
-    public purchasePrice!: number;
+    public priceAtPurchase!: number;
     public quantity!: number;
 
     public readonly createdAt!: Date;
@@ -44,7 +44,7 @@ OrderProduct.init(
             type: DataTypes.INTEGER.UNSIGNED,
             allowNull: false,
         },
-        purchasePrice: {
+        priceAtPurchase: {
             type: DataTypes.DECIMAL(10, 2),
             allowNull: false,
         },
