@@ -2,10 +2,11 @@ import { NextFunction, Request, Response } from "express";
 import { User } from "../models/user.model";
 import { Cart } from "../models/cart.model";
 import jwt from "jsonwebtoken";
+import { UserRoles } from "../enums/user-enums.enum";
 
-//POST /app/user/register
-export const register = async (req: Request, res: Response, next: NextFunction) => {
-    const body = req.body;
+//POST /app/user/registerUser body: {email, password};
+export const registerUser = async (req: Request, res: Response, next: NextFunction) => {
+    const body: { email: string; password: string } = { email: req.body.email, password: req.body.password };
     try {
         const existingUser = await User.findOne({
             where: {
@@ -13,8 +14,7 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
             },
         });
         if (!existingUser) {
-            const newUser = await User.create(body);
-            console.log(newUser);
+            const newUser = await User.create({...body, role: UserRoles.User});
             const { password, ...userData } = newUser.get();
             await Cart.findOrCreate({where: {userId: newUser.id}});
             return res.status(201).json(userData);
@@ -28,7 +28,7 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
     }
 };
 
-//POST /app/user/login
+//POST /app/user/login body: {email, password}
 export const login = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const body = req.body;

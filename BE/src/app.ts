@@ -10,6 +10,7 @@ import userRoutes from "./routes/user.routes";
 import adminRoutes from "./routes/admin.routes";
 import cartRoutes from "./routes/cart.routes";
 import orderRoutes from "./routes/order.routes";
+import addressRoutes from "./routes/address.routes"
 //Middlewares
 import { errorHandler } from "./middlewares/errorHandler";
 
@@ -25,12 +26,13 @@ app.use("/app/user", userRoutes);
 app.use("/app/admin", adminRoutes);
 app.use("/app/cart", cartRoutes);
 app.use("/app/order", orderRoutes);
+app.use("/app/address", addressRoutes);
 
 app.use(errorHandler);
 
 sequelize
-    .sync({})
+    .sync({alter: true})
     .then((res) => {})
-    .catch((err) => console.log(err));
+    .catch((err) => {});
 
 export default app;

@@ -34,7 +34,7 @@ export class Product
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
 }
-console.log("Product model initialized");
+
 Product.init(
     {
         id: {

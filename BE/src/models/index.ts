@@ -4,6 +4,7 @@ import { Order } from "./order.model";
 import { OrderProduct } from "./orderProduct.model";
 import { Cart } from "./cart.model";
 import { CartProduct } from "./cartProduct.model";
+import { Address } from "./address.model";
 
 void Product;
 void User;
@@ -11,6 +12,7 @@ void Cart;
 void CartProduct;
 void Order;
 void OrderProduct;
+void Address;
 
 CartProduct.belongsTo(Cart, { foreignKey: "cartId", onUpdate: "CASCADE" });
 Cart.hasMany(CartProduct, { foreignKey: "cartId", onDelete: "CASCADE" });
@@ -32,3 +34,6 @@ Product.hasMany(OrderProduct, {
 
 OrderProduct.belongsTo(Order, { foreignKey: "orderId" });
 Order.hasMany(OrderProduct, { foreignKey: "orderId", onDelete: "CASCADE" });
+
+Address.belongsTo(User, { foreignKey: "userId" });
+User.hasMany(Address, { foreignKey: "userId", onDelete: "CASCADE" });

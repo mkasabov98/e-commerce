@@ -13,10 +13,6 @@ export const updateCartProduct = async (req: AuthRequest, res: Response, next: N
     const userId = req.user.id;
 
     try {
-        // const user = await User.findByPk(userId);
-        // if (!user) {
-        //     throw { status: 404, message: "There is no user associated with that userId" };
-        // }
         if (req.user?.role !== UserRoles.User) {
             throw { status: 401, message: "Unauthorized" };
         }
@@ -41,7 +37,7 @@ export const updateCartProduct = async (req: AuthRequest, res: Response, next: N
 
         await cartProduct.increment("quantity", { by: product.quantity });
         await cartProduct.reload();
-        res.status(200).json(cartProduct.get());
+        res.status(200).json(cartProduct);
     } catch (error) {
         next(error);
     }

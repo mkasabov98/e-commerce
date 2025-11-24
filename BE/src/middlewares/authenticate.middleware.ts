@@ -13,7 +13,6 @@ export const authenticate = async (req: AuthRequest, res: Response, next: NextFu
             throw { status: 401, message: "No token provided" };
         }
 
-        console.log(process.env.JWT_SECRET)
         const token = header.split(" ")[1];
         const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { id: number; role: number; email: string };
 

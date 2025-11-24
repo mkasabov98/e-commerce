@@ -29,7 +29,6 @@ export class User
     }
 }
 
-console.log("User model initialized");
 User.init(
     {
         id: {

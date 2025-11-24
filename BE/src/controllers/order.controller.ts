@@ -8,14 +8,19 @@ import { Order } from "../models/order.model";
 import { OrderStatuses } from "../enums/order-enums.enum";
 import sequelize from "../config/database";
 import { OrderProduct } from "../models/orderProduct.model";
+import { Address } from "../models/address.model";
 
 export const createOrder = async (req: AuthRequest, res: Response, next: NextFunction) => {
     const user = req.user;
+    const addressId = req.body.addressId;
 
     try {
         if (req.user?.role !== UserRoles.User) throw { status: 401, message: "Unauthorized" };
         const userCart = await Cart.findOne({ where: { userId: user.id } });
         if (!userCart) throw { status: 400, message: "No cart found." };
+
+        const address = await Address.findByPk(addressId);
+        if (!address) throw { status: 400, message: "No matching address" };
 
         const productsInCart = await CartProduct.findAll({
             where: { cartId: userCart.id },
@@ -46,7 +51,17 @@ export const createOrder = async (req: AuthRequest, res: Response, next: NextFun
 
         const transaction = await sequelize.transaction();
         try {
-            const order = await Order.create({ userId: user.id, status: OrderStatuses.Paid, totalAmount: totalAmount }, { transaction });
+            const order = await Order.create(
+                {
+                    userId: user.id,
+                    status: OrderStatuses.Paid,
+                    totalAmount: totalAmount,
+                    shippingCountry: address.country,
+                    shippingCity: address.city,
+                    shippingAddress: address.address,
+                },
+                { transaction }
+            );
             const orderProducts = productsInCart.map((x) => ({
                 orderId: order.id,
                 productId: x.productId,
@@ -70,6 +85,9 @@ export const createOrder = async (req: AuthRequest, res: Response, next: NextFun
                 message: "Order completed",
                 totalAmount,
                 orderId: order.id,
+                shippingCountry: order.shippingCountry,
+                shippingCity: order.shippingCity,
+                shippingAddress: order.shippingAddress
             });
         } catch (error) {
             await transaction.rollback();
