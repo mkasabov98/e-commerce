@@ -2,12 +2,31 @@ import { NextFunction, Response } from "express";
 import { AuthRequest } from "../middlewares/authenticate.middleware";
 import { Product, ProductCreationAttributes } from "../models/product.model";
 import { UserRoles } from "../enums/user-enums.enum";
+import { User } from "../models/user.model";
 
 const isAdmin = (user: { role: UserRoles }) => {
     return user.role === UserRoles.Admin;
 };
 
-// POST "/app/admin/products/create"
+// POST /app/admin/register body: {email, user}
+export const registerAdmin = async (req: AuthRequest, res: Response, next: NextFunction) => {
+    const body: { email: string; password: string } = { email: req.body.email, password: req.body.password };
+    try {
+        if (!isAdmin(req.user)) throw { status: 401, message: "Unauthorized" };
+
+        const existingUser = await User.findOne({ where: { email: body.email } });
+        if (existingUser) throw { status: 404, message: "There is a user associated with that email" };
+
+        const newAdmin = await User.create({ ...body, role: UserRoles.Admin });
+        const { password, ...adminData } = newAdmin.get();
+
+        res.status(201).json(adminData);
+    } catch (error) {
+        next(error);
+    }
+};
+
+// POST "/app/admin/products/create" body: ProductCreationAttributes
 export const createProduct = async (req: AuthRequest, res: Response, next: NextFunction) => {
     const body: ProductCreationAttributes = req.body;
     try {
