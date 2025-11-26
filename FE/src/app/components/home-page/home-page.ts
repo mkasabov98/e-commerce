@@ -5,8 +5,7 @@ import { AuthService } from '../../services/auth.service';
     selector: 'app-home-page',
     imports: [],
     templateUrl: './home-page.html',
-    styleUrl: './home-page.scss',
-    standalone: true
+    styleUrl: './home-page.scss'
 })
 export class HomePage implements OnInit {
     constructor(private authService: AuthService) {}
