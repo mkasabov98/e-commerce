@@ -1,17 +1,20 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { loggedUser, loginResponse } from '../models/auth.models';
 
 @Injectable({
     providedIn: 'root',
 })
 export class AuthService {
+    loggedUserSubject = new BehaviorSubject(null);
+    
     constructor(private http: HttpClient) {}
 
     private headers: HttpHeaders = new HttpHeaders().set('Content-Type', 'application/json');
 
-    public login(body: { email: string; password: string }): Observable<any> {
+    public login(body: { email: string; password: string }): Observable<loginResponse> {
         return this.http.post<any>(`${environment.apiUrl}/user/login`, body, {
             observe: 'body',
             headers: this.headers,

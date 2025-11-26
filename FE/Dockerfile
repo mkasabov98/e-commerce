@@ -1,24 +1,26 @@
 # Stage 1: Build Angular app
-FROM node:20-alpine AS build
+FROM node:18-alpine AS build
 
 WORKDIR /app
 
-COPY e-commerce/package*.json ./
-
+COPY package*.json ./
 RUN npm install
 
-COPY e-commerce/ ./
+COPY ./ ./
 
-RUN npm run build -- --project e-commerce --configuration production
+RUN npm run build -- --configuration production
 
+# Stage 2: Serve with Nginx
 FROM nginx:alpine
 
-RUN rm /etc/nginx/conf.d/default.conf
+# Optional: safe remove
+RUN [ -f /etc/nginx/conf.d/default.conf ] && rm /etc/nginx/conf.d/default.conf || echo "default.conf not found"
 
-COPY nginx.conf /etc/nginx/conf.d/
+# Copy custom nginx config
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-COPY --from=build /app/dist/e-commerce/browser /usr/share/nginx/html/
+# Adjust dist path to match angular.json output
+COPY --from=build /app/dist/fe/browser /usr/share/nginx/html/
 
 EXPOSE 80
-
 CMD ["nginx", "-g", "daemon off;"]
