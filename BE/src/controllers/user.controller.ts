@@ -62,9 +62,8 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
             process.env.JWT_SECRET!,
             { expiresIn: 3600 }
         );
-        const { password, ...userData } = existingUser.get();
         res.status(200).json({
-            userData: userData,
+            userData: {email: existingUser.email, id: existingUser.id, role: existingUser.role},
             token,
         });
     } catch (error) {

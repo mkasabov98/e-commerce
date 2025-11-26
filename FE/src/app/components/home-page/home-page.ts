@@ -6,15 +6,19 @@ import { AuthService } from '../../services/auth.service';
     imports: [],
     templateUrl: './home-page.html',
     styleUrl: './home-page.scss',
+    standalone: true
 })
 export class HomePage implements OnInit {
     constructor(private authService: AuthService) {}
 
     ngOnInit(): void {
         this.authService
-            .login({ email: 'normalUser123@test.com', password: '1221an,as' })
+            .login({ email: 'user1123@ab.com', password: 'user1123@abv.com' })
             .pipe()
-            .subscribe((res) => console.log(res));
+            .subscribe((res) =>{
+                //save token in localStorage
+                
+            });
 
         this.authService
             .products()
@@ -22,7 +26,7 @@ export class HomePage implements OnInit {
             .subscribe((res) => console.log(res));
 
         this.authService
-            .registerUser({ email: 'user123@ab.com', password: 'user123@abv.com' })
+            .registerUser({ email: 'user2@abv.com', password: 'user2@abv.com' })
             .pipe()
             .subscribe((res) => console.log(res));
     }

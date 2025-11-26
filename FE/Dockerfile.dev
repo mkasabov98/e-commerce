@@ -1,11 +1,11 @@
 # FE/Dockerfile.dev
-FROM node:20-alpine
+FROM node:18-alpine
 WORKDIR /app
 
-COPY e-commerce/package*.json ./
+COPY package*.json ./
 RUN npm install
 
-COPY e-commerce/ ./
+COPY ./ ./
 
 EXPOSE 4200
 
