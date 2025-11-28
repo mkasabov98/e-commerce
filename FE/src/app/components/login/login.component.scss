@@ -1,0 +1,26 @@
+.login-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: -webkit-fill-available;
+}
+
+.form-body {
+    height: 10rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-content: center;
+    flex-wrap: wrap;
+    padding: 0rem 4rem 0rem 4rem;
+
+    input {
+        width: -webkit-fill-available;
+    }
+}
+
+.submit-button {
+    display: flex;
+    justify-content: flex-end;
+    padding: 0 2rem 1rem;
+}

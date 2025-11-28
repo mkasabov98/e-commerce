@@ -1,0 +1,64 @@
+<p-button (onClick)="registerModalVisible = true">Register</p-button>
+
+<p-dialog
+    header="Register"
+    [modal]="true"
+    [(visible)]="registerModalVisible"
+    [style]="{ width: '30rem' }"
+    [contentStyle]="{ height: '22rem' }"
+    (onHide)="onCloseRegisterFrom()"
+>
+    <form
+        [formGroup]="registerForm"
+        (ngSubmit)="onRegisterFormSubmit()"
+        class="register-form"
+    >
+        <div class="form-body">
+            <div class="password-wrapper">
+                <p-floatLabel variant="on">
+                    <input
+                        pInputText
+                        id="email"
+                        pSize="large"
+                        formControlName="email"
+                    />
+                    <label for="email">Email</label>
+                </p-floatLabel>
+                @if (isInvalidEmail('email')) {
+                <p-message
+                    severity="error"
+                    size="small"
+                    variant="simple"
+                    class="error-message"
+                    >Enter valid email</p-message
+                >
+                }
+            </div>
+            <p-floatlabel variant="on">
+                <p-password
+                    id="password"
+                    size="large"
+                    [toggleMask]="true"
+                    formControlName="password"
+                    [pTooltip]="passwordTooltip"
+                >
+                    <ng-template #passwordTooltip tooltipPosition="top">
+                        <ul>
+                            <li>At least one lowercase</li>
+                            <li>At least one uppercase</li>
+                            <li>At least one numeric</li>
+                            <li>At least one special character</li>
+                            <li>Minimum 8 characters</li>
+                        </ul>
+                    </ng-template>
+                </p-password>
+                <label for="password">Password</label>
+            </p-floatlabel>
+        </div>
+        <div class="submit-button">
+            <p-button type="Submit" [disabled]="disableRegisterButton()"
+                >Register</p-button
+            >
+        </div>
+    </form>
+</p-dialog>
