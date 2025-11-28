@@ -1,0 +1,41 @@
+<p-button (onClick)="visible = true">Login</p-button>
+
+<p-dialog
+    header="Log in"
+    [modal]="true"
+    [(visible)]="visible"
+    [style]="{ width: '30rem' }"
+    [contentStyle]="{ height: '17rem' }"
+    (onHide)="onHideDialog()"
+>
+    <form
+        [formGroup]="loginForm"
+        (ngSubmit)="onFormSubmit()"
+        class="login-form"
+    >
+        <div class="form-body">
+            <p-floatLabel variant="on">
+                <input
+                    pInputText
+                    id="email"
+                    pSize="large"
+                    formControlName="email"
+                />
+                <label for="email">Email</label>
+            </p-floatLabel>
+            <p-floatLabel variant="on">
+                <p-password
+                    id="password"
+                    size="large"
+                    formControlName="password"
+                    [toggleMask]="true"
+                    [feedback]="false"
+                />
+                <label for="password">Password</label>
+            </p-floatLabel>
+        </div>
+        <div class="submit-button">
+            <p-button type="Submit" [disabled]="loginForm.invalid">Log in</p-button>
+        </div>
+    </form>
+</p-dialog>
