@@ -33,7 +33,7 @@ export const createProduct = async (req: AuthRequest, res: Response, next: NextF
         if (!isAdmin(req.user)) {
             throw { status: 401, message: "Unauthorized" };
         }
-        const newProduct = await Product.create(body);
+        const newProduct = await Product.create({...body, reviewsCount: 0});
         res.status(201).json({ newProduct });
     } catch (error) {
         next(error);

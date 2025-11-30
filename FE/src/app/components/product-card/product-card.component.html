@@ -1,0 +1,27 @@
+<div class="card-wrapper" (click)="openProduct($event)">
+    <div class="card-header">
+        <img alt="Card" [src]="product.imageUrl" />
+    </div>
+    <div class="card-body">
+        <div class="product-name">{{ product.name }}</div>
+        <div class="review-wrapper">
+            <div class="stars">
+                @for (i of productStars; track i) { @if (i.startsWith('filledStar')) {
+                <i class="pi pi-star-fill text-yellow-500"></i>
+                } @else {
+                <i class="pi pi-star-fill text-gray-400"></i>
+                } }
+            </div>
+            <div class="product-review">
+                {{ `(${product.reviewsCount})` }}
+            </div>
+        </div>
+    </div>
+    <div class="card-footer">
+        <div>{{`${product.finalPrice}$`}}</div>
+        <p-button (onClick)="addToCart($event)">
+            <span>add to cart</span>
+            <i class="pi pi-cart-plus"></i>
+        </p-button>
+    </div>
+</div>

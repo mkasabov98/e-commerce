@@ -60,7 +60,7 @@ OrderProduct.init(
         modelName: "OrderProduct",
         indexes: [
             {
-                unique: true,
+                unique: false,
                 fields: ["orderId", "productId"],
             },
         ],

@@ -1,10 +1,11 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Response } from "express";
 import { User } from "../models/user.model";
+import { AuthRequest } from "../middlewares/authenticate.middleware";
 
-//POST /app/user/delete/:userId
-export const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
+//POST /app/user/delete
+export const deleteUser = async (req: AuthRequest, res: Response, next: NextFunction) => {
+    const userId = req.user.id;
     try {
-        const userId = req.params.id;
         const existingUser = await User.findByPk(userId);
         if (!existingUser) {
             throw {
