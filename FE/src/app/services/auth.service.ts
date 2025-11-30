@@ -1,18 +1,24 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, map, Observable, tap } from 'rxjs';
+import { inject, Injectable } from '@angular/core';
+import { BehaviorSubject, map, MonoTypeOperatorFunction, Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { loggedUser, loginResponse } from '../models/auth.models';
+import { loggedUser } from '../models/auth.models';
+import { NO_USER } from '../constants.ts/constants';
+import { ToastService } from './toast.service';
+// import jwt from ''
 
 @Injectable({
     providedIn: 'root',
 })
 export class AuthService {
-    NO_USER = {email: '', id: -1, role: -1};
-    loggedUserSubject = new BehaviorSubject<loggedUser>(this.NO_USER);
+    pipe(arg0: MonoTypeOperatorFunction<unknown>) {
+        throw new Error('Method not implemented.');
+    }
+    public loggedUserSubject = new BehaviorSubject<loggedUser>(NO_USER);
 
     constructor(private http: HttpClient) {}
 
+    private toastService = inject(ToastService)
     private headers: HttpHeaders = new HttpHeaders().set(
         'Content-Type',
         'application/json'
@@ -27,8 +33,8 @@ export class AuthService {
             .pipe(
                 map((res) => {
                     localStorage.setItem('jwt', JSON.stringify(res.token));
-                    this.loggedUserSubject.next(res.loggedUser);
-                    return res.loggedUser;
+                    this.loggedUserSubject.next(res.userData);
+                    return res.userData;
                 })
             );
     }
@@ -47,10 +53,27 @@ export class AuthService {
         );
     }
 
-    // public products(): Observable<any> {
-    //     return this.http.get<any>(`${environment.apiUrl}/products`, {
-    //         observe: 'body',
-    //         headers: this.headers
-    //     });
-    // }
+    public tokenExpired (): boolean {
+        const jwt = localStorage.getItem('jwt');
+
+        if (jwt) {
+            const payload = JSON.parse(atob(jwt.split('.')[1]));
+            const now = Math.floor(Date.now() / 1000);
+
+            if (payload.exp < now) {
+                localStorage.removeItem('jwt');
+                this.loggedUserSubject.next(NO_USER);
+                this.toastService.show('Your session has expired');
+                return true;
+            } else {
+                this.loggedUserSubject.next({
+                    id: payload.id,
+                    email: payload.email,
+                    role: payload.role,
+                });
+                return false;
+            }
+        }
+        return false;
+    }
 }

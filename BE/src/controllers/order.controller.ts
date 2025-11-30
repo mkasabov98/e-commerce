@@ -54,7 +54,7 @@ export const createOrder = async (req: AuthRequest, res: Response, next: NextFun
             const order = await Order.create(
                 {
                     userId: user.id,
-                    status: OrderStatuses.Paid,
+                    status: OrderStatuses.Delivered,
                     totalAmount: totalAmount,
                     shippingCountry: address.country,
                     shippingCity: address.city,

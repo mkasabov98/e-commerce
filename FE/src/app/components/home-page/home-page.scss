@@ -1,0 +1,11 @@
+.cards-wrapper {
+    width: 90vw;
+    height: 90vh;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 1.5rem;
+    justify-content: center;
+    overflow-y: scroll;
+    scrollbar-width: none;
+}

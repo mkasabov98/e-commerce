@@ -11,8 +11,10 @@ import { ToastService } from '../../services/toast.service';
 import { AuthService } from '../../services/auth.service';
 import { FloatLabel } from 'primeng/floatlabel';
 import { InputTextModule } from 'primeng/inputtext';
-import { take } from 'rxjs';
+import { concatMap, of, take, tap } from 'rxjs';
 import { PasswordModule } from 'primeng/password';
+import { CartService } from '../../services/cart.service';
+import { UserRoles } from '../../models/auth.models';
 
 @Component({
     selector: 'app-login',
@@ -24,13 +26,14 @@ import { PasswordModule } from 'primeng/password';
         InputTextModule,
         PasswordModule,
     ],
-    providers: [AuthService, ToastService],
+    providers: [ToastService],
     templateUrl: './login.component.html',
     styleUrl: './login.component.scss',
     standalone: true,
 })
 export class LoginComponent {
     private formBuilder = inject(FormBuilder);
+    private isAdmin = false;
     public visible = false;
 
     public registerModalVisible = false;
@@ -40,7 +43,8 @@ export class LoginComponent {
     });
     constructor(
         private authService: AuthService,
-        private toastService: ToastService
+        private toastService: ToastService,
+        private cartService: CartService
     ) {}
 
     onHideDialog() {
@@ -53,11 +57,26 @@ export class LoginComponent {
                 email: this.loginForm.controls['email'].value,
                 password: this.loginForm.controls['password'].value,
             })
-            .pipe(take(1))
-            .subscribe(
-                (res) => {
+            .pipe(
+                take(1),
+                tap((res) => {
+                    this.isAdmin = res.role === UserRoles.Admin;
                     this.visible = false;
                     this.toastService.show('Successful login', 'success');
+                }),
+                concatMap(() => {
+                    const localCart = localStorage.getItem('localCart');
+                    localStorage.removeItem('localCart');
+                    return localCart && this.isAdmin
+                        ? this.cartService.updateCart(JSON.parse(localCart))
+                        : of(null);
+                })
+            )
+            .subscribe(
+                (res) => {
+                    if (res) {
+                        this.toastService.show(res?.message!, 'info');
+                    }
                 },
                 (error) => {
                     this.toastService.show(

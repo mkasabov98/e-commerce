@@ -1,0 +1,1 @@
+export const NO_USER = {email: '', id: -1, role: -1};

@@ -1,0 +1,57 @@
+.card-wrapper {
+    height: 25rem;
+    width: 17rem;
+    background-color: rgb(231 219 219);
+    border: 2px solid #abb8c9;
+    i {
+        font-size: 1.5rem;
+    }
+
+    .card-header {
+        img {
+            height: 15rem;
+            width: calc(17rem - 4px);
+            object-fit: cover;
+        }
+    }
+
+    .card-body {
+        height: 6rem;
+        width: 17rem;
+        padding: 0 1rem 0 1rem;
+        display: flex;
+        flex-direction: column;
+
+        .product-name {
+            font-size: 1.2rem;
+            margin: 0.6rem 0 0.6rem 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .review-wrapper {
+            display: flex;
+            justify-content: start;
+            align-items: center;
+            gap: 0.3rem;
+
+            .product-review {
+                font-size: 1.3rem;
+                padding-bottom: 5px;
+            }
+        }
+    }
+
+    .card-footer {
+        height: 4rem;
+        width: 17rem;
+        display: flex;
+        justify-content: space-between;
+        padding: 0 1rem 1rem 1rem;
+        flex-wrap: wrap;
+        align-content: center;
+        align-items: center;
+        font-size: 1.3rem;
+    }
+}

@@ -6,7 +6,6 @@ import {
 } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { Router } from '@angular/router';
-import { ToastService } from '../services/toast.service';
 import { throwError } from 'rxjs';
 import { inject } from '@angular/core';
 
@@ -25,7 +24,7 @@ export const authInterceptor: HttpInterceptorFn = (
     ];
 
     if (unprotectedRoutes.some((x) => url.includes(x))) {
-        next(
+        return next(
             req.clone({
                 setHeaders: headers,
             })
@@ -43,15 +42,31 @@ export const authInterceptor: HttpInterceptorFn = (
             return throwError(
                 () =>
                     new HttpErrorResponse({
-                        error: { message: 'Session expired', typeOfToast: 'info' },
+                        error: {
+                            message: 'Session expired',
+                            typeOfToast: 'info',
+                        },
                         status: 401,
                         statusText: 'Unauthorized',
                     })
             );
         }
+    } else {
+        router.navigate(['/e-com']);
+        return throwError(
+            () =>
+                new HttpErrorResponse({
+                    error: {
+                        message: 'Please log in your account!',
+                        typeOfToast: 'info',
+                    },
+                    status: 401,
+                    statusText: 'Unauthorized',
+                })
+        );
     }
 
-    headers['Authorization'] = `Bearer ${jwt}`;
+    headers['Authorization'] = `Bearer ${JSON.parse(jwt)}`;
     const clonedReq = req.clone({
         setHeaders: headers,
     });

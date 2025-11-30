@@ -5,8 +5,9 @@ import { User } from "../models/user.model";
 import { Cart } from "../models/cart.model";
 import { CartProduct } from "../models/cartProduct.model";
 import { Product } from "../models/product.model";
+import sequelize from "../config/database";
 
-//Post app/cart/updateProduct
+//Patch app/cart/updateProduct
 //Used to add product to the cart if not existing or update the quantity of the product
 export const updateCartProduct = async (req: AuthRequest, res: Response, next: NextFunction) => {
     const product: { productId: number; quantity: number } = req.body;
@@ -37,7 +38,56 @@ export const updateCartProduct = async (req: AuthRequest, res: Response, next: N
 
         await cartProduct.increment("quantity", { by: product.quantity });
         await cartProduct.reload();
-        res.status(200).json(cartProduct);
+        res.status(200).json({ productId: cartProduct.productId, quantity: cartProduct.quantity });
+    } catch (error) {
+        next(error);
+    }
+};
+
+//Patch app/cart/updateCart
+export const bulkUpdateCart = async (req: AuthRequest, res: Response, next: NextFunction) => {
+    const products: { productId: number; productQuantity: number }[] = req.body;
+    const user = req.user;
+
+    try {
+        if (req.user?.role !== UserRoles.User) {
+            throw { status: 401, message: "Unauthorized" };
+        }
+
+        const userCart = await Cart.findOne({
+            where: {
+                userId: user.id,
+            },
+        });
+
+        if (!userCart) throw { status: 404, message: "There is no cart associated with that user ID." };
+
+        const transaction = await sequelize.transaction();
+        try {
+            for (const product of products) {
+                const [row, created] = await CartProduct.findOrCreate({
+                    where: {
+                        cartId: userCart.id,
+                        productId: product.productId,
+                    },
+                    defaults: {
+                        cartId: userCart.id,
+                        productId: product.productId,
+                        quantity: product.productQuantity,
+                    },
+                    transaction: transaction,
+                });
+
+                if (!created) {
+                    await row.increment("quantity", { by: product.productQuantity, transaction: transaction });
+                }
+            }
+            await transaction.commit();
+            res.status(201).json({ message: "Cart successfully updated!" });
+        } catch (error) {
+            await transaction.rollback();
+            next(error);
+        }
     } catch (error) {
         next(error);
     }
@@ -49,10 +99,6 @@ export const deleteProductFromCart = async (req: AuthRequest, res: Response, nex
     const userId = req.user.id;
 
     try {
-        // const user = await User.findByPk(userId);
-        // if (!user) {
-        //     throw { status: 404, message: "There is no user associated with that userId" };
-        // }
         if (req.user?.role !== UserRoles.User) {
             throw { status: 401, message: "Unauthorized" };
         }
@@ -107,13 +153,13 @@ export const getAllProductsInCart = async (req: AuthRequest, res: Response, next
             return acc + curr.quantity * curr.Product!.finalPrice;
         }, 0);
 
-        const cartItems = cartProducts.map((x) => ({ 
+        const cartItems = cartProducts.map((x) => ({
             productId: x.productId,
             quantity: x.quantity,
             name: x.Product.name,
             description: x.Product.description,
             price: x.Product.finalPrice,
-            imageUrl: x.Product.imageUrl
+            imageUrl: x.Product.imageUrl,
         }));
 
         res.status(200).json({ items: cartItems, totalPrice });
