@@ -11,9 +11,6 @@ import { ToastService } from './toast.service';
     providedIn: 'root',
 })
 export class AuthService {
-    pipe(arg0: MonoTypeOperatorFunction<unknown>) {
-        throw new Error('Method not implemented.');
-    }
     public loggedUserSubject = new BehaviorSubject<loggedUser>(NO_USER);
 
     constructor(private http: HttpClient) {}
@@ -53,7 +50,7 @@ export class AuthService {
         );
     }
 
-    public tokenExpired (): boolean {
+    public checkJWT (): [isJwt: boolean, expired: boolean] {
         const jwt = localStorage.getItem('jwt');
 
         if (jwt) {
@@ -64,16 +61,16 @@ export class AuthService {
                 localStorage.removeItem('jwt');
                 this.loggedUserSubject.next(NO_USER);
                 this.toastService.show('Your session has expired');
-                return true;
+                return [true, true];
             } else {
                 this.loggedUserSubject.next({
                     id: payload.id,
                     email: payload.email,
                     role: payload.role,
                 });
-                return false;
+                return [true, false];
             }
         }
-        return false;
+        return [false, false];
     }
 }

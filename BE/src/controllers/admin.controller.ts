@@ -3,6 +3,7 @@ import { AuthRequest } from "../middlewares/authenticate.middleware";
 import { Product, ProductCreationAttributes } from "../models/product.model";
 import { UserRoles } from "../enums/user-enums.enum";
 import { User } from "../models/user.model";
+import { ProductCategory } from "../models/category.model";
 
 const isAdmin = (user: { role: UserRoles }) => {
     return user.role === UserRoles.Admin;
@@ -33,8 +34,34 @@ export const createProduct = async (req: AuthRequest, res: Response, next: NextF
         if (!isAdmin(req.user)) {
             throw { status: 401, message: "Unauthorized" };
         }
-        const newProduct = await Product.create({...body, reviewsCount: 0});
+        const newProduct = await Product.create({ ...body, reviewsCount: 0 });
         res.status(201).json({ newProduct });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// POST /app/admin/category body: {categoryName: string};
+export const createCategory = async (req: AuthRequest, res: Response, next: NextFunction) => {
+    const body = req.body;
+    const user = req.user;
+
+    try {
+        if (!isAdmin(req.user)) {
+            throw { status: 401, message: "Unauthorized" };
+        }
+
+        const existingCategory = await ProductCategory.findOne({
+            where: {
+                categoryName: body.categoryName,
+            },
+        });
+
+        if (existingCategory) throw { status: 404, message: "This category already exists." };
+
+        const newCategory = await ProductCategory.create(body);
+
+        res.status(201).json(newCategory);
     } catch (error) {
         next(error);
     }

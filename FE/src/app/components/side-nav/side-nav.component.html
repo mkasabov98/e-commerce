@@ -1,0 +1,34 @@
+<div class="side-nav-wrapper">
+    <div class="clear-filters-button">
+        <p-button (onClick)="clearFilters()" [disabled]="sortBy === undefined && !selectedCategories().length">Clear Filters</p-button>
+    </div>
+    <p-panel header="Sort Options">
+        <div class="buttons-wrapper">
+            <div class="radio-button">
+                <p-radiobutton inputId="ASCENDING" [value]="sortByEnum.ASC" [(ngModel)]="sortBy" (onClick)="onSortBy()" />
+                <label for="ASCENDING">Price ascending</label>
+            </div>
+            <div class="radio-button">
+                <p-radiobutton inputId="DESCENDING" [value]="sortByEnum.DESC" [(ngModel)]="sortBy" (onClick)="onSortBy()" />
+                <label for="DESCENDING">Price descending</label>
+            </div>
+            <div class="radio-button">
+                <p-radiobutton inputId="REVIEW" [value]="sortByEnum.REVIEW" [(ngModel)]="sortBy" (onClick)="onSortBy()" />
+                <label for="REVIEW">Most reviews</label>
+            </div>
+        </div>
+    </p-panel>
+
+    <p-listbox [options]="productCategories()" (onChange)="onSelectionChange()" optionValue="id" [(ngModel)]="selectedCategories" optionLabel="categoryName" multiple="true" metaKeySelection="false" [listStyle]="{ 'max-height': '54vh' }">
+        <ng-template pTemplate="header">
+            <div class="category-header">Category Filters</div>
+        </ng-template>
+
+        <ng-template let-category pTemplate="item">
+            <div class="flex align-items-center gap-2">
+                <i class="pi pi-tag text-sm"></i>
+                <div>{{ category.categoryName }}</div>
+            </div>
+        </ng-template>
+    </p-listbox>
+</div>

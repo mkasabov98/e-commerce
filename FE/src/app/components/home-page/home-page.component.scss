@@ -1,0 +1,32 @@
+.home-page-wrapper {
+    display: flex;
+    background-color: var(--p-primary-200);
+}
+
+.cards-wrapper {
+    width: 90vw;
+    height: 90vh;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 1.5rem;
+    justify-content: center;
+    overflow-y: scroll;
+    scrollbar-width: none;
+}
+
+.side-nav {
+    display: flex;
+    flex-direction: column;
+    padding-left: 2vw;
+    height: 91vh;
+
+    app-sort-menu {
+        width: 15rem;
+    }
+
+    app-side-nav {
+        width: 15rem;
+        display: flex;
+    }
+}
