@@ -7,9 +7,38 @@ export interface cardProduct {
     stock: number; // quantity in stock
     starReview: number | null;
     reviewsCount: number;
+    categoryId: number;
 }
 
-export interface updateCartProductResponse {
-    productId: number;
-    quantity: number;
+export interface getProductsParams {
+    pageNumber?: number;
+    itemsPerPage?: number;
+    categories?: number[];
+    sortBy?: sortByOptions;
+    searchString?: string;
+}
+export interface getProductsResponse {
+    data: cardProduct[];
+    meta: {
+        totalItems: number;
+        pageNumber: number;
+        itemsPerPage: number;
+        totalPages: number;
+    };
+}
+export interface productCategory {
+    id: number;
+    categoryName: string;
+}
+
+export interface filtersSubject {
+    categories: number[];
+    sortBy: sortByOptions | undefined;
+    searchString: string;
+}
+
+export enum sortByOptions {
+    ASC = "asc",
+    DESC = "desc",
+    REVIEW = "reviews",
 }

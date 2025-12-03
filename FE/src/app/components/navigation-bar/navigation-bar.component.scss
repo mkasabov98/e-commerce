@@ -1,28 +1,28 @@
-.navbar {
-    display: flex;
-    height: 7vh;
-    align-items: center;
-    justify-content: space-between;
-    background-color: rgb(231, 219, 219);
+p-toolbar {
+    height: 9vh;
+}
+.home-button-wrapper {
+    margin: 0.5rem;
+    width: 12vw;
+}
 
-    .home-button-wrapper {
-        margin: 0.5rem;
-        width: 12vw;
-    }
+.search-bar {
+    width: 20rem;
+}
 
-    .auth-buttons-wrapper {
-        .badge-wrapper {
-            padding: 10px 10px 0 0;
-            font-size: 1.4rem;
+.auth-buttons-wrapper {
+    .badge-wrapper {
+        padding: 10px 10px 0 0;
+        font-size: 1.4rem;
 
-            i {
-                font-size: 1.5rem !important;
-            }
-
+        i {
+            font-size: 1.5rem !important;
         }
-        
-        width: 14vw;
-        display: flex;
-        justify-content: space-around;
     }
+
+    width: 14vw;
+    display: flex;
+    gap: 1.5rem;
+    justify-content: flex-end;
+    padding-right: 0.5rem;
 }
