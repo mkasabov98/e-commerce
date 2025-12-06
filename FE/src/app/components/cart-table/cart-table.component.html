@@ -1,0 +1,51 @@
+<div class="cart-table-wrapper">
+    <div class="header-wrapper">
+        <span class="header">Products in cart:</span>
+    </div>
+    <div class="table-wrapper">
+        <p-table [value]="products">
+            <ng-template #header>
+                <tr>
+                    <th [style.width.%]="15">Product</th>
+                    <th [style.width.%]="15">Image</th>
+                    <th [style.width.%]="15">Price</th>
+                    <th [style.width.%]="20">Status</th>
+                    <th [style.width.%]="20">Add/Remove</th>
+                    <th [style.width.%]="15">Total Price</th>
+                </tr>
+            </ng-template>
+            <ng-template #body let-product>
+                <tr class="table-row">
+                    <td>{{ product.name }}</td>
+                    <td>
+                        <img [src]="product.imageUrl" [alt]="product.name" />
+                    </td>
+                    <td>{{ '$' + product.price }}</td>
+                    <td>
+                        <p-tag [value]="product.inventoryStatus" [severity]="product.severityStatus" />
+                    </td>
+                    <td>
+                        <p-inputgroup style="width: fit-content;">
+                            <p-inputgroup-addon (click)="handleAction(product.productId, product.quantity, 'decrement')">
+                                <i class="pi pi-minus"></i>
+                            </p-inputgroup-addon>
+                            <p-inputnumber style="max-width: 50px;" class="input-field" (onInput)="changeValue($event, product.productId)" [(ngModel)]="product.quantity" size="small" mode="decimal" [min]="0" />
+                            <p-inputgroup-addon (click)="handleAction(product.productId, product.quantity, 'increment')">
+                                <i class="pi pi-plus"></i>
+                            </p-inputgroup-addon>
+                        </p-inputgroup>
+                    </td>
+                    <td>{{ `$${(product.price * product.quantity).toFixed(2)}` }}</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+    <div class="footer-wrapper">
+        <span class="footer">Products price:</span>
+        <span class="footer">{{ "$" + cartTotalPrice }}</span>
+    </div>
+</div>
+
+<div class="card flex justify-center gap-2">
+    <p-confirmdialog />
+</div>

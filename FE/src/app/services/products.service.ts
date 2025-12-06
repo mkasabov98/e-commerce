@@ -3,6 +3,7 @@ import { Injectable } from "@angular/core";
 import { BehaviorSubject, Observable, ObservableLike } from "rxjs";
 import { filtersSubject, getProductsParams, getProductsResponse, productCategory } from "../models/products.models";
 import { environment } from "../../environments/environment";
+import { getCartProductsResponse } from "../models/cart.models";
 
 @Injectable({
     providedIn: "root",
@@ -20,6 +21,13 @@ export class ProductsService {
         return this.http.get<getProductsResponse>(`${environment.apiUrl}/products`, {
             observe: "body",
             params: { ...params },
+        });
+    }
+
+    public getSpecificProducts(productsIds: number[]): Observable<getCartProductsResponse> {
+        return this.http.get<getCartProductsResponse>(`${environment.apiUrl}/products/specificProducts`, {
+            observe: "body",
+            params: { productsIds },
         });
     }
 

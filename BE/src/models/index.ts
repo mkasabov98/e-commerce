@@ -51,5 +51,5 @@ User.hasMany(Review, { foreignKey: "userId" });
 Review.belongsTo(Order, { foreignKey: "orderId" });
 Order.hasMany(Review, { foreignKey: "orderId" });
 
-Product.belongsTo(ProductCategory, { foreignKey: "productCategoryId" });
-ProductCategory.hasMany(Product, { foreignKey: "productCategoryId" });
+Product.belongsTo(ProductCategory, { foreignKey: "productCategoryId", as: "ProductCategory" });
+ProductCategory.hasMany(Product, { foreignKey: "productCategoryId", as: "Products" });

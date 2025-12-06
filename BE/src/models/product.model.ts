@@ -1,5 +1,6 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import sequelize from "../config/database";
+import { ProductCategory } from "./category.model";
 
 interface ProductAttributes {
     id: number;
@@ -30,6 +31,8 @@ export class Product extends Model<ProductAttributes, ProductCreationAttributes>
     public starReview!: number;
     public reviewsCount!: number;
 
+    public ProductCategory?: ProductCategory;
+
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
 }
@@ -45,6 +48,10 @@ Product.init(
         productCategoryId: {
             type: DataTypes.INTEGER.UNSIGNED,
             allowNull: false,
+            references: {
+                model: ProductCategory,
+                key: "id",
+            },
         },
         name: {
             type: DataTypes.STRING,

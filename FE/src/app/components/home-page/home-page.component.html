@@ -2,14 +2,18 @@
     <div class="side-nav">
         <app-side-nav></app-side-nav>
     </div>
-    <div class="cards-wrapper">
-        @for (product of products; track product.id) {
-        <app-product-card [product]="product"></app-product-card>
-        }
-        @if (loading) {
-        <div class="card flex justify-center align-items-center">
-            <p-progress-spinner ariaLabel="loading" />
+    <div class="data-wrapper">
+        <div class="cards-wrapper">
+            @for (product of products; track product.id) {
+            <app-product-card [product]="product"></app-product-card>
+            } @if (loading) {
+            <div class="loading-wrapper">
+                <p-progress-spinner ariaLabel="loading" />
+            </div>
+            }
         </div>
-        }
+        <div class="paginator">
+            <p-paginator (onPageChange)="onPageChange($event)" [first]="paginationParams.first" [rows]="paginationParams.rows" [totalRecords]="paginationParams.totalRecords" [rowsPerPageOptions]="[10, 20, 30, 50]" />
+        </div>
     </div>
 </div>

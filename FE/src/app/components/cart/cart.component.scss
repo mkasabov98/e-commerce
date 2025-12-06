@@ -1,0 +1,12 @@
+.cart-page-wrapper {
+    background-color: var(--p-primary-200);
+    width: 100%;
+    height: calc(100dvh - 80px);
+
+    app-cart-table {
+        width: 60dvw;
+        display: flex;
+        padding: 20px 40px;
+        max-height: calc(100dvh - 80px);
+    }
+}
