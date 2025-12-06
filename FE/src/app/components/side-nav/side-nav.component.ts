@@ -50,7 +50,6 @@ export class SideNavComponent implements OnInit, OnDestroy {
 
     onSelectionChange() {
         const currentFilters = this.productsService.filtersSubject.getValue();
-        console.log(this.productsService.filtersSubject.getValue())
         this.productsService.filtersSubject.next({ ...currentFilters, categories: [...this.selectedCategories()] });
     }
 

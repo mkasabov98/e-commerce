@@ -18,22 +18,11 @@ import { CartService } from "../../services/cart.service";
 })
 export class ProductCardComponent implements OnInit, OnDestroy {
     @Input() product!: cardProduct;
-    // public product = {
-    //     // MOCK PRODUCT
-    //     id: 3,
-    //     name: "kniga",
-    //     description: "first product description",
-    //     finalPrice: 56.0,
-    //     imageUrl: "https://s13emagst.akamaized.net/products/92844/92843211/images/res_dbe5508e65ad2167a08d5b3d0dc6b4fd.jpg",
-    //     stock: 14,
-    //     starReview: 2,
-    //     reviewsCount: 0,
-    // };
-
-    public productStars: string[] = [];
 
     private loggedUser: loggedUser = NO_USER;
     private destroy$ = new Subject<void>();
+
+    public productStars: string[] = [];
 
     constructor(private authService: AuthService, private toastService: ToastService, private cartService: CartService) {}
 
@@ -85,6 +74,7 @@ export class ProductCardComponent implements OnInit, OnDestroy {
                 .subscribe(
                     (res) => {
                         this.cartService.cartItemsSubject$.next(this.cartService.cartItemsSubject$.value + 1);
+                        this.toastService.show("Item has been added to cart", 'success')
                     },
                     (error) => {
                         this.toastService.show(error.error.message, "warn");

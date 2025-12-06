@@ -70,6 +70,39 @@ const ECommercePreset = definePreset(Aura, {
                 background: "{surface.300}",
             },
         },
+        button: {
+            root: {
+                paddingX: "8px",
+                paddingY: "6px",
+            },
+        },
+        paginator: {
+            root: {
+                background: "{surface:300}",
+            },
+        },
+        datatable: {
+            root: {
+                // borderColor: "black",
+            },
+            row: {
+                background: "transparent"
+            },
+            header: {
+                // borderWidth: '1px',
+                // borderColor: "black",
+                background: "transparent"
+            },
+            footer: {
+                background: "transparent",
+                    // borderWidth: '1px',
+                // borderColor: "black",
+            },
+            headerCell: {
+                background: "transparent",
+                // borderColor: "black",
+            }
+        }
     },
 });
 

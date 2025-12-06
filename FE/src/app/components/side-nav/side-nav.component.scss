@@ -3,6 +3,7 @@
     flex-direction: column;
     gap: 2vh;
     padding: 2vh 0 2vh 0;
+    flex-grow: 1;
 
     .clear-filters-button {
         height: 5vh;
@@ -12,7 +13,7 @@
     }
 
     p-panel {
-        height: 18vh;
+        min-height: fit-content;
     }
 }
 

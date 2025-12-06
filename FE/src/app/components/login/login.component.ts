@@ -74,7 +74,7 @@ export class LoginComponent {
                 (res) => {
                     if (res) {
                         this.cartService.cartItemsSubject$.next(res.items.reduce((acc, curr) => {
-                        return acc + curr.quantity;
+                        return acc + curr.quantity!;
                     },0))
                     }
                 },

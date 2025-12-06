@@ -24,7 +24,7 @@ export interface PaginationMeta {
 const getQueryParams = (req: Request): ProductQueryParams => {
     const { pageNumber, itemsPerPage, categories, sortBy, searchString } = req.query;
     const limit = parseInt(itemsPerPage as string, 10) || 10;
-    const pNum = parseInt(pageNumber as string, 10) || 1;
+    const pNum = parseInt(pageNumber as string, 10) || 0;
     let updatedCategories: number[];
     if (!categories) {
         updatedCategories = [];
@@ -38,7 +38,7 @@ const getQueryParams = (req: Request): ProductQueryParams => {
         limit,
         pageNumber: pNum,
         itemsPerPage: limit,
-        offset: (pNum - 1) * limit,
+        offset: pNum * limit,
         categories: updatedCategories,
         sortBy: (sortBy as ProductQueryParams["sortBy"]) || "id",
         searchString: searchString ? (searchString as string).trim() : null,
@@ -90,6 +90,49 @@ export const getAllProducts = async (req: Request, res: Response, next: NextFunc
             data: countResult.rows as Product[],
             meta,
         });
+    } catch (error) {
+        next(error);
+    }
+};
+
+//GET /app/products/specificProducts
+export const getSpecificProducts = async (req: Request, res: Response, next: NextFunction) => {
+    const {productsIds} = req.query;
+    let updatedProductsIds: number[] = [];
+    if (!productsIds) {
+        updatedProductsIds = [];
+    } else if (typeof productsIds === "string") {
+        updatedProductsIds = productsIds.split(",").map(Number);
+    } else if (Array.isArray(productsIds)) {
+        updatedProductsIds = productsIds.map(Number);
+    }
+
+    try {
+        const products = await Product.findAll({
+            where: {
+                id: updatedProductsIds,
+            },
+            attributes: ["id", "stock", "starReview", "name", "finalPrice", "imageUrl"],
+            include: [
+                {
+                    model: ProductCategory,
+                    as: "ProductCategory",
+                    attributes: ["categoryName"],
+                },
+            ],
+        });
+
+        const flattedProducts = products.map((x) => ({
+            productId: x.id,
+            stock: x.stock,
+            starReview: x.starReview,
+            name: x.name,
+            price: x.finalPrice,
+            imageUrl: x.imageUrl,
+            category: x.ProductCategory.categoryName,
+        }));
+
+        res.status(200).json({items: flattedProducts})
     } catch (error) {
         next(error);
     }

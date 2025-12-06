@@ -19,7 +19,7 @@
         </div>
     </p-panel>
 
-    <p-listbox [options]="productCategories()" (onChange)="onSelectionChange()" optionValue="id" [(ngModel)]="selectedCategories" optionLabel="categoryName" multiple="true" metaKeySelection="false" [listStyle]="{ 'max-height': '54vh' }">
+    <p-listbox [options]="productCategories()" (onChange)="onSelectionChange()" optionValue="id" [(ngModel)]="selectedCategories" optionLabel="categoryName" multiple="true" metaKeySelection="false" [listStyle]="{ 'max-height': 'fit-content' }">
         <ng-template pTemplate="header">
             <div class="category-header">Category Filters</div>
         </ng-template>

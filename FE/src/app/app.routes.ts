@@ -3,6 +3,7 @@ import { HomePage } from './components/home-page/home-page.component';
 import { CartComponent } from './components/cart/cart.component';
 import { userGuard } from './guards/user.guard';
 import { LayoutComponent } from './components/layout/layout.component';
+import { ProfileComponent } from './components/profile/profile.component';
 
 export const routes: Routes = [
     {
@@ -16,6 +17,10 @@ export const routes: Routes = [
             {
                 path: 'cart',
                 component: CartComponent,
+            },
+            {
+                path: 'profile',
+                component: ProfileComponent,
                 canActivate: [userGuard]
             }
         ],

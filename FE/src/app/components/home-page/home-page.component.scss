@@ -1,18 +1,47 @@
 .home-page-wrapper {
     display: flex;
+    justify-content: center;
+    width: 100%;
     background-color: var(--p-primary-200);
 }
 
-.cards-wrapper {
-    width: 90vw;
-    height: 90vh;
+.data-wrapper {
+    width: min(95%, 1600px);
     display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    padding: 1.5rem;
+    flex-direction: column;
+    justify-content: space-between;
+    
+    .cards-wrapper {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+        gap: 1rem;
+
+        width: 100%;
+        margin: 0 auto;
+        padding: 1rem;
+
+        overflow-y: auto;
+        scrollbar-width: none;
+
+        app-product-card {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    }
+    .paginator {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 1rem;
+    }
+}
+
+.loading-wrapper {
+    grid-column: 1 / -1;
+    display: flex;
     justify-content: center;
-    overflow-y: scroll;
-    scrollbar-width: none;
+    align-items: center;
+    padding: 2rem 0;
 }
 
 .side-nav {

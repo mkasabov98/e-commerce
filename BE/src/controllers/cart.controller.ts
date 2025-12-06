@@ -6,6 +6,7 @@ import { Cart } from "../models/cart.model";
 import { CartProduct } from "../models/cartProduct.model";
 import { Product } from "../models/product.model";
 import sequelize from "../config/database";
+import { ProductCategory } from "../models/category.model";
 
 //Patch app/cart/updateProduct
 //Used to add product to the cart if not existing or update the quantity of the product
@@ -31,12 +32,22 @@ export const updateCartProduct = async (req: AuthRequest, res: Response, next: N
             },
         });
 
+        if (product.quantity === 0) {
+            if (!cartProduct) {
+                throw { status: 404, message: "Product is not found in your cart" };
+            } else {
+                await cartProduct.destroy();
+                return res.status(200).json({ message: "Item removed from cart" });
+            }
+        }
+
         if (!cartProduct) {
             const newProductInCart = await CartProduct.create({ cartId: userCartId, productId: product.productId, quantity: product.quantity });
             return res.status(200).json(newProductInCart.get());
         }
 
-        await cartProduct.increment("quantity", { by: product.quantity });
+        cartProduct.quantity = product.quantity;
+        await cartProduct.save();
         await cartProduct.reload();
         res.status(200).json({ productId: cartProduct.productId, quantity: cartProduct.quantity });
     } catch (error) {
@@ -144,7 +155,14 @@ export const getAllProductsInCart = async (req: AuthRequest, res: Response, next
                 {
                     model: Product,
                     as: "Product",
-                    attributes: ["name", "description", "finalPrice", "imageUrl"],
+                    attributes: ["name", "finalPrice", "imageUrl", "stock", "starReview"],
+                    include: [
+                        {
+                            model: ProductCategory,
+                            as: "ProductCategory",
+                            attributes: ["categoryName"],
+                        },
+                    ],
                 },
             ],
         });
@@ -156,10 +174,12 @@ export const getAllProductsInCart = async (req: AuthRequest, res: Response, next
         const cartItems = cartProducts.map((x) => ({
             productId: x.productId,
             quantity: x.quantity,
-            name: x.Product.name,
-            description: x.Product.description,
-            price: x.Product.finalPrice,
-            imageUrl: x.Product.imageUrl,
+            stock: x.Product.stock,
+            starReview: x.Product.starReview,
+            name: x.Product!.name,
+            price: x.Product!.finalPrice,
+            imageUrl: x.Product!.imageUrl,
+            category: x.Product!.ProductCategory.categoryName,
         }));
 
         res.status(200).json({ items: cartItems, totalPrice });

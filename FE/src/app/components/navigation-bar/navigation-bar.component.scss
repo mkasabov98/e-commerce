@@ -1,5 +1,5 @@
 p-toolbar {
-    height: 9vh;
+    height: 80px;
 }
 .home-button-wrapper {
     margin: 0.5rem;
@@ -14,13 +14,14 @@ p-toolbar {
     .badge-wrapper {
         padding: 10px 10px 0 0;
         font-size: 1.4rem;
+        cursor: pointer;
 
         i {
             font-size: 1.5rem !important;
         }
     }
 
-    width: 14vw;
+    width: fit-content;
     display: flex;
     gap: 1.5rem;
     justify-content: flex-end;
