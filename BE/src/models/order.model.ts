@@ -7,9 +7,10 @@ interface OrderAttributes {
     userId: number;
     shippingCountry: string;
     shippingCity: string;
-    shippingAddress: string;
+    shippingAddress: string; //address snapshot
     totalAmount: number;
     status: OrderStatuses;
+    stripePaymentIntentId: string;
 }
 
 interface OrderCreationAttributes extends Optional<OrderAttributes, "id"> {}
@@ -22,6 +23,7 @@ export class Order extends Model<OrderAttributes, OrderCreationAttributes> imple
     public shippingAddress!: string;
     public totalAmount!: number;
     public status!: OrderStatuses;
+    public stripePaymentIntentId!: string;
 
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
@@ -59,6 +61,10 @@ Order.init(
             type: DataTypes.INTEGER,
             allowNull: false,
             defaultValue: 0,
+        },
+        stripePaymentIntentId: {
+            type: DataTypes.STRING,
+            allowNull: false,
         },
     },
     {

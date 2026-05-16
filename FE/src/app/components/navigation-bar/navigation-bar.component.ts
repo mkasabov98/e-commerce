@@ -32,6 +32,7 @@ export class NavigationBarComponent implements OnInit, OnDestroy {
     public searchString = "";
 
     public UserRoles = UserRoles;
+    public NO_USER = NO_USER;
     public loggedUser: loggedUser = NO_USER;
     public cartItems: number = 0;
     constructor(private authService: AuthService, private toastService: ToastService, private cartService: CartService, private productsService: ProductsService, public router: Router) {}
@@ -65,6 +66,7 @@ export class NavigationBarComponent implements OnInit, OnDestroy {
         this.authService.loggedUserSubject.next(NO_USER);
         localStorage.removeItem("jwt");
         this.cartService.cartItemsSubject$.next(0);
+        this.cartService.updateCartBadge();
         this.toastService.show("You have logged out.");
     }
 

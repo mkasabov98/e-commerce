@@ -1,4 +1,4 @@
-import { NextFunction, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { AuthRequest } from "../middlewares/authenticate.middleware";
 import { UserRoles } from "../enums/user-enums.enum";
 import { Cart } from "../models/cart.model";
@@ -9,8 +9,70 @@ import { OrderStatuses } from "../enums/order-enums.enum";
 import sequelize from "../config/database";
 import { OrderProduct } from "../models/orderProduct.model";
 import { Address } from "../models/address.model";
+import stripe from "../config/stripe";
+import Stripe from "stripe";
 
-export const createOrder = async (req: AuthRequest, res: Response, next: NextFunction) => {
+interface WebhookRequest extends Request {
+    rawBody: Buffer;
+}
+
+const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_LOCAL_WEBHOOK_SECRET;
+
+export const handleStripeWebhook = async (req: WebhookRequest, res, next: NextFunction) => {
+    const sig = req.headers["stripe-signature"] as string;
+    let event: Stripe.Event;
+
+    try {
+        event = stripe.webhooks.constructEvent(req.body, sig, STRIPE_WEBHOOK_SECRET);
+    } catch (error) {
+        console.log(`❌ Webhook signature verification failed:`, error);
+        return res.sendStatus(400);
+    }
+
+    if (event.type === "payment_intent.succeeded") {
+        const paymentIntent = event.data.object as Stripe.PaymentIntent;
+        const transaction = await sequelize.transaction();
+
+        try {
+            const order = await Order.findOne({
+                where: { stripePaymentIntentId: paymentIntent.id },
+                transaction,
+            });
+
+            if (!order || order.status !== OrderStatuses.Pending) {
+                await transaction.rollback();
+                return res.sendStatus(200);
+            }
+
+            const orderProducts = await OrderProduct.findAll({ where: { orderId: order.id }, transaction });
+            await order.update({ status: OrderStatuses.Paid }, { transaction });
+
+            await Promise.all(
+                orderProducts.map(async (x) => {
+                    const product = await Product.findByPk(x.productId, { attributes: ["stock"], transaction });
+                    if (product) {
+                        return Product.update({ stock: product.stock - x.quantity }, { where: { id: x.productId }, transaction });
+                    }
+                })
+            );
+
+            const userId = parseInt(paymentIntent.metadata.userId);
+            const userCart = await Cart.findOne({ where: { userId }, transaction });
+            if (userCart) {
+                await CartProduct.destroy({ where: { cartId: userCart.id }, transaction });
+            }
+
+            await transaction.commit();
+        } catch (error) {
+            console.error("Error during webhook fulfillment:", error);
+            await transaction.rollback();
+        }
+    }
+
+    return res.sendStatus(200);
+};
+
+export const createPaymentIntent = async (req: AuthRequest, res: Response, next: NextFunction) => {
     const user = req.user;
     const addressId = req.body.addressId;
 
@@ -51,17 +113,29 @@ export const createOrder = async (req: AuthRequest, res: Response, next: NextFun
 
         const transaction = await sequelize.transaction();
         try {
+            const stripeAmount = Math.round(totalAmount * 100);
+            const paymentIntent = await stripe.paymentIntents.create({
+                amount: stripeAmount,
+                currency: "usd",
+                metadata: {
+                    userId: user.id,
+                    cartId: userCart.id,
+                },
+            });
+
             const order = await Order.create(
                 {
                     userId: user.id,
-                    status: OrderStatuses.Delivered,
+                    status: OrderStatuses.Pending,
                     totalAmount: totalAmount,
                     shippingCountry: address.country,
                     shippingCity: address.city,
-                    shippingAddress: address.address,
+                    shippingAddress: address.country + ", " + address.city + ", " + address.address,
+                    stripePaymentIntentId: paymentIntent.id,
                 },
                 { transaction }
             );
+
             const orderProducts = productsInCart.map((x) => ({
                 orderId: order.id,
                 productId: x.productId,
@@ -71,23 +145,12 @@ export const createOrder = async (req: AuthRequest, res: Response, next: NextFun
 
             await OrderProduct.bulkCreate(orderProducts, { transaction });
 
-            await Promise.all(
-                productsInCart.map((x) => {
-                    return Product.update({ stock: x.Product.stock - x.quantity }, { where: { id: x.productId }, transaction });
-                })
-            );
-
-            await CartProduct.destroy({ where: { cartId: userCart.id }, transaction });
-
             await transaction.commit();
 
             res.status(200).json({
-                message: "Order completed",
-                totalAmount,
+                message: "Payment Intent Created",
                 orderId: order.id,
-                shippingCountry: order.shippingCountry,
-                shippingCity: order.shippingCity,
-                shippingAddress: order.shippingAddress
+                clientSecret: paymentIntent.client_secret,
             });
         } catch (error) {
             await transaction.rollback();

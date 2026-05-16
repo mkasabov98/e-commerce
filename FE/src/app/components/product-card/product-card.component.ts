@@ -4,7 +4,7 @@ import { cardProduct } from "../../models/products.models";
 import { Button } from "primeng/button";
 import { AuthService } from "../../services/auth.service";
 import { Subject, take, takeUntil } from "rxjs";
-import { loggedUser } from "../../models/auth.models";
+import { loggedUser, UserRoles } from "../../models/auth.models";
 import { NO_USER } from "../../constants.ts/constants";
 import { ToastService } from "../../services/toast.service";
 import { CartService } from "../../services/cart.service";
@@ -19,9 +19,10 @@ import { CartService } from "../../services/cart.service";
 export class ProductCardComponent implements OnInit, OnDestroy {
     @Input() product!: cardProduct;
 
-    private loggedUser: loggedUser = NO_USER;
     private destroy$ = new Subject<void>();
-
+    
+    public UserRoles = UserRoles;
+    public loggedUser: loggedUser = NO_USER;
     public productStars: string[] = [];
 
     constructor(private authService: AuthService, private toastService: ToastService, private cartService: CartService) {}

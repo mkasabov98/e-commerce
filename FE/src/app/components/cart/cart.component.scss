@@ -2,11 +2,48 @@
     background-color: var(--p-primary-200);
     width: 100%;
     height: calc(100dvh - 80px);
+    display: flex;
+    justify-content: space-around;
+
 
     app-cart-table {
         width: 60dvw;
         display: flex;
         padding: 20px 40px;
+        height: fit-content;
         max-height: calc(100dvh - 80px);
+    }
+
+    app-process-order {
+        width: 40dvw;
+        padding: 20px 40px;
+        height: fit-content;
+        max-height: calc(100dvh - 80px);
+    }
+
+    .payment-success {
+        width: 40dvw;
+        padding: 20px 40px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        text-align: center;
+
+        i {
+            font-size: 3rem;
+            color: var(--p-green-500);
+        }
+
+        h3 {
+            margin: 0;
+            font-size: 1.4rem;
+        }
+
+        p {
+            margin: 0;
+            color: var(--p-text-muted-color);
+        }
     }
 }

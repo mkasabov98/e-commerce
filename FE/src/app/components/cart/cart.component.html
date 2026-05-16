@@ -1,3 +1,12 @@
 <div class="cart-page-wrapper">
     <app-cart-table></app-cart-table>
+    @if (paymentComplete) {
+        <div class="payment-success">
+            <i class="pi pi-check-circle"></i>
+            <h3>Order placed successfully!</h3>
+            <p>Your payment was processed. Your order is now being prepared.</p>
+        </div>
+    } @else if (loggedUser.id !== NO_USER.id && showStepper) {
+        <app-process-order (paymentComplete)="onPaymentComplete()"></app-process-order>
+    }
 </div>

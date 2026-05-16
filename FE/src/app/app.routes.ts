@@ -4,6 +4,7 @@ import { CartComponent } from './components/cart/cart.component';
 import { userGuard } from './guards/user.guard';
 import { LayoutComponent } from './components/layout/layout.component';
 import { ProfileComponent } from './components/profile/profile.component';
+import { cartGuard } from './guards/cart.guard';
 
 export const routes: Routes = [
     {
@@ -17,6 +18,7 @@ export const routes: Routes = [
             {
                 path: 'cart',
                 component: CartComponent,
+                canActivate: [cartGuard]
             },
             {
                 path: 'profile',

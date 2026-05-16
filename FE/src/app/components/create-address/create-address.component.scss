@@ -1,0 +1,24 @@
+.address-form {
+    padding-top: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+
+    .form-body {
+        display: flex;
+        flex-direction: column;
+        gap: 2dvh;
+        padding: 0 10px;
+
+        input {
+            width: 100%;
+        }
+    }
+
+    .submit-button {
+        display: flex;
+        justify-content: flex-end;
+        padding: 10px;
+    }
+}

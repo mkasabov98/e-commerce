@@ -102,6 +102,15 @@ const ECommercePreset = definePreset(Aura, {
                 background: "transparent",
                 // borderColor: "black",
             }
+        },
+
+        stepper: {
+            steppanel: {
+                background: "transparent"
+            },
+            separator: {
+                background: "{surface.700}"
+            }
         }
     },
 });

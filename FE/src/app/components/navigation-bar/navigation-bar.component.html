@@ -9,24 +9,24 @@
         <p-iconfield>
             <p-inputicon class="pi pi-search" />
             <input [(ngModel)]="searchString" type="text" pInputText placeholder="Search" class="search-bar" (input)="onInputChange($event)" />
-            <p-inputicon class="pi pi-times" (click)="clearInput()" style="cursor: pointer"/>
+            <p-inputicon class="pi pi-times" (click)="clearInput()" style="cursor: pointer" />
         </p-iconfield>
     </ng-template>
     }
     <ng-template #end>
         <div class="auth-buttons-wrapper">
+            @if (loggedUser.role !== UserRoles.Admin) {
             <div class="badge-wrapper" routerLink="/e-com/cart">
                 <p-overlaybadge [value]="cartItems" severity="success">
                     <i class="pi pi-cart-arrow-down" style="font-size: 1rem"></i>
                 </p-overlaybadge>
             </div>
-            @if (loggedUser.id === -1) {
+            } @if (loggedUser.id === NO_USER.id) {
             <app-register></app-register>
             <app-login></app-login>
-            } @if (loggedUser.role !== -1) {
-                @if (loggedUser.role === UserRoles.User) {
-                    <p-button routerLink="/e-com/profile">Profile</p-button>
-                }
+            } @if (loggedUser.role !== -1) { @if (loggedUser.role === UserRoles.User) {
+            <p-button routerLink="/e-com/profile">Profile</p-button>
+            }
             <p-button (onClick)="logOut()">Log out</p-button>
             }
         </div>
