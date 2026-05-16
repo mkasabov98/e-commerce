@@ -43,6 +43,10 @@ export class CartTableComponent implements OnInit, OnDestroy {
             this.loggedUser = res;
             this.fetchCartProducts();
         });
+
+        this.cartService.cartItemsSubject$.pipe(takeUntil(this.destroy$)).subscribe((count) => {
+            if (count === 0) this.products = [];
+        });
     }
 
     fetchCartProducts() {
@@ -105,7 +109,7 @@ export class CartTableComponent implements OnInit, OnDestroy {
 
     handleAction(productId: number, quantity: number, actionType: "increment" | "decrement") {
         if (actionType === "decrement") {
-            if (quantity === 1) this.openConfirmDialog(productId, 0);
+            if (quantity === 1) this.openConfirmDialog(productId, quantity);
             else this.updateProductQuantity(productId, quantity - 1);
         } else {
             this.updateProductQuantity(productId, quantity + 1);

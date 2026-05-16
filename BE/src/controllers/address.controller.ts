@@ -23,13 +23,12 @@ export const getAddresses = async (req: AuthRequest, res: Response, next: NextFu
 
     try {
         if (user?.role !== UserRoles.User) throw { status: 401, message: "Unauthorized" };
-        const addresses = await Address.findAll({ where: { userId: user.id } });
+        const addresses = await Address.findAll({ where: { userId: user.id }, attributes: ["address", "city", "country", "id", "userId"] });
         res.status(200).json(addresses);
     } catch (error) {
         next(error);
     }
 };
-
 
 //Currently cannot delete an address that has been used for an order as Order has FK pointing to the address
 //Should work on this in future

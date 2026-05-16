@@ -4,16 +4,14 @@ import { AuthService } from '../services/auth.service';
 import { map, take } from 'rxjs';
 import { UserRoles } from '../models/auth.models';
 
-export const userGuard: CanActivateFn = (route, state) => {
+export const cartGuard: CanActivateFn = (route, state) => {
     const authService = inject(AuthService);
     const router = inject(Router);
-    return authService.loggedUserSubject.pipe(
-        take(1),
-        map((res) => {
-            if (res?.role !== UserRoles.User) {
-                return router.createUrlTree(['e-com/']);
-            }
-            return true;
-        })
-    );
+
+    return authService.loggedUserSubject.pipe(take(1), map((res) => {
+        if (res.role === UserRoles.Admin) {
+            return router.createUrlTree(['e-com/']);
+        }
+        return true
+    }))
 };

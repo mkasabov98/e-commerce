@@ -21,7 +21,6 @@ import { UserRoles } from "../../models/auth.models";
 })
 export class LoginComponent {
     private formBuilder = inject(FormBuilder);
-    // private isUser = false;
     public visible = false;
 
     public registerModalVisible = false;
@@ -48,9 +47,11 @@ export class LoginComponent {
                     this.toastService.show("Successful login", "success");
                 }),
                 concatMap((res) => {
-                    const localCart = localStorage.getItem("localCart");
-                    localStorage.removeItem("localCart");
                     const isUser = res.role === UserRoles.User;
+                    const localCart = localStorage.getItem("localCart");
+                    if (isUser) {
+                        localStorage.removeItem("localCart");
+                    }
 
                     if (localCart && isUser) {
                         return this.cartService.updateCart(JSON.parse(localCart)).pipe(map((updateCartRes) => ({ isUser, updated: true, updateCartRes })));
@@ -73,9 +74,11 @@ export class LoginComponent {
             .subscribe(
                 (res) => {
                     if (res) {
-                        this.cartService.cartItemsSubject$.next(res.items.reduce((acc, curr) => {
-                        return acc + curr.quantity!;
-                    },0))
+                        this.cartService.cartItemsSubject$.next(
+                            res.items.reduce((acc, curr) => {
+                                return acc + curr.quantity!;
+                            }, 0)
+                        );
                     }
                 },
                 (error) => {

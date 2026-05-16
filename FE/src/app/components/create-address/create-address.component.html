@@ -1,0 +1,45 @@
+<p-button (onClick)="visible = true">Add address</p-button>
+
+<p-dialog header="Add address" (onHide)="resetForm()" [modal]="true" [(visible)]="visible" [style]="{ width: '30dvw' }" [contentStyle]="{ height: '60dvh' }">
+    <form [formGroup]="addressForm" (ngSubmit)="onFormSubmit()" class="address-form">
+        <div class="form-body">
+            <p-floatlabel class="w-full md:w-56" variant="on">
+                <p-select [options]="countries" formControlName="country" id="country" optionLabel="name" class="w-full md:w-56"></p-select>
+                <label for="country">Country</label>
+            </p-floatlabel>
+            <p-floatlabel class="w-full md:w-56" variant="on">
+                <p-select
+                    [options]="states"
+                    formControlName="state"
+                    id="state"
+                    optionLabel="name"
+                    [filter]="true"
+                    filterBy="name"
+                    class="w-full md:w-56"
+                ></p-select>
+                <label for="state">State / Region</label>
+            </p-floatlabel>
+            <p-floatlabel class="w-full md:w-56" variant="on">
+                <p-select
+                    [options]="cities"
+                    [virtualScroll]="true"
+                    [virtualScrollItemSize]="37"
+                    formControlName="city"
+                    id="city"
+                    optionLabel="name"
+                    [filter]="true"
+                    filterBy="name"
+                    class="w-full md:w-56"
+                ></p-select>
+                <label for="city">City</label>
+            </p-floatlabel>
+            <p-floatlabel variant="on">
+                <input pInputText id="address" formControlName="address" placeholder="Street Nº, floor Nº, etc" />
+                <label for="address">Additional information</label>
+            </p-floatlabel>
+        </div>
+        <div class="submit-button">
+            <p-button type="submit-button" [disabled]="disableButton()">Add address</p-button>
+        </div>
+    </form>
+</p-dialog>

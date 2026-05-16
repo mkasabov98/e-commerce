@@ -23,9 +23,11 @@ services:
     build: ./BE
     container_name: ecommerce-backend
     ports:
-      - "5000:5000"
+      - "3000:3000"
     env_file:
       - ./BE/.env
+    environment:
+      - DB_HOST=mysql
     depends_on:
       - mysql
     restart: unless-stopped

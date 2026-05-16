@@ -1,4 +1,5 @@
 export const environment = {
-  production: false,
-  apiUrl: 'http://localhost:5000/app'
+    production: false,
+    apiUrl: "http://localhost:3000/app",
+STRIPE_PUBLISHABLE_KEY: "pk_test_51ScNwmGY0NYtZ6EuG5Hats0KhuMdAF7gkuKN1moXI37HYa0WKqY2Y1yo0qvYXLdTzEhECRunmtC5f5MA9SlqgBWp00prkUYbpZ",
 };

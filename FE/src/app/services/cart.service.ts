@@ -4,12 +4,30 @@ import { getCartProductsResponse, updateCartProductResponse } from "../models/ca
 import { environment } from "../../environments/environment";
 import { BehaviorSubject, Observable } from "rxjs";
 
+import { loadStripe, Stripe } from "@stripe/stripe-js";
+
 @Injectable({
     providedIn: "root",
 })
 export class CartService {
     public cartItemsSubject$ = new BehaviorSubject<number>(0);
-    constructor(private http: HttpClient) {}
+    private stripePromise: Promise<Stripe | null>;
+
+    constructor(private http: HttpClient) {
+        this.stripePromise = loadStripe(environment.STRIPE_PUBLISHABLE_KEY);
+    }
+
+    public getStripe(): Promise<Stripe | null> {
+        return this.stripePromise;
+    }
+
+    public initiatePayment(addressId: number): Observable<{ clientSecret: string; orderId: number; message: string }> {
+        return this.http.post<{ clientSecret: string; orderId: number; message: string }>(
+            `${environment.apiUrl}/cart/create-payment-intent`,
+            { addressId },
+            { observe: "body" }
+        );
+    }
 
     public updateLocalCart(productId: number, quantity: number) {
         let localCart: { productId: number; productQuantity: number }[] = JSON.parse(localStorage.getItem("localCart") || "");
