@@ -11,7 +11,7 @@ import { ProductCategory } from "../models/category.model";
 //Patch app/cart/updateProduct
 //Used to add product to the cart if not existing or update the quantity of the product
 export const updateCartProduct = async (req: AuthRequest, res: Response, next: NextFunction) => {
-    const product: { productId: number; quantity: number } = req.body;
+    const product: { productId: number; quantity: number; increment?: boolean } = req.body;
     const userId = req.user.id;
 
     try {
@@ -42,11 +42,18 @@ export const updateCartProduct = async (req: AuthRequest, res: Response, next: N
         }
 
         if (!cartProduct) {
+            if (product.quantity > existingProduct.stock) {
+                throw { status: 400, message: `Only ${existingProduct.stock} unit(s) of this item are available` };
+            }
             const newProductInCart = await CartProduct.create({ cartId: userCartId, productId: product.productId, quantity: product.quantity });
             return res.status(200).json(newProductInCart.get());
         }
 
-        cartProduct.quantity = product.quantity;
+        const newQuantity = product.increment ? cartProduct.quantity + product.quantity : product.quantity;
+        if (newQuantity > existingProduct.stock) {
+            throw { status: 400, message: `Only ${existingProduct.stock} unit(s) of this item are available` };
+        }
+        cartProduct.quantity = newQuantity;
         await cartProduct.save();
         await cartProduct.reload();
         res.status(200).json({ productId: cartProduct.productId, quantity: cartProduct.quantity });

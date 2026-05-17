@@ -47,7 +47,7 @@
         <div class="footer-section">
             <div class="price">{{ product.finalPrice }}$</div>
 
-            <p-button [disabled]="loggedUser.role === UserRoles.Admin" styleClass="p-button-sm p-button-rounded p-button-success" (onClick)="addToCart($event)">
+            <p-button [disabled]="loggedUser.role === UserRoles.Admin || product.stock === 0" styleClass="p-button-sm p-button-rounded p-button-success" (onClick)="addToCart($event)">
                 <i class="pi pi-cart-plus mr-2"></i>
                 <span>Add</span>
             </p-button>

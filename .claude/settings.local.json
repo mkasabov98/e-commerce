@@ -3,7 +3,10 @@
     "allow": [
       "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\User\\\\Desktop\\\\e-commerce\" -Recurse -Force | Where-Object {-not $_.PSIsContainer} | Select-Object -ExpandProperty FullName | ForEach-Object { $_.Replace\\('C:\\\\Users\\\\User\\\\Desktop\\\\e-commerce\\\\', ''\\) } | Sort-Object)",
       "PowerShell(netstat *)",
-      "WebFetch(domain:api.geocoded.me)"
+      "WebFetch(domain:api.geocoded.me)",
+      "Bash(npm ls *)",
+      "Bash(dir src *)",
+      "Bash(findstr \"\\\\.scss\")"
     ]
   }
 }

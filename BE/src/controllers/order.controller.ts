@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { Transaction } from "sequelize";
 import { AuthRequest } from "../middlewares/authenticate.middleware";
 import { UserRoles } from "../enums/user-enums.enum";
 import { Cart } from "../models/cart.model";
@@ -45,31 +46,102 @@ export const handleStripeWebhook = async (req: WebhookRequest, res, next: NextFu
             }
 
             const orderProducts = await OrderProduct.findAll({ where: { orderId: order.id }, transaction });
+
+            // Lock each product row and validate stock before committing anything
+            for (const x of orderProducts) {
+                const product = await Product.findByPk(x.productId, {
+                    lock: Transaction.LOCK.UPDATE,
+                    transaction,
+                });
+                if (!product || product.stock < x.quantity) {
+                    try {
+                        await stripe.refunds.create({ payment_intent: paymentIntent.id });
+                    } catch (refundError) {
+                        console.error(`CRITICAL: Refund failed for payment intent ${paymentIntent.id}`, refundError);
+                    }
+                    await order.update({ status: OrderStatuses.Cancelled }, { transaction });
+                    await transaction.commit();
+                    console.warn(`Order ${order.id} cancelled and refunded — insufficient stock for payment intent ${paymentIntent.id}`);
+                    return res.sendStatus(200);
+                }
+            }
+
             await order.update({ status: OrderStatuses.Paid }, { transaction });
 
-            await Promise.all(
-                orderProducts.map(async (x) => {
-                    const product = await Product.findByPk(x.productId, { attributes: ["stock"], transaction });
-                    if (product) {
-                        return Product.update({ stock: product.stock - x.quantity }, { where: { id: x.productId }, transaction });
-                    }
-                })
-            );
+            for (const x of orderProducts) {
+                await Product.decrement("stock", { by: x.quantity, where: { id: x.productId }, transaction });
+            }
 
             const userId = parseInt(paymentIntent.metadata.userId);
+            if (isNaN(userId)) {
+                console.error(`Webhook: missing userId in metadata for payment intent ${paymentIntent.id}`);
+                await transaction.rollback();
+                return res.sendStatus(200);
+            }
+
             const userCart = await Cart.findOne({ where: { userId }, transaction });
             if (userCart) {
                 await CartProduct.destroy({ where: { cartId: userCart.id }, transaction });
             }
 
             await transaction.commit();
+            console.log(`Order ${order.id} fulfilled for user ${userId} — payment intent ${paymentIntent.id}`);
         } catch (error) {
             console.error("Error during webhook fulfillment:", error);
             await transaction.rollback();
         }
     }
 
+    if (event.type === "payment_intent.payment_failed" || event.type === "payment_intent.canceled") {
+        const paymentIntent = event.data.object as Stripe.PaymentIntent;
+        try {
+            await Order.update(
+                { status: OrderStatuses.Cancelled },
+                { where: { stripePaymentIntentId: paymentIntent.id, status: OrderStatuses.Pending } }
+            );
+            console.log(`Order cancelled due to ${event.type} — payment intent ${paymentIntent.id}`);
+        } catch (error) {
+            console.error(`Failed to cancel order for payment intent ${paymentIntent.id}`, error);
+        }
+    }
+
     return res.sendStatus(200);
+};
+
+export const getUserOrders = async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+        if (req.user?.role !== UserRoles.User) throw { status: 401, message: "Unauthorized" };
+
+        const orders = await Order.findAll({
+            where: { userId: req.user.id },
+            include: [
+                {
+                    model: OrderProduct,
+                    include: [{ model: Product, attributes: ["name", "imageUrl"] }],
+                },
+            ],
+            order: [["createdAt", "DESC"]],
+        });
+
+        const result = orders.map((order: any) => ({
+            id: order.id,
+            status: order.status,
+            totalAmount: order.totalAmount,
+            shippingAddress: order.shippingAddress,
+            createdAt: order.createdAt,
+            products: order.OrderProducts?.map((op: any) => ({
+                productId: op.productId,
+                name: op.Product?.name,
+                imageUrl: op.Product?.imageUrl,
+                priceAtPurchase: op.priceAtPurchase,
+                quantity: op.quantity,
+            })) ?? [],
+        }));
+
+        res.status(200).json(result);
+    } catch (error) {
+        next(error);
+    }
 };
 
 export const createPaymentIntent = async (req: AuthRequest, res: Response, next: NextFunction) => {
@@ -78,10 +150,12 @@ export const createPaymentIntent = async (req: AuthRequest, res: Response, next:
 
     try {
         if (req.user?.role !== UserRoles.User) throw { status: 401, message: "Unauthorized" };
+
         const userCart = await Cart.findOne({ where: { userId: user.id } });
         if (!userCart) throw { status: 400, message: "No cart found." };
 
-        const address = await Address.findByPk(addressId);
+        // Fix #1: validate address belongs to the requesting user
+        const address = await Address.findOne({ where: { id: addressId, userId: user.id } });
         if (!address) throw { status: 400, message: "No matching address" };
 
         const productsInCart = await CartProduct.findAll({
@@ -111,18 +185,20 @@ export const createPaymentIntent = async (req: AuthRequest, res: Response, next:
             return res.status(400).json({ errors });
         }
 
+        // Fix #2: create the payment intent before opening the DB transaction so the
+        // connection is not held idle during the Stripe network round-trip
+        const stripeAmount = Math.round(totalAmount * 100);
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount: stripeAmount,
+            currency: "usd",
+            metadata: {
+                userId: user.id,
+                cartId: userCart.id,
+            },
+        });
+
         const transaction = await sequelize.transaction();
         try {
-            const stripeAmount = Math.round(totalAmount * 100);
-            const paymentIntent = await stripe.paymentIntents.create({
-                amount: stripeAmount,
-                currency: "usd",
-                metadata: {
-                    userId: user.id,
-                    cartId: userCart.id,
-                },
-            });
-
             const order = await Order.create(
                 {
                     userId: user.id,
@@ -154,6 +230,12 @@ export const createPaymentIntent = async (req: AuthRequest, res: Response, next:
             });
         } catch (error) {
             await transaction.rollback();
+            // Cancel the orphaned payment intent so the user is never charged
+            try {
+                await stripe.paymentIntents.cancel(paymentIntent.id);
+            } catch (cancelError) {
+                console.error(`Failed to cancel orphaned payment intent ${paymentIntent.id}`, cancelError);
+            }
             next(error);
         }
     } catch (error) {

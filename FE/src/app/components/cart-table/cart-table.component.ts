@@ -112,6 +112,11 @@ export class CartTableComponent implements OnInit, OnDestroy {
             if (quantity === 1) this.openConfirmDialog(productId, quantity);
             else this.updateProductQuantity(productId, quantity - 1);
         } else {
+            const product = this.products.find((x) => x.productId === productId);
+            if (product && quantity >= product.stock) {
+                this.toastService.show(`Only ${product.stock} unit(s) of this item are available`, "warn");
+                return;
+            }
             this.updateProductQuantity(productId, quantity + 1);
         }
     }
@@ -119,8 +124,17 @@ export class CartTableComponent implements OnInit, OnDestroy {
     changeValue(event: InputNumberInputEvent, productId: number) {
         const quantity = event.value;
         const formattedValue = Number(event.formattedValue);
-        if (!quantity) this.openConfirmDialog(productId, formattedValue);
-        else this.updateProductQuantity(productId, quantity);
+        if (!quantity) {
+            this.openConfirmDialog(productId, formattedValue);
+        } else {
+            const product = this.products.find((x) => x.productId === productId);
+            if (product && quantity > product.stock) {
+                this.toastService.show(`Only ${product.stock} unit(s) of this item are available`, "warn");
+                this.updateProductQuantity(productId, product.stock);
+            } else {
+                this.updateProductQuantity(productId, quantity);
+            }
+        }
     }
 
     updateProductQuantity(productId: number, quantity: number) {
