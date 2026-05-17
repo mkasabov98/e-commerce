@@ -44,43 +44,44 @@ export class ProductCardComponent implements OnInit, OnDestroy {
 
     addToCart(event$: Event) {
         event$.stopPropagation();
+
+        if (this.product.stock === 0) {
+            this.toastService.show("This item is out of stock", "warn");
+            return;
+        }
+
         if (this.loggedUser.id === NO_USER.id) {
             const cart = localStorage.getItem("localCart");
-            const updatedCart: {
-                productId: number;
-                productQuantity: number;
-            }[] = !cart ? [] : JSON.parse(cart);
-
+            const updatedCart: { productId: number; productQuantity: number }[] = !cart ? [] : JSON.parse(cart);
             const indexToUpdate = updatedCart.findIndex((x) => x.productId === this.product.id);
 
             if (indexToUpdate === -1) {
-                updatedCart.push({
-                    productId: this.product.id,
-                    productQuantity: 1,
-                });
+                updatedCart.push({ productId: this.product.id, productQuantity: 1 });
             } else {
-                updatedCart[indexToUpdate] = {
-                    productId: this.product.id,
-                    productQuantity: updatedCart[indexToUpdate].productQuantity + 1,
-                };
+                const currentQty = updatedCart[indexToUpdate].productQuantity;
+                if (currentQty >= this.product.stock) {
+                    this.toastService.show(`Only ${this.product.stock} unit(s) of this item are available`, "warn");
+                    return;
+                }
+                updatedCart[indexToUpdate].productQuantity = currentQty + 1;
             }
 
             localStorage.setItem("localCart", JSON.stringify(updatedCart));
-            this.toastService.show("The item has been added to your cart, once you log in your account, your personal cart will be updated.");
             this.cartService.cartItemsSubject$.next(this.cartService.cartItemsSubject$.value + 1);
+            this.toastService.show("Item added to temporary cart. Log in to save your cart.");
         } else {
             this.cartService
-                .addProductToCart(this.product.id, 1)
+                .addProductToCart(this.product.id, 1, true)
                 .pipe(take(1))
-                .subscribe(
-                    (res) => {
+                .subscribe({
+                    next: () => {
                         this.cartService.cartItemsSubject$.next(this.cartService.cartItemsSubject$.value + 1);
-                        this.toastService.show("Item has been added to cart", 'success')
+                        this.toastService.show("Item has been added to cart", "success");
                     },
-                    (error) => {
+                    error: (error) => {
                         this.toastService.show(error.error.message, "warn");
-                    }
-                );
+                    },
+                });
         }
     }
 

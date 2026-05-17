@@ -52,10 +52,10 @@ export class CartService {
         });
     }
 
-    public addProductToCart(productId: number, quantity: number): Observable<updateCartProductResponse> {
+    public addProductToCart(productId: number, quantity: number, increment = false): Observable<updateCartProductResponse> {
         return this.http.patch<updateCartProductResponse>(
             `${environment.apiUrl}/cart/updateProduct`,
-            { productId, quantity },
+            { productId, quantity, increment },
             {
                 observe: "body",
             }

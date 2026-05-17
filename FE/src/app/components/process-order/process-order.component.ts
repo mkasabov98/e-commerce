@@ -113,7 +113,8 @@ export class ProcessOrderComponent implements OnInit, OnDestroy {
                 this.paymentComplete.emit();
             }
         } catch (err: any) {
-            this.cardError = err?.error?.message ?? "An unexpected error occurred";
+            const errors: string[] | undefined = err?.error?.errors;
+            this.cardError = errors?.length ? errors.join(" ") : (err?.error?.message ?? "An unexpected error occurred");
         } finally {
             this.isProcessing = false;
         }

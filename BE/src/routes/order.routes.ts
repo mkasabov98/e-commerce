@@ -1,9 +1,9 @@
-// import { Router } from "express";
-// import { authenticate } from "../middlewares/authenticate.middleware";
-// import { createOrder } from "../controllers/order.controller";
+import { Router } from "express";
+import { authenticate } from "../middlewares/authenticate.middleware";
+import { getUserOrders } from "../controllers/order.controller";
 
-// const router = Router();
+const router = Router();
 
-// router.post('/create', authenticate, createOrder);
+router.get("/", authenticate, getUserOrders);
 
-// export default router;
+export default router;

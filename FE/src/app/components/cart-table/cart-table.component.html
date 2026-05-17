@@ -30,7 +30,10 @@
                                 <i class="pi pi-minus"></i>
                             </p-inputgroup-addon>
                             <p-inputnumber style="max-width: 50px;" class="input-field" (onInput)="changeValue($event, product.productId)" [(ngModel)]="product.quantity" size="small" mode="decimal" [min]="0" />
-                            <p-inputgroup-addon (click)="handleAction(product.productId, product.quantity, 'increment')">
+                            <p-inputgroup-addon
+                                [style.opacity]="product.quantity >= product.stock ? '0.4' : '1'"
+                                [style.cursor]="product.quantity >= product.stock ? 'not-allowed' : 'pointer'"
+                                (click)="handleAction(product.productId, product.quantity, 'increment')">
                                 <i class="pi pi-plus"></i>
                             </p-inputgroup-addon>
                         </p-inputgroup>
