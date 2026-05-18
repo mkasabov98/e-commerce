@@ -28,7 +28,7 @@
 
 <p-card class="product-card" (click)="openProduct($event)">
     <ng-template pTemplate="header">
-        <img [src]="product.imageUrl" alt="Product image" class="product-image" />
+        <img [src]="product.imageUrl" [alt]="product.name" class="product-image" (error)="onImageError($event)" />
     </ng-template>
     <div class="product-name">
         {{ product.name }}

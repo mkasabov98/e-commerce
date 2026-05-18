@@ -196,6 +196,11 @@ export class CartTableComponent implements OnInit, OnDestroy {
         });
     }
 
+    onImageError(event: Event) {
+        (event.target as HTMLImageElement).src =
+            "https://placehold.co/400x300?text=No+Image";
+    }
+
     getInventoryStatus(stock: number) {
         if (stock === 0) return "OUTOFSTOCK";
         else if (stock <= 10) return "LOWSTOCK";

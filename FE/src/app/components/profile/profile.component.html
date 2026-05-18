@@ -1,66 +1,161 @@
 <div class="profile-wrapper">
-    <div class="header-wrapper">
-        <span class="header">Order History</span>
+
+    <!-- Stats strip -->
+    <div class="stats-strip">
+        @if (isLoading) {
+            @for (i of [1, 2, 3]; track i) {
+                <p-skeleton height="56px" width="160px" borderRadius="12px" />
+            }
+        } @else {
+            <div class="stat-card">
+                <span class="stat-value">{{ paidOrders.length }}</span>
+                <span class="stat-label">Orders Placed</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-value">${{ totalSpent | number: '1.2-2' }}</span>
+                <span class="stat-label">Total Spent</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-value">${{ averageOrderValue | number: '1.2-2' }}</span>
+                <span class="stat-label">Avg. Order Value</span>
+            </div>
+        }
     </div>
 
-    @if (isLoading) {
-        <div class="skeleton-list">
-            @for (i of [1, 2, 3]; track i) {
-                <p-skeleton height="56px" borderRadius="8px" />
-            }
-        </div>
-    } @else if (!orders.length) {
-        <div class="empty-state">
-            <i class="pi pi-shopping-bag"></i>
-            <p>No orders yet</p>
-        </div>
-    } @else {
-        <p-accordion [multiple]="true">
-            @for (order of orders; track order.id; let i = $index) {
-                <p-accordion-panel [value]="order.id.toString()">
-                    <p-accordion-header>
-                        <div class="accordion-header">
-                            <span class="order-id">#{{ orders.length - i }}</span>
-                            <span class="order-date">{{ order.createdAt | date: 'MMM d, y' }}</span>
-                            <span class="order-total">${{ order.totalAmount | number: '1.2-2' }}</span>
-                            <p-tag
-                                [value]="getStatusLabel(order.status)"
-                                [severity]="getStatusSeverity(order.status)"
-                            />
+    <!-- Tabs -->
+    <p-tabs value="orders">
+        <p-tablist>
+            <p-tab value="orders">
+                <i class="pi pi-shopping-bag"></i>
+                Order History
+            </p-tab>
+            <p-tab value="addresses">
+                <i class="pi pi-map-marker"></i>
+                Saved Addresses
+            </p-tab>
+        </p-tablist>
+
+        <p-tabpanels>
+
+            <!-- Order History tab -->
+            <p-tabpanel value="orders">
+                @if (isLoading) {
+                    <div class="skeleton-list">
+                        @for (i of [1, 2, 3]; track i) {
+                            <p-skeleton height="56px" borderRadius="8px" />
+                        }
+                    </div>
+                } @else if (!orders.length) {
+                    <div class="empty-state">
+                        <i class="pi pi-shopping-bag"></i>
+                        <p>No orders yet</p>
+                    </div>
+                } @else {
+                    <p-accordion [multiple]="true">
+                        @for (order of orders; track order.id; let i = $index) {
+                            <p-accordion-panel [value]="order.id.toString()">
+                                <p-accordion-header>
+                                    <div class="accordion-header">
+                                        <span class="order-id">#{{ orders.length - i }}</span>
+                                        <span class="order-date">{{ order.createdAt | date: 'MMM d, y' }}</span>
+                                        <span class="order-total">${{ order.totalAmount | number: '1.2-2' }}</span>
+                                        <p-tag
+                                            [value]="getStatusLabel(order.status)"
+                                            [severity]="getStatusSeverity(order.status)"
+                                        />
+                                    </div>
+                                </p-accordion-header>
+                                <p-accordion-content>
+                                    <div class="order-details">
+                                        <div class="order-meta">
+                                            <div class="shipping-address">
+                                                <i class="pi pi-map-marker"></i>
+                                                <span>{{ order.shippingAddress }}</span>
+                                            </div>
+                                            <p-button
+                                                label="Re-order"
+                                                icon="pi pi-refresh"
+                                                size="small"
+                                                severity="secondary"
+                                                [loading]="reOrderingId === order.id"
+                                                [disabled]="reOrderingId !== null && reOrderingId !== order.id"
+                                                (onClick)="reOrder(order)"
+                                            />
+                                        </div>
+                                        <p-table [value]="order.products">
+                                            <ng-template #header>
+                                                <tr>
+                                                    <th [style.width.%]="25">Product</th>
+                                                    <th [style.width.%]="15">Image</th>
+                                                    <th [style.width.%]="20">Unit Price</th>
+                                                    <th [style.width.%]="15">Qty</th>
+                                                    <th [style.width.%]="25">Subtotal</th>
+                                                </tr>
+                                            </ng-template>
+                                            <ng-template #body let-product>
+                                                <tr class="table-row">
+                                                    <td>{{ product.name }}</td>
+                                                    <td>
+                                                        <img [src]="product.imageUrl" [alt]="product.name" (error)="onImageError($event)" />
+                                                    </td>
+                                                    <td>${{ product.priceAtPurchase | number: '1.2-2' }}</td>
+                                                    <td>{{ product.quantity }}</td>
+                                                    <td>${{ (product.priceAtPurchase * product.quantity) | number: '1.2-2' }}</td>
+                                                </tr>
+                                            </ng-template>
+                                        </p-table>
+                                    </div>
+                                </p-accordion-content>
+                            </p-accordion-panel>
+                        }
+                    </p-accordion>
+                }
+            </p-tabpanel>
+
+            <!-- Saved Addresses tab -->
+            <p-tabpanel value="addresses">
+                <div class="addresses-panel">
+                    <div class="addresses-header">
+                        <app-create-address (onAddressCreate)="onAddressCreated()" />
+                    </div>
+
+                    @if (addressesLoading) {
+                        <div class="skeleton-list">
+                            @for (i of [1, 2, 3]; track i) {
+                                <p-skeleton height="72px" borderRadius="8px" />
+                            }
                         </div>
-                    </p-accordion-header>
-                    <p-accordion-content>
-                        <div class="order-details">
-                            <div class="shipping-address">
-                                <i class="pi pi-map-marker"></i>
-                                <span>{{ order.shippingAddress }}</span>
-                            </div>
-                            <p-table [value]="order.products">
-                                <ng-template #header>
-                                    <tr>
-                                        <th [style.width.%]="25">Product</th>
-                                        <th [style.width.%]="15">Image</th>
-                                        <th [style.width.%]="20">Unit Price</th>
-                                        <th [style.width.%]="15">Qty</th>
-                                        <th [style.width.%]="25">Subtotal</th>
-                                    </tr>
-                                </ng-template>
-                                <ng-template #body let-product>
-                                    <tr class="table-row">
-                                        <td>{{ product.name }}</td>
-                                        <td>
-                                            <img [src]="product.imageUrl" [alt]="product.name" />
-                                        </td>
-                                        <td>${{ product.priceAtPurchase | number: '1.2-2' }}</td>
-                                        <td>{{ product.quantity }}</td>
-                                        <td>${{ (product.priceAtPurchase * product.quantity) | number: '1.2-2' }}</td>
-                                    </tr>
-                                </ng-template>
-                            </p-table>
+                    } @else if (!addresses.length) {
+                        <div class="empty-state">
+                            <i class="pi pi-map-marker"></i>
+                            <p>No saved addresses</p>
                         </div>
-                    </p-accordion-content>
-                </p-accordion-panel>
-            }
-        </p-accordion>
-    }
+                    } @else {
+                        <div class="address-list">
+                            @for (addr of addresses; track addr.id) {
+                                <div class="address-card">
+                                    <div class="address-info">
+                                        <i class="pi pi-map-marker"></i>
+                                        <div class="address-text">
+                                            <span class="address-main">{{ addr.address }}</span>
+                                            <span class="address-sub">{{ addr.city }}, {{ addr.country }}</span>
+                                        </div>
+                                    </div>
+                                    <p-button
+                                        icon="pi pi-trash"
+                                        severity="danger"
+                                        [text]="true"
+                                        (onClick)="confirmDeleteAddress(addr.id!)"
+                                    />
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </p-tabpanel>
+
+        </p-tabpanels>
+    </p-tabs>
+
+    <p-confirmdialog />
 </div>
