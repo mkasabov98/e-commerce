@@ -6,7 +6,9 @@
       "WebFetch(domain:api.geocoded.me)",
       "Bash(npm ls *)",
       "Bash(dir src *)",
-      "Bash(findstr \"\\\\.scss\")"
+      "Bash(findstr \"\\\\.scss\")",
+      "Bash(node -e \"const p = require\\('./node_modules/primeng/package.json'\\); console.log\\(p.version\\)\")",
+      "mcp__ide__getDiagnostics"
     ]
   }
 }

@@ -37,4 +37,8 @@ export class AddressService {
             observe: "body",
         });
     }
+
+    public deleteAddress(id: number): Observable<void> {
+        return this.http.delete<void>(`${environment.apiUrl}/address/${id}`);
+    }
 }

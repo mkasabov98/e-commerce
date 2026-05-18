@@ -38,6 +38,11 @@ export class ProductCardComponent implements OnInit, OnDestroy {
         }
     }
 
+    onImageError(event: Event) {
+        (event.target as HTMLImageElement).src =
+            "https://placehold.co/400x300?text=No+Image";
+    }
+
     openProduct(event$: Event) {
         console.log("openProduct");
     }
