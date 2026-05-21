@@ -45,7 +45,7 @@ Review.init(
             allowNull: false,
         },
         starReview: {
-            type: DataTypes.DECIMAL(1),
+            type: DataTypes.INTEGER,
             allowNull: false,
             validate: {
                 min: 1,

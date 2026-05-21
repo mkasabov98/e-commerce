@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Router } from "@angular/router";
 import { TableModule } from "primeng/table";
 import { AuthService } from "../../services/auth.service";
 import { ToastService } from "../../services/toast.service";
@@ -12,6 +13,7 @@ import { ButtonModule } from "primeng/button";
 import { cartProduct } from "../../models/cart.models";
 import { ProductsService } from "../../services/products.service";
 import { TagModule } from "primeng/tag";
+import { getInventoryStatus, getInventorySeverity } from "../../utils/stock.utils";
 
 @Component({
     selector: "app-cart-table",
@@ -32,7 +34,7 @@ export class CartTableComponent implements OnInit, OnDestroy {
         if (!this.products || !this.products.length) return 0;
         return this.products.reduce((acc, curr) => acc + curr.quantity! * curr.price, 0).toFixed(2);
     }
-    constructor(private authService: AuthService, private toastService: ToastService, private cartService: CartService, private confirmationService: ConfirmationService, private productsService: ProductsService) {}
+    constructor(private authService: AuthService, private toastService: ToastService, private cartService: CartService, private confirmationService: ConfirmationService, private productsService: ProductsService, private router: Router) {}
 
     ngOnInit(): void {
         this.authService.loggedUserSubject.pipe(takeUntil(this.destroy$)).subscribe((res) => {
@@ -58,8 +60,8 @@ export class CartTableComponent implements OnInit, OnDestroy {
                                 return {
                                     ...x,
                                     quantity: products.find((y) => y.productId === x.productId)?.productQuantity,
-                                    inventoryStatus: this.getInventoryStatus(x.stock),
-                                    severityStatus: this.getSeverity(x.stock),
+                                    inventoryStatus: getInventoryStatus(x.stock),
+                                    severityStatus: getInventorySeverity(x.stock),
                                 };
                             }),
                             totalPrice,
@@ -84,8 +86,8 @@ export class CartTableComponent implements OnInit, OnDestroy {
                             items: items.map((x) => {
                                 return {
                                     ...x,
-                                    inventoryStatus: this.getInventoryStatus(x.stock),
-                                    severityStatus: this.getSeverity(x.stock),
+                                    inventoryStatus: getInventoryStatus(x.stock),
+                                    severityStatus: getInventorySeverity(x.stock),
                                 };
                             }),
                             totalPrice,
@@ -178,21 +180,13 @@ export class CartTableComponent implements OnInit, OnDestroy {
         document.getElementById('checkout-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
+    navigateToProduct(productId: number) {
+        this.router.navigate(["/e-com/product", productId]);
+    }
+
     onImageError(event: Event) {
         (event.target as HTMLImageElement).src =
             "https://placehold.co/400x300?text=No+Image";
-    }
-
-    getInventoryStatus(stock: number) {
-        if (stock === 0) return "OUTOFSTOCK";
-        else if (stock <= 10) return "LOWSTOCK";
-        else return "INSTOCK";
-    }
-
-    getSeverity(stock: number) {
-        if (stock === 0) return "danger";
-        else if (stock <= 10) return "warn";
-        else return "success";
     }
 
     ngOnDestroy(): void {

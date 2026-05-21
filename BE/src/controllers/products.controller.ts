@@ -143,6 +143,7 @@ export const getProductById = async (req: Request, res: Response, next: NextFunc
     try {
         const product = await Product.findByPk(req.params.productId, {
             attributes: ["id", "name", "description", "finalPrice", "imageUrl", "stock", "starReview", "reviewsCount"],
+            include: [{ model: ProductCategory, as: "ProductCategory", attributes: ["id", "categoryName"] }],
         });
         if (!product) {
             throw { status: 400, message: "Item does not exist" };

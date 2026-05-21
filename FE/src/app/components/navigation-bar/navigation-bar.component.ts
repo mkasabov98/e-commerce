@@ -85,6 +85,7 @@ export class NavigationBarComponent implements OnInit, OnDestroy {
             takeUntil(this.destroy$)
         ).subscribe(() => {
             this.mobileSearchOpen = false;
+            this.searchString = this.productsService.filtersSubject.getValue().searchString;
         });
 
         this.inputSubject
@@ -95,11 +96,34 @@ export class NavigationBarComponent implements OnInit, OnDestroy {
                     ...this.productsService.filtersSubject.getValue(),
                     searchString,
                 });
+                if (searchString && this.router.url.startsWith('/e-com/product/')) {
+                    this.router.navigate(['/e-com']);
+                }
             });
     }
 
+    get showSearch(): boolean {
+        return this.router.url === '/e-com' || this.router.url.startsWith('/e-com/product/');
+    }
+
     onInputChange(event: Event) {
-        this.inputSubject.next((event.target as HTMLInputElement).value);
+        const value = (event.target as HTMLInputElement).value;
+        this.inputSubject.next(value);
+    }
+
+    goHome() {
+        this.productsService.filtersSubject.next({
+            categories: [],
+            sortBy: undefined,
+            searchString: "",
+        });
+        this.router.navigate(['/e-com']);
+    }
+
+    onSearchEnter() {
+        if (this.router.url.startsWith('/e-com/product/')) {
+            this.router.navigate(['/e-com']);
+        }
     }
 
     clearInput() {

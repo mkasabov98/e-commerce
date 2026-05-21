@@ -1,0 +1,543 @@
+// ── Page shell ─────────────────────────────────────────────────
+
+.product-page-wrapper {
+    background: var(--p-surface-50);
+    min-height: calc(100dvh - var(--nav-height));
+    padding: 20px 40px 48px;
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+
+// ── Breadcrumb ─────────────────────────────────────────────────
+
+::ng-deep .product-breadcrumb {
+    background: transparent !important;
+    border: none !important;
+    padding: 0 0 20px 0 !important;
+}
+
+// ── Hero ───────────────────────────────────────────────────────
+
+.hero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    margin-bottom: 40px;
+}
+
+// Image column
+
+.hero-image-col {
+    position: relative;
+
+    ::ng-deep .hero-image {
+        display: block;
+
+        img {
+            width: 100%;
+            height: 480px;
+            object-fit: cover;
+            border-radius: var(--p-border-radius-2xl);
+            display: block;
+        }
+
+        // Preview icon overlay
+        .p-image-preview-icon {
+            border-radius: var(--p-border-radius-2xl);
+        }
+    }
+}
+
+.stock-badge {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 4px 12px;
+    border-radius: var(--p-border-radius-full);
+    color: var(--p-surface-0);
+    pointer-events: none;
+
+    &.out-of-stock { background: var(--p-app-badge-danger); }
+    &.low-stock    { background: var(--p-app-badge-warning); }
+}
+
+// Details column
+
+.hero-details-col {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding-top: 4px;
+}
+
+.category-chip {
+    display: inline-block;
+    width: fit-content;
+    background: var(--p-primary-50);
+    color: var(--p-primary-700);
+    border: 1px solid var(--p-primary-200);
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    padding: 3px 12px;
+    border-radius: var(--p-border-radius-full);
+    cursor: pointer;
+    transition: background var(--p-app-transition-base), color var(--p-app-transition-base);
+
+    &:hover {
+        background: var(--p-primary-100);
+        color: var(--p-primary-800);
+    }
+}
+
+::ng-deep .breadcrumb-category a,
+::ng-deep .breadcrumb-category span {
+    cursor: pointer !important;
+    color: var(--p-primary-600) !important;
+
+    &:hover { color: var(--p-primary-800) !important; }
+}
+
+.product-title {
+    font-size: 1.9rem;
+    font-weight: 700;
+    color: var(--p-surface-900);
+    line-height: 1.25;
+    margin: 0;
+}
+
+.rating-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.review-count-text {
+    font-size: 0.875rem;
+    color: var(--p-text-muted-color);
+    font-weight: 500;
+}
+
+.price-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.product-price {
+    font-size: 2.1rem;
+    font-weight: 700;
+    color: var(--p-surface-900);
+    line-height: 1;
+}
+
+.product-description-short {
+    font-size: 0.9rem;
+    line-height: 1.65;
+    color: var(--p-surface-600);
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.add-to-cart-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 4px;
+}
+
+::ng-deep .qty-input {
+    .p-inputnumber-button {
+        width: 2.4rem;
+    }
+
+    input {
+        width: 3.5rem;
+        text-align: center;
+        font-weight: 600;
+    }
+}
+
+::ng-deep .add-cart-btn {
+    flex: 1;
+}
+
+// ── Hero skeleton ──────────────────────────────────────────────
+
+.hero-skeleton {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    height: 480px;
+    margin-bottom: 40px;
+}
+
+.skeleton-img-col {
+    height: 100%;
+}
+
+.skeleton-details-col {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding-top: 4px;
+}
+
+// ── Tabs ───────────────────────────────────────────────────────
+
+.description-panel {
+    padding: 20px 0 8px;
+}
+
+.description-text {
+    font-size: 1rem;
+    line-height: 1.75;
+    color: var(--p-surface-700);
+    margin: 0;
+    white-space: pre-wrap;
+}
+
+// ── Reviews panel ──────────────────────────────────────────────
+
+.reviews-panel {
+    padding: 20px 0 8px;
+}
+
+.reviews-skeleton {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+// Rating overview card
+
+.rating-overview {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    padding: 28px 32px;
+    background: var(--p-content-background);
+    border-radius: var(--p-border-radius-xl);
+    border: 1px solid var(--p-surface-200);
+    margin-bottom: 28px;
+}
+
+.rating-score-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    min-width: 130px;
+    padding-right: 8px;
+}
+
+.score-big {
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: var(--p-surface-900);
+    line-height: 1;
+}
+
+.score-sub {
+    font-size: 0.8rem;
+    color: var(--p-text-muted-color);
+    font-weight: 500;
+}
+
+.rating-bars-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-left: 8px;
+}
+
+.bar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.bar-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    min-width: 28px;
+    color: var(--p-surface-700);
+    display: flex;
+    align-items: center;
+    gap: 3px;
+
+    i {
+        font-size: 0.65rem;
+        color: var(--p-app-star-color);
+    }
+}
+
+::ng-deep .rating-bar {
+    flex: 1;
+    height: 8px !important;
+    border-radius: var(--p-border-radius-full) !important;
+
+    .p-progressbar-value {
+        background: var(--p-app-star-color) !important;
+        border-radius: var(--p-border-radius-full) !important;
+    }
+}
+
+.bar-count {
+    font-size: 0.8rem;
+    color: var(--p-text-muted-color);
+    min-width: 20px;
+    text-align: right;
+}
+
+// Individual reviews
+
+.review-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.review-item {
+    padding: 20px;
+    background: var(--p-content-background);
+    border-radius: var(--p-border-radius-xl);
+    border: 1px solid var(--p-surface-200);
+    transition: border-color var(--p-app-transition-base);
+
+    &.own-review {
+        border-color: var(--p-primary-200);
+        background: var(--p-primary-50);
+    }
+}
+
+.review-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+::ng-deep .review-avatar.p-avatar {
+    background: var(--p-primary-100) !important;
+    color: var(--p-primary-700) !important;
+    font-weight: 700 !important;
+    font-size: 0.9rem !important;
+    width: 2.2rem !important;
+    height: 2.2rem !important;
+    flex-shrink: 0;
+}
+
+.reviewer-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.reviewer-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--p-surface-800);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.own-badge {
+    background: var(--p-primary-100);
+    color: var(--p-primary-700);
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 1px 7px;
+    border-radius: var(--p-border-radius-full);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.review-date {
+    font-size: 0.78rem;
+    color: var(--p-text-muted-color);
+}
+
+::ng-deep .review-stars .p-rating-icon {
+    font-size: 0.85rem !important;
+}
+
+.review-text {
+    font-size: 0.9rem;
+    line-height: 1.65;
+    color: var(--p-surface-700);
+    margin: 0 0 4px;
+}
+
+::ng-deep .edit-review-btn {
+    margin-top: 6px;
+}
+
+// Empty reviews state
+
+.empty-reviews {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 48px 0;
+    color: var(--p-text-muted-color);
+
+    i {
+        font-size: 2.5rem;
+        color: var(--p-surface-300);
+    }
+
+    p {
+        font-size: 1rem;
+        font-weight: 600;
+        margin: 0;
+        color: var(--p-text-color);
+    }
+
+    span {
+        font-size: 0.875rem;
+    }
+}
+
+// Write / Edit review form
+
+.review-form-section {
+    margin-top: 8px;
+}
+
+.form-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--p-surface-800);
+    margin: 0 0 20px;
+}
+
+.review-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-rating-row {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--p-surface-700);
+}
+
+.review-textarea {
+    width: 100%;
+    resize: vertical;
+    border-radius: var(--p-border-radius-lg);
+}
+
+.form-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+// Review info CTA (not eligible / not logged in)
+
+.review-cta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 18px;
+    background: var(--p-surface-100);
+    border-radius: var(--p-border-radius-lg);
+    border: 1px solid var(--p-surface-200);
+    font-size: 0.875rem;
+    color: var(--p-text-muted-color);
+    margin-top: 16px;
+
+    i {
+        font-size: 1rem;
+        color: var(--p-primary-400);
+        flex-shrink: 0;
+    }
+}
+
+// ── Responsive ─────────────────────────────────────────────────
+
+@media (max-width: 900px) {
+    .product-page-wrapper {
+        padding: 16px 16px 40px;
+    }
+
+    .hero,
+    .hero-skeleton {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        height: auto;
+    }
+
+    .hero-image-col {
+        ::ng-deep .hero-image img {
+            height: 320px;
+        }
+    }
+
+    .skeleton-img-col {
+        height: 320px;
+    }
+
+    .product-title {
+        font-size: 1.5rem;
+    }
+
+    .product-price {
+        font-size: 1.6rem;
+    }
+
+    .add-to-cart-row {
+        flex-wrap: wrap;
+
+        ::ng-deep .add-cart-btn {
+            flex: 1 1 100%;
+        }
+    }
+
+    .rating-overview {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+        padding: 20px;
+
+        ::ng-deep .p-divider-vertical {
+            display: none;
+        }
+    }
+
+    .rating-score-col {
+        flex-direction: row;
+        align-items: center;
+        gap: 14px;
+        min-width: 0;
+        padding-right: 0;
+    }
+
+    .rating-bars-col {
+        width: 100%;
+        padding-left: 0;
+    }
+}

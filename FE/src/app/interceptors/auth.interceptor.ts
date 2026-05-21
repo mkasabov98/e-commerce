@@ -18,18 +18,39 @@ export const authInterceptor: HttpInterceptorFn = (
     const headers: Record<string, string> = {
         'Content-Type': 'application/json',
     };
-    const unprotectedRoutes = [
+
+    // Fully public — no auth needed
+    const publicRoutes = [
         `${environment.apiUrl}/auth`,
         `${environment.apiUrl}/products`,
     ];
 
-    if (unprotectedRoutes.some((x) => url.includes(x))) {
-        return next(
-            req.clone({
-                setHeaders: headers,
-            })
-        );
+    // Optional auth — attach JWT if present and valid, but never redirect
+    const optionalAuthGetRoutes = [
+        `${environment.apiUrl}/review`,
+    ];
+
+    if (publicRoutes.some((x) => url.includes(x))) {
+        return next(req.clone({ setHeaders: headers }));
     }
+
+    if (req.method === 'GET' && optionalAuthGetRoutes.some((x) => url.includes(x))) {
+        const jwt = localStorage.getItem('jwt');
+        if (jwt) {
+            try {
+                const payload = JSON.parse(atob(jwt.split('.')[1]));
+                const now = Math.floor(Date.now() / 1000);
+                if (payload.exp > now) {
+                    headers['Authorization'] = `Bearer ${JSON.parse(jwt)}`;
+                }
+            } catch {
+                // malformed JWT — skip auth header
+            }
+        }
+        return next(req.clone({ setHeaders: headers }));
+    }
+
+    // Protected routes — require a valid JWT
     const jwt = localStorage.getItem('jwt');
 
     if (jwt) {

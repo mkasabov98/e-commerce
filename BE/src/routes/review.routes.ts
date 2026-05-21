@@ -1,9 +1,11 @@
 import { Router } from "express";
-import { createReview } from "../controllers/review.controller";
-import { authenticate } from "../middlewares/authenticate.middleware";
+import { createReview, getReviewsByProductId, updateReview } from "../controllers/review.controller";
+import { authenticate, optionalAuthenticate } from "../middlewares/authenticate.middleware";
 
 const router = Router();
 
-router.post('/', authenticate,createReview);
+router.get("/:productId", optionalAuthenticate, getReviewsByProductId);
+router.post("/", authenticate, createReview);
+router.put("/:reviewId", authenticate, updateReview);
 
 export default router;

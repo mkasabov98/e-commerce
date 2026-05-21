@@ -2,7 +2,8 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { getCartProductsResponse, updateCartProductResponse } from "../models/cart.models";
 import { environment } from "../../environments/environment";
-import { BehaviorSubject, Observable } from "rxjs";
+import { BehaviorSubject, catchError, EMPTY, map, Observable, of, tap } from "rxjs";
+import { ToastService } from "./toast.service";
 
 import { loadStripe, Stripe } from "@stripe/stripe-js";
 
@@ -13,7 +14,7 @@ export class CartService {
     public cartItemsSubject$ = new BehaviorSubject<number>(0);
     private stripePromise: Promise<Stripe | null>;
 
-    constructor(private http: HttpClient) {
+    constructor(private http: HttpClient, private toastService: ToastService) {
         this.stripePromise = loadStripe(environment.STRIPE_PUBLISHABLE_KEY);
     }
 
@@ -66,6 +67,36 @@ export class CartService {
         return this.http.patch<{ message: string }>(`${environment.apiUrl}/cart/updateCart`, products, {
             observe: "body",
         });
+    }
+
+    public addToCart(productId: number, quantity: number, stock: number, isGuest: boolean): Observable<void> {
+        if (isGuest) {
+            const cart: { productId: number; productQuantity: number }[] = JSON.parse(
+                localStorage.getItem("localCart") || "[]"
+            );
+            const idx = cart.findIndex((x) => x.productId === productId);
+            if (idx === -1) {
+                cart.push({ productId, productQuantity: quantity });
+            } else {
+                cart[idx].productQuantity = Math.min(cart[idx].productQuantity + quantity, stock);
+            }
+            localStorage.setItem("localCart", JSON.stringify(cart));
+            this.cartItemsSubject$.next(this.cartItemsSubject$.value + quantity);
+            this.toastService.show("Item added to temporary cart. Log in to save your cart.");
+            return of(undefined);
+        }
+
+        return this.addProductToCart(productId, quantity, true).pipe(
+            tap(() => {
+                this.cartItemsSubject$.next(this.cartItemsSubject$.value + quantity);
+                this.toastService.show("Item has been added to cart", "success");
+            }),
+            catchError((err) => {
+                this.toastService.show(err.error?.message ?? "Failed to add to cart", "warn");
+                return EMPTY;
+            }),
+            map(() => undefined),
+        );
     }
 
     public updateCartBadge() {

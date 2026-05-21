@@ -114,6 +114,13 @@
     }
 }
 
+.product-row-link {
+    cursor: pointer;
+    transition: background var(--p-app-transition-base);
+
+    &:hover td { background: var(--p-surface-50) !important; }
+}
+
 .table-row {
     img {
         width: 100%;
@@ -237,7 +244,7 @@
         grid-template-columns: 60px 1fr auto;
         grid-template-areas:
             "img name     subtotal"
-            "img priceqty subtotal";
+            "img priceqty review";
         column-gap: 12px;
         padding: 10px 0;
         border-bottom: 1px solid var(--p-surface-200);
@@ -277,7 +284,12 @@
             &:nth-child(5) { // Subtotal
                 grid-area: subtotal;
                 font-size: 0.95rem;
-                align-self: center;
+                align-self: end;
+                padding-left: 8px;
+            }
+            &:nth-child(6) { // Review button
+                grid-area: review;
+                align-self: start;
                 padding-left: 8px;
             }
         }

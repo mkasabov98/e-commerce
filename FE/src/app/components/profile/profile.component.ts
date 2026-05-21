@@ -1,5 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { CommonModule } from "@angular/common";
+import { Router } from "@angular/router";
 import { AccordionModule } from "primeng/accordion";
 import { TableModule } from "primeng/table";
 import { TagModule } from "primeng/tag";
@@ -48,6 +49,7 @@ export class ProfileComponent implements OnInit {
         private cartService: CartService,
         private toastService: ToastService,
         private confirmationService: ConfirmationService,
+        private router: Router,
     ) {}
 
     ngOnInit(): void {
@@ -135,6 +137,14 @@ export class ProfileComponent implements OnInit {
 
     get averageOrderValue(): number {
         return this.paidOrders.length ? this.totalSpent / this.paidOrders.length : 0;
+    }
+
+    navigateToProduct(productId: number) {
+        this.router.navigate(["/e-com/product", productId]);
+    }
+
+    reviewProduct(productId: number) {
+        this.router.navigate(["/e-com/product", productId], { queryParams: { tab: 'reviews' } });
     }
 
     onImageError(event: Event) {
