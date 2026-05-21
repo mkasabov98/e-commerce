@@ -194,6 +194,37 @@
     }
 }
 
+// Security / change password
+
+.security-panel {
+    padding-top: 8px;
+    max-width: 420px;
+}
+
+.security-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--p-surface-800);
+    margin: 0 0 20px;
+}
+
+.password-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.field-error {
+    margin-top: -10px;
+    font-size: 0.8rem;
+    color: var(--p-red-500);
+}
+
+.password-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
 @media (max-width: 768px) {
     .profile-wrapper {
         padding: 16px;
