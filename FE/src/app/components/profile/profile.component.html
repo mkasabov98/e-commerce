@@ -85,15 +85,16 @@
                                         <p-table [value]="order.products" styleClass="order-products-table">
                                             <ng-template #header>
                                                 <tr class="order-table-header">
-                                                    <th [style.width.%]="25">Product</th>
-                                                    <th [style.width.%]="15">Image</th>
-                                                    <th [style.width.%]="20">Unit Price</th>
-                                                    <th [style.width.%]="15">Qty</th>
-                                                    <th [style.width.%]="25">Subtotal</th>
+                                                    <th [style.width.%]="22">Product</th>
+                                                    <th [style.width.%]="13">Image</th>
+                                                    <th [style.width.%]="18">Unit Price</th>
+                                                    <th [style.width.%]="12">Qty</th>
+                                                    <th [style.width.%]="20">Subtotal</th>
+                                                    <th [style.width.%]="15">Review</th>
                                                 </tr>
                                             </ng-template>
                                             <ng-template #body let-product>
-                                                <tr class="table-row">
+                                                <tr class="table-row product-row-link" (click)="navigateToProduct(product.productId)">
                                                     <td>{{ product.name }}</td>
                                                     <td>
                                                         <img [src]="product.imageUrl" [alt]="product.name" (error)="onImageError($event)" />
@@ -101,6 +102,16 @@
                                                     <td>${{ product.priceAtPurchase | number: '1.2-2' }}</td>
                                                     <td>{{ product.quantity }}</td>
                                                     <td>${{ (product.priceAtPurchase * product.quantity) | number: '1.2-2' }}</td>
+                                                    <td (click)="$event.stopPropagation()">
+                                                        <p-button
+                                                            label="Review"
+                                                            icon="pi pi-star"
+                                                            size="small"
+                                                            [outlined]="true"
+                                                            [disabled]="order.status !== 3"
+                                                            (onClick)="reviewProduct(product.productId)"
+                                                        />
+                                                    </td>
                                                 </tr>
                                             </ng-template>
                                         </p-table>

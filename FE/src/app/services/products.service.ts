@@ -1,7 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, Observable, ObservableLike } from "rxjs";
-import { filtersSubject, getProductsParams, getProductsResponse, productCategory } from "../models/products.models";
+import { filtersSubject, getProductsParams, getProductsResponse, productCategory, productDetail } from "../models/products.models";
 import { environment } from "../../environments/environment";
 import { getCartProductsResponse } from "../models/cart.models";
 
@@ -35,5 +35,9 @@ export class ProductsService {
         return this.http.get<productCategory[]>(`${environment.apiUrl}/products/categories`, {
             observe: "body",
         });
+    }
+
+    public getProductById(id: number): Observable<productDetail> {
+        return this.http.get<productDetail>(`${environment.apiUrl}/products/${id}`);
     }
 }

@@ -1,0 +1,258 @@
+<div class="product-page-wrapper">
+
+    <!-- ── Hero skeleton ─────────────────────────────────────────── -->
+    @if (loadingProduct) {
+        <div class="hero-skeleton">
+            <div class="skeleton-img-col">
+                <p-skeleton height="100%" borderRadius="16px" />
+            </div>
+            <div class="skeleton-details-col">
+                <p-skeleton height="20px" width="100px" borderRadius="20px" />
+                <p-skeleton height="40px" borderRadius="8px" />
+                <p-skeleton height="20px" width="160px" borderRadius="8px" />
+                <p-skeleton height="52px" borderRadius="8px" />
+                <p-skeleton height="44px" width="240px" borderRadius="8px" />
+            </div>
+        </div>
+    } @else if (product) {
+
+        <!-- ── Breadcrumb ─────────────────────────────────────────── -->
+        <p-breadcrumb [model]="breadcrumbItems" [home]="breadcrumbHome" styleClass="product-breadcrumb" />
+
+        <!-- ── Hero ──────────────────────────────────────────────── -->
+        <div class="hero">
+
+            <!-- Image -->
+            <div class="hero-image-col">
+                <p-image
+                    [src]="product.imageUrl"
+                    [alt]="product.name"
+                    [preview]="true"
+                    styleClass="hero-image"
+                    (onError)="onImageError($event)"
+                />
+                @if (product.stock === 0) {
+                    <span class="stock-badge out-of-stock">Out of stock</span>
+                } @else if (product.stock <= 5) {
+                    <span class="stock-badge low-stock">Only {{ product.stock }} left</span>
+                }
+            </div>
+
+            <!-- Details -->
+            <div class="hero-details-col">
+                <span class="category-chip" (click)="navigateToCategory()">{{ product.ProductCategory.categoryName }}</span>
+
+                <h1 class="product-title">{{ product.name }}</h1>
+
+                <div class="rating-row">
+                    <p-rating [ngModel]="product.starReview ?? 0" [readonly]="true"  />
+                    <span class="review-count-text">
+                        @if (product.reviewsCount > 0) {
+                            {{ product.starReview | number: '1.1-1' }} &middot; {{ product.reviewsCount }} review{{ product.reviewsCount !== 1 ? 's' : '' }}
+                        } @else {
+                            No reviews yet
+                        }
+                    </span>
+                </div>
+
+                <div class="price-row">
+                    <span class="product-price">${{ product.finalPrice | number: '1.2-2' }}</span>
+                    <p-tag [value]="inventoryStatus" [severity]="inventorySeverity" />
+                </div>
+
+                <p class="product-description-short">{{ product.description }}</p>
+
+                @if (loggedUser.role !== UserRoles.Admin) {
+                    <div class="add-to-cart-row">
+                        <p-inputnumber
+                            [(ngModel)]="quantity"
+                            [min]="1"
+                            [max]="product.stock"
+                            [showButtons]="true"
+                            [disabled]="product.stock === 0"
+                            buttonLayout="horizontal"
+                            decrementButtonIcon="pi pi-minus"
+                            incrementButtonIcon="pi pi-plus"
+                            styleClass="qty-input"
+                        />
+                        <p-button
+                            label="Add to Cart"
+                            icon="pi pi-cart-plus"
+                            [disabled]="product.stock === 0"
+                            (onClick)="addToCart()"
+                            styleClass="add-cart-btn"
+                        />
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- ── Tabs ───────────────────────────────────────────────── -->
+        <p-tabs [value]="activeTab">
+            <p-tablist>
+                <p-tab value="description">
+                    <i class="pi pi-align-left"></i>
+                    Description
+                </p-tab>
+                <p-tab value="reviews">
+                    <i class="pi pi-star"></i>
+                    Reviews @if (product.reviewsCount > 0) { ({{ product.reviewsCount }}) }
+                </p-tab>
+            </p-tablist>
+
+            <p-tabpanels>
+
+                <!-- Description tab -->
+                <p-tabpanel value="description">
+                    <div class="description-panel">
+                        <p class="description-text">{{ product.description }}</p>
+                    </div>
+                </p-tabpanel>
+
+                <!-- Reviews tab -->
+                <p-tabpanel value="reviews">
+                    <div class="reviews-panel">
+
+                        @if (loadingReviews) {
+                            <div class="reviews-skeleton">
+                                @for (i of [1, 2, 3]; track i) {
+                                    <p-skeleton height="96px" borderRadius="12px" />
+                                }
+                            </div>
+                        } @else {
+
+                            <!-- Rating overview card -->
+                            @if (reviews.length > 0) {
+                                <div class="rating-overview">
+                                    <div class="rating-score-col">
+                                        <span class="score-big">{{ product.starReview | number: '1.1-1' }}</span>
+                                        <p-rating [ngModel]="product.starReview ?? 0" [readonly]="true"  />
+                                        <span class="score-sub">{{ product.reviewsCount }} review{{ product.reviewsCount !== 1 ? 's' : '' }}</span>
+                                    </div>
+                                    <p-divider layout="vertical" />
+                                    <div class="rating-bars-col">
+                                        @for (bar of ratingBreakdown; track bar.stars) {
+                                            <div class="bar-row">
+                                                <span class="bar-label">{{ bar.stars }} <i class="pi pi-star-fill"></i></span>
+                                                <p-progressbar [value]="bar.percentage" styleClass="rating-bar" [showValue]="false" />
+                                                <span class="bar-count">{{ bar.count }}</span>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                                <p-divider />
+                            }
+
+                            <!-- Review list -->
+                            @if (reviews.length === 0) {
+                                <div class="empty-reviews">
+                                    <i class="pi pi-star"></i>
+                                    <p>No reviews yet</p>
+                                    <span>Be the first to review this product!</span>
+                                </div>
+                            } @else {
+                                <div class="review-list">
+                                    @for (review of reviews; track review.id) {
+                                        <div class="review-item" [class.own-review]="review.isOwn">
+                                            <div class="review-header">
+                                                <p-avatar
+                                                    [label]="review.author.charAt(0).toUpperCase()"
+                                                    shape="circle"
+                                                    styleClass="review-avatar"
+                                                />
+                                                <div class="reviewer-info">
+                                                    <span class="reviewer-name">
+                                                        {{ review.author }}
+                                                        @if (review.isOwn) {
+                                                            <span class="own-badge">You</span>
+                                                        }
+                                                    </span>
+                                                    <span class="review-date">{{ review.createdAt | date: 'MMM d, y' }}</span>
+                                                </div>
+                                                <p-rating [ngModel]="review.starReview" [readonly]="true"  styleClass="review-stars" />
+                                            </div>
+                                            @if (review.review) {
+                                                <p class="review-text">{{ review.review }}</p>
+                                            }
+                                            @if (review.isOwn && !editingReview) {
+                                                <p-button
+                                                    label="Edit Review"
+                                                    icon="pi pi-pencil"
+                                                    size="small"
+                                                    severity="secondary"
+                                                    [text]="true"
+                                                    (onClick)="editingReview = true"
+                                                    styleClass="edit-review-btn"
+                                                />
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                            }
+
+                            <!-- Write / Edit review form -->
+                            @if (canReview && (!hasReviewed || editingReview)) {
+                                <div class="review-form-section">
+                                    <p-divider />
+                                    <h3 class="form-title">{{ hasReviewed ? 'Edit Your Review' : 'Write a Review' }}</h3>
+                                    <form [formGroup]="reviewForm" (ngSubmit)="submitReview()" class="review-form">
+                                        <div class="form-rating-row">
+                                            <label class="form-label">Your Rating</label>
+                                            <p-rating formControlName="starReview"  />
+                                        </div>
+                                        <p-floatlabel>
+                                            <textarea
+                                                id="reviewText"
+                                                pTextarea
+                                                formControlName="reviewText"
+                                                rows="4"
+                                                class="review-textarea"
+                                            ></textarea>
+                                            <label for="reviewText">Share your experience (optional)</label>
+                                        </p-floatlabel>
+                                        <div class="form-actions">
+                                            @if (editingReview) {
+                                                <p-button
+                                                    label="Cancel"
+                                                    severity="secondary"
+                                                    [outlined]="true"
+                                                    (onClick)="editingReview = false"
+                                                    type="button"
+                                                />
+                                            }
+                                            <p-button
+                                                type="submit"
+                                                [label]="hasReviewed ? 'Update Review' : 'Submit Review'"
+                                                icon="pi pi-check"
+                                                [loading]="submittingReview"
+                                                [disabled]="reviewForm.invalid"
+                                            />
+                                        </div>
+                                    </form>
+                                </div>
+
+                            <!-- Not eligible: purchased but not delivered, or not purchased -->
+                            } @else if (canReview === false && loggedUser.id !== NO_USER.id) {
+                                <div class="review-cta">
+                                    <i class="pi pi-info-circle"></i>
+                                    <span>Purchase and receive this product to leave a review.</span>
+                                </div>
+
+                            <!-- Not logged in -->
+                            } @else if (canReview === null && loggedUser.id === NO_USER.id) {
+                                <div class="review-cta">
+                                    <i class="pi pi-info-circle"></i>
+                                    <span>Log in and purchase this product to leave a review.</span>
+                                </div>
+                            }
+
+                        }
+                    </div>
+                </p-tabpanel>
+
+            </p-tabpanels>
+        </p-tabs>
+
+    }
+
+</div>

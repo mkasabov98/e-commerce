@@ -42,3 +42,15 @@ export enum sortByOptions {
     DESC = "desc",
     REVIEW = "reviews",
 }
+
+export interface productDetail {
+    id: number;
+    name: string;
+    description: string;
+    finalPrice: number;
+    imageUrl: string;
+    stock: number;
+    starReview: number | null;
+    reviewsCount: number;
+    ProductCategory: { id: number; categoryName: string };
+}

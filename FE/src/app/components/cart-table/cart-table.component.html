@@ -21,7 +21,7 @@
             </ng-template>
             <ng-template #body let-product>
                 <tr class="table-row">
-                    <td class="col-image">
+                    <td class="col-image product-img-link" (click)="navigateToProduct(product.productId)">
                         <img [src]="product.imageUrl" [alt]="product.name" (error)="onImageError($event)" />
                     </td>
                     <td class="col-product">

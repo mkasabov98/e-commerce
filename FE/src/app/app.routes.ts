@@ -4,6 +4,7 @@ import { CartComponent } from './components/cart/cart.component';
 import { userGuard } from './guards/user.guard';
 import { LayoutComponent } from './components/layout/layout.component';
 import { ProfileComponent } from './components/profile/profile.component';
+import { ProductPageComponent } from './components/product-page/product-page.component';
 import { cartGuard } from './guards/cart.guard';
 
 export const routes: Routes = [
@@ -14,6 +15,10 @@ export const routes: Routes = [
             {
                 path: '',
                 component: HomePage
+            },
+            {
+                path: 'product/:id',
+                component: ProductPageComponent
             },
             {
                 path: 'cart',

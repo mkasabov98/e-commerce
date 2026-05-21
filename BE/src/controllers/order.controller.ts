@@ -154,7 +154,6 @@ export const createPaymentIntent = async (req: AuthRequest, res: Response, next:
         const userCart = await Cart.findOne({ where: { userId: user.id } });
         if (!userCart) throw { status: 400, message: "No cart found." };
 
-        // Fix #1: validate address belongs to the requesting user
         const address = await Address.findOne({ where: { id: addressId, userId: user.id } });
         if (!address) throw { status: 400, message: "No matching address" };
 
@@ -185,8 +184,6 @@ export const createPaymentIntent = async (req: AuthRequest, res: Response, next:
             return res.status(400).json({ errors });
         }
 
-        // Fix #2: create the payment intent before opening the DB transaction so the
-        // connection is not held idle during the Stripe network round-trip
         const stripeAmount = Math.round(totalAmount * 100);
         const paymentIntent = await stripe.paymentIntents.create({
             amount: stripeAmount,

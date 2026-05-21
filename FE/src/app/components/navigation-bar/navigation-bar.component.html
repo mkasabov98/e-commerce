@@ -3,16 +3,16 @@
     <p-toolbar>
         <ng-template #start>
             <div class="home-button-wrapper">
-                <p-button routerLink="/e-com">Home</p-button>
+                <p-button (onClick)="goHome()">Home</p-button>
             </div>
         </ng-template>
 
-        @if (router.url === '/e-com') {
+        @if (showSearch) {
             <ng-template #center>
                 <p-iconfield>
                     <p-inputicon class="pi pi-search" />
                     <input [(ngModel)]="searchString" type="text" pInputText placeholder="Search"
-                        class="search-bar" (input)="onInputChange($event)" />
+                        class="search-bar" (input)="onInputChange($event)" (keydown.enter)="onSearchEnter()" />
                     <p-inputicon class="pi pi-times" (click)="clearInput()" style="cursor:pointer" />
                 </p-iconfield>
             </ng-template>
@@ -45,10 +45,10 @@
 <!-- ── Mobile navbar ──────────────────────────────────────────── -->
 @if (isMobile) {
     <header class="mobile-navbar">
-        <span class="mobile-brand" routerLink="/e-com">Shop</span>
+        <span class="mobile-brand" (click)="goHome()">Shop</span>
 
         <div class="mobile-actions">
-            @if (router.url === '/e-com') {
+            @if (showSearch) {
                 <button class="nav-icon-btn" (click)="mobileSearchOpen = !mobileSearchOpen"
                     [class.active]="mobileSearchOpen">
                     <i class="pi pi-search"></i>
@@ -72,7 +72,7 @@
         <p-iconfield class="mobile-search-field">
             <p-inputicon class="pi pi-search" />
             <input [(ngModel)]="searchString" type="text" pInputText placeholder="Search products…"
-                (input)="onInputChange($event)" />
+                (input)="onInputChange($event)" (keydown.enter)="onSearchEnter()" />
             <p-inputicon class="pi pi-times" (click)="clearInput(); mobileSearchOpen = false"
                 style="cursor:pointer" />
         </p-iconfield>

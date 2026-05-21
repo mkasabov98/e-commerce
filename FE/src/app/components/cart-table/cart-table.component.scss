@@ -43,6 +43,14 @@
 
 // Column widths & header alignment
 .col-image   { width: 72px; }
+
+.product-img-link {
+    cursor: pointer;
+
+    img { transition: opacity 0.15s; }
+
+    &:hover img { opacity: 0.8; }
+}
 .col-qty     { width: 120px; }
 .col-total   { width: 110px; }
 
