@@ -57,6 +57,7 @@ export class ProcessOrderComponent implements OnInit, OnDestroy {
             .pipe(take(1))
             .subscribe((res) => {
                 this.addresses = res;
+                this.selectedAddress = res.find((a) => a.isDefault) ?? null;
             });
     }
 

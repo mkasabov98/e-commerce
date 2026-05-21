@@ -38,6 +38,10 @@ export class AddressService {
         });
     }
 
+    public setDefaultAddress(id: number): Observable<address> {
+        return this.http.patch<address>(`${environment.apiUrl}/address/${id}/default`, {});
+    }
+
     public deleteAddress(id: number): Observable<void> {
         return this.http.delete<void>(`${environment.apiUrl}/address/${id}`);
     }

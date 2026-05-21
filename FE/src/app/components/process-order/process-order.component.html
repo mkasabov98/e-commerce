@@ -51,9 +51,8 @@
                 <label for="address">Delivery address</label>
             </p-floatlabel>
 
-            <app-create-address (onAddressCreate)="onAddressCreate()" />
-
             <div class="step-actions">
+                <app-create-address (onAddressCreate)="onAddressCreate()" />
                 <p-button
                     label="Continue"
                     icon="pi pi-arrow-right"

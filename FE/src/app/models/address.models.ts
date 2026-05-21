@@ -4,6 +4,7 @@ export interface address {
     address: string;
     id?: number;
     userId?: number;
+    isDefault?: boolean;
 }
 
 export interface state {
