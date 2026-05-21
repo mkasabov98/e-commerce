@@ -1,6 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { Router } from "@angular/router";
+import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from "@angular/forms";
 import { AccordionModule } from "primeng/accordion";
 import { TableModule } from "primeng/table";
 import { TagModule } from "primeng/tag";
@@ -8,11 +9,15 @@ import { SkeletonModule } from "primeng/skeleton";
 import { TabsModule } from "primeng/tabs";
 import { ButtonModule } from "primeng/button";
 import { ConfirmDialogModule } from "primeng/confirmdialog";
+import { FloatLabelModule } from "primeng/floatlabel";
+import { PasswordModule } from "primeng/password";
+import { TooltipModule } from "primeng/tooltip";
 import { ConfirmationService } from "primeng/api";
 import { Order } from "../../models/order.models";
 import { OrderService } from "../../services/order.service";
 import { address } from "../../models/address.models";
 import { AddressService } from "../../services/address.service";
+import { AuthService } from "../../services/auth.service";
 import { CartService } from "../../services/cart.service";
 import { ToastService } from "../../services/toast.service";
 import { CreateAddressComponent } from "../create-address/create-address.component";
@@ -22,6 +27,7 @@ import { catchError, forkJoin, of, take } from "rxjs";
     selector: "app-profile",
     imports: [
         CommonModule,
+        ReactiveFormsModule,
         AccordionModule,
         TableModule,
         TagModule,
@@ -29,6 +35,9 @@ import { catchError, forkJoin, of, take } from "rxjs";
         TabsModule,
         ButtonModule,
         ConfirmDialogModule,
+        FloatLabelModule,
+        PasswordModule,
+        TooltipModule,
         CreateAddressComponent,
     ],
     providers: [ConfirmationService],
@@ -43,9 +52,29 @@ export class ProfileComponent implements OnInit {
     public addressesLoading = true;
     public reOrderingId: number | null = null;
 
+    public submittingPassword = false;
+    public passwordForm = new FormGroup(
+        {
+            currentPassword: new FormControl("", [Validators.required]),
+            newPassword: new FormControl("", [
+                Validators.required,
+                Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/),
+            ]),
+            confirmPassword: new FormControl("", [Validators.required]),
+        },
+        { validators: this.passwordsMatchValidator }
+    );
+
+    private passwordsMatchValidator(group: AbstractControl): ValidationErrors | null {
+        const newPw = group.get("newPassword")?.value;
+        const confirm = group.get("confirmPassword")?.value;
+        return newPw && confirm && newPw !== confirm ? { passwordsMismatch: true } : null;
+    }
+
     constructor(
         private orderService: OrderService,
         private addressService: AddressService,
+        private authService: AuthService,
         private cartService: CartService,
         private toastService: ToastService,
         private confirmationService: ConfirmationService,
@@ -160,6 +189,23 @@ export class ProfileComponent implements OnInit {
     onImageError(event: Event) {
         (event.target as HTMLImageElement).src =
             "https://placehold.co/400x300?text=No+Image";
+    }
+
+    changePassword() {
+        if (this.passwordForm.invalid || this.submittingPassword) return;
+        const { currentPassword, newPassword } = this.passwordForm.value;
+        this.submittingPassword = true;
+        this.authService.changePassword(currentPassword!, newPassword!).pipe(take(1)).subscribe({
+            next: () => {
+                this.toastService.show("Password updated successfully.", "success");
+                this.passwordForm.reset();
+                this.submittingPassword = false;
+            },
+            error: (err) => {
+                this.toastService.show(err.error?.message ?? "Failed to update password", "warn");
+                this.submittingPassword = false;
+            },
+        });
     }
 
     getStatusLabel(status: number): string {

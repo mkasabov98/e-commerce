@@ -50,6 +50,13 @@ export class AuthService {
         );
     }
 
+    public changePassword(currentPassword: string, newPassword: string): Observable<{ message: string }> {
+        return this.http.patch<{ message: string }>(`${environment.apiUrl}/user/password`, {
+            currentPassword,
+            newPassword,
+        });
+    }
+
     public checkJWT (): [isJwt: boolean, expired: boolean] {
         const jwt = localStorage.getItem('jwt');
 

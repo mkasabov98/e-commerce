@@ -33,6 +33,10 @@
                 <i class="pi pi-map-marker"></i>
                 Saved Addresses
             </p-tab>
+            <p-tab value="security">
+                <i class="pi pi-lock"></i>
+                Security
+            </p-tab>
         </p-tablist>
 
         <p-tabpanels>
@@ -179,6 +183,74 @@
                             }
                         </div>
                     }
+                </div>
+            </p-tabpanel>
+
+            <!-- Security tab -->
+            <p-tabpanel value="security">
+                <div class="security-panel">
+                    <h3 class="security-title">Change Password</h3>
+                    <form [formGroup]="passwordForm" (ngSubmit)="changePassword()" class="password-form">
+                        <p-floatlabel variant="on" class="w-full">
+                            <p-password
+                                id="currentPassword"
+                                formControlName="currentPassword"
+                                [feedback]="false"
+                                [toggleMask]="true"
+                                styleClass="w-full"
+                                inputStyleClass="w-full"
+                            />
+                            <label for="currentPassword">Current password</label>
+                        </p-floatlabel>
+
+                        <p-floatlabel variant="on" class="w-full">
+                            <p-password
+                                id="newPassword"
+                                formControlName="newPassword"
+                                [toggleMask]="true"
+                                styleClass="w-full"
+                                inputStyleClass="w-full"
+                                [pTooltip]="passwordTooltip"
+                                tooltipPosition="right"
+                            >
+                                <ng-template #passwordTooltip>
+                                    <ul>
+                                        <li>At least one lowercase</li>
+                                        <li>At least one uppercase</li>
+                                        <li>At least one numeric</li>
+                                        <li>At least one special character</li>
+                                        <li>Minimum 8 characters</li>
+                                    </ul>
+                                </ng-template>
+                            </p-password>
+                            <label for="newPassword">New password</label>
+                        </p-floatlabel>
+
+                        <p-floatlabel variant="on" class="w-full">
+                            <p-password
+                                id="confirmPassword"
+                                formControlName="confirmPassword"
+                                [feedback]="false"
+                                [toggleMask]="true"
+                                styleClass="w-full"
+                                inputStyleClass="w-full"
+                            />
+                            <label for="confirmPassword">Confirm new password</label>
+                        </p-floatlabel>
+                        @if (passwordForm.errors?.['passwordsMismatch'] && passwordForm.get('confirmPassword')?.dirty) {
+                            <small class="field-error">Passwords do not match.</small>
+                        }
+
+                        <div class="password-actions">
+                            <p-button
+                                type="submit"
+                                label="Update password"
+                                icon="pi pi-check"
+                                [loading]="submittingPassword"
+                                [disabled]="passwordForm.invalid || submittingPassword"
+                            />
+                        </div>
+                    </form>
                 </div>
             </p-tabpanel>
 
