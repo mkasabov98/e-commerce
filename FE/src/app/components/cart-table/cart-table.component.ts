@@ -1,9 +1,5 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { TableModule } from "primeng/table";
-import { InputGroupModule } from "primeng/inputgroup";
-import { InputGroupAddonModule } from "primeng/inputgroupaddon";
-import { InputNumberInputEvent, InputNumberModule } from "primeng/inputnumber";
-import { FormsModule } from "@angular/forms";
 import { AuthService } from "../../services/auth.service";
 import { ToastService } from "../../services/toast.service";
 import { map, Subject, take, takeUntil } from "rxjs";
@@ -19,7 +15,7 @@ import { TagModule } from "primeng/tag";
 
 @Component({
     selector: "app-cart-table",
-    imports: [FormsModule, TableModule, InputGroupModule, InputGroupAddonModule, InputNumberModule, ConfirmDialogModule, ButtonModule, TagModule],
+    imports: [TableModule, ConfirmDialogModule, ButtonModule, TagModule],
     providers: [ConfirmationService],
     templateUrl: "./cart-table.component.html",
     styleUrl: "./cart-table.component.scss",
@@ -121,22 +117,6 @@ export class CartTableComponent implements OnInit, OnDestroy {
         }
     }
 
-    changeValue(event: InputNumberInputEvent, productId: number) {
-        const quantity = event.value;
-        const formattedValue = Number(event.formattedValue);
-        if (!quantity) {
-            this.openConfirmDialog(productId, formattedValue);
-        } else {
-            const product = this.products.find((x) => x.productId === productId);
-            if (product && quantity > product.stock) {
-                this.toastService.show(`Only ${product.stock} unit(s) of this item are available`, "warn");
-                this.updateProductQuantity(productId, product.stock);
-            } else {
-                this.updateProductQuantity(productId, quantity);
-            }
-        }
-    }
-
     updateProductQuantity(productId: number, quantity: number) {
         if (this.loggedUser.id === -1) {
             this.cartService.updateLocalCart(productId, quantity);
@@ -158,7 +138,6 @@ export class CartTableComponent implements OnInit, OnDestroy {
         }
     }
 
-    // Updated the products array in order to not fetch the updated cart on each action.
     updateCart(productId: number, quantity: number) {
         const productIndex = this.products.findIndex((x) => x.productId === productId);
         if (quantity === 0) {
@@ -167,7 +146,6 @@ export class CartTableComponent implements OnInit, OnDestroy {
             this.products[productIndex].quantity = quantity;
         }
 
-        //update cart badge
         this.cartService.cartItemsSubject$.next(this.products.reduce((acc, curr) => acc + curr.quantity!, 0));
     }
 
@@ -194,6 +172,10 @@ export class CartTableComponent implements OnInit, OnDestroy {
                 this.updateCart(productId, prevQuantity);
             },
         });
+    }
+
+    scrollToCheckout() {
+        document.getElementById('checkout-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     onImageError(event: Event) {

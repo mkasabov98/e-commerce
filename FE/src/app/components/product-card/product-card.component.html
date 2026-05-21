@@ -1,56 +1,68 @@
-<!-- <div class="card-wrapper" (click)="openProduct($event)">
-    <div class="card-header">
-        <img alt="Card" [src]="product.imageUrl" />
+<div class="product-card" (click)="openProduct($event)">
+
+    <!-- Image -->
+    <div class="card-image-wrapper">
+        <img
+            [src]="product.imageUrl"
+            [alt]="product.name"
+            class="card-img"
+            (error)="onImageError($event)"
+        />
+
+        @if (product.stock === 0) {
+            <span class="stock-badge out-of-stock">Out of stock</span>
+        } @else if (product.stock <= 5) {
+            <span class="stock-badge low-stock">Only {{ product.stock }} left</span>
+        }
+
+        @if (loggedUser.role !== UserRoles.Admin) {
+            <div class="hover-overlay">
+                <p-button
+                    icon="pi pi-cart-plus"
+                    label="Quick Add"
+                    [disabled]="product.stock === 0"
+                    (onClick)="addToCart($event)"
+                    size="small"
+                    styleClass="quick-add-btn"
+                />
+            </div>
+        }
     </div>
+
+    <!-- Body -->
     <div class="card-body">
-        <div class="product-name">{{ product.name }}</div>
-        <div class="review-wrapper">
+        <p class="product-name">{{ product.name }}</p>
+
+        <div class="review-row">
             <div class="stars">
-                @for (i of productStars; track i) { @if (i.startsWith('filledStar')) {
-                <i class="pi pi-star-fill text-yellow-500"></i>
-                } @else {
-                <i class="pi pi-star-fill text-gray-400"></i>
-                } }
+                @for (star of productStars; track star) {
+                    @if (star.startsWith('filledStar')) {
+                        <i class="pi pi-star-fill star-filled"></i>
+                    } @else {
+                        <i class="pi pi-star star-empty"></i>
+                    }
+                }
             </div>
-            <div class="product-review">
-                {{ `(${product.reviewsCount})` }}
-            </div>
-        </div>
-    </div>
-    <div class="card-footer">
-        <div>{{`${product.finalPrice}$`}}</div>
-        <p-button (onClick)="addToCart($event)">
-            <span>add to cart</span>
-            <i class="pi pi-cart-plus"></i>
-        </p-button>
-    </div>
-</div> -->
-
-<p-card class="product-card" (click)="openProduct($event)">
-    <ng-template pTemplate="header">
-        <img [src]="product.imageUrl" [alt]="product.name" class="product-image" (error)="onImageError($event)" />
-    </ng-template>
-    <div class="product-name">
-        {{ product.name }}
-    </div>
-    <div class="review-section">
-        <div class="stars">
-            @for (i of productStars; track i) { @if (i.startsWith('filledStar')) {
-            <i class="pi pi-star-fill text-yellow-500"></i>
+            @if (product.reviewsCount > 0) {
+                <span class="review-count">{{ product.reviewsCount }}</span>
             } @else {
-            <i class="pi pi-star-fill text-gray-400"></i>
-            } }
+                <span class="no-reviews">No reviews</span>
+            }
         </div>
-        <div class="review-count">({{ product.reviewsCount }})</div>
-    </div>
-    <ng-template pTemplate="footer">
-        <div class="footer-section">
-            <div class="price">{{ product.finalPrice }}$</div>
 
-            <p-button [disabled]="loggedUser.role === UserRoles.Admin || product.stock === 0" styleClass="p-button-sm p-button-rounded p-button-success" (onClick)="addToCart($event)">
-                <i class="pi pi-cart-plus mr-2"></i>
-                <span>Add</span>
-            </p-button>
+        <div class="card-footer">
+            <span class="price">${{ product.finalPrice }}</span>
+            <p-button
+                icon="pi pi-cart-plus"
+                [disabled]="loggedUser.role === UserRoles.Admin || product.stock === 0"
+                (onClick)="addToCart($event)"
+                [rounded]="true"
+                size="small"
+                severity="secondary"
+                [outlined]="true"
+                styleClass="add-btn"
+            />
         </div>
-    </ng-template>
-</p-card>
+    </div>
+
+</div>

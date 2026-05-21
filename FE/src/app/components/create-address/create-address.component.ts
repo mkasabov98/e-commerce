@@ -1,28 +1,32 @@
-import { Component, EventEmitter, inject, OnInit, Output } from "@angular/core";
+import { Component, EventEmitter, inject, OnInit, OnDestroy, Output } from "@angular/core";
+import { NgTemplateOutlet } from "@angular/common";
 import { FormBuilder, ReactiveFormsModule } from "@angular/forms";
 import { Button } from "primeng/button";
 import { DialogModule } from "primeng/dialog";
+import { DrawerModule } from "primeng/drawer";
 import { FloatLabel } from "primeng/floatlabel";
 import { InputTextModule } from "primeng/inputtext";
 import { ToastService } from "../../services/toast.service";
 import { SelectModule } from "primeng/select";
 import { COUNTRIES } from "../../constants.ts/constants";
-import { take } from "rxjs";
+import { Subject, take, takeUntil } from "rxjs";
 import { AddressService } from "../../services/address.service";
 import { city, state } from "../../models/address.models";
+import { BreakpointObserver } from "@angular/cdk/layout";
 
 @Component({
     selector: "app-create-address",
-    imports: [Button, DialogModule, ReactiveFormsModule, InputTextModule, FloatLabel, SelectModule],
+    imports: [Button, DialogModule, DrawerModule, ReactiveFormsModule, InputTextModule, FloatLabel, SelectModule, NgTemplateOutlet],
     providers: [ToastService],
     templateUrl: "./create-address.component.html",
     styleUrl: "./create-address.component.scss",
     standalone: true,
 })
-export class CreateAddressComponent implements OnInit {
+export class CreateAddressComponent implements OnInit, OnDestroy {
     @Output() onAddressCreate: EventEmitter<any> = new EventEmitter();
 
     private formBuilder = inject(FormBuilder);
+    private destroy$ = new Subject<void>();
 
     public addressForm = this.formBuilder.group({
         country: [null],
@@ -32,13 +36,23 @@ export class CreateAddressComponent implements OnInit {
     });
 
     public visible = false;
+    public isMobile = typeof window !== "undefined" && window.innerWidth <= 768;
     public countries = COUNTRIES;
     public states: state[] = [];
     public cities: city[] = [];
 
-    constructor(private addressService: AddressService, private toastService: ToastService) {}
+    constructor(
+        private addressService: AddressService,
+        private toastService: ToastService,
+        private breakpointObserver: BreakpointObserver,
+    ) {}
 
     ngOnInit(): void {
+        this.breakpointObserver
+            .observe(["(max-width: 768px)"])
+            .pipe(takeUntil(this.destroy$))
+            .subscribe((result) => (this.isMobile = result.matches));
+
         this.formDependencies();
     }
 
@@ -57,10 +71,7 @@ export class CreateAddressComponent implements OnInit {
             addressControl?.setValue(null);
             this.states = [];
             this.cities = [];
-
-            if (countryValue) {
-                this.fetchStates(countryValue);
-            }
+            if (countryValue) this.fetchStates(countryValue);
         });
 
         stateControl?.valueChanges.subscribe((stateValue) => {
@@ -69,7 +80,6 @@ export class CreateAddressComponent implements OnInit {
             addressControl?.disable();
             addressControl?.setValue(null);
             this.cities = [];
-
             if (stateValue) {
                 const country = this.addressForm.value.country as unknown as { code: string };
                 this.fetchCities(country.code, (stateValue as unknown as state).iso2);
@@ -140,5 +150,9 @@ export class CreateAddressComponent implements OnInit {
         this.addressForm.reset();
         this.states = [];
         this.cities = [];
+    }
+
+    ngOnDestroy() {
+        this.destroy$.next();
     }
 }

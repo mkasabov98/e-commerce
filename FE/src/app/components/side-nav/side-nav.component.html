@@ -1,34 +1,56 @@
-<div class="side-nav-wrapper">
-    <div class="clear-filters-button">
-        <p-button (onClick)="clearFilters()" [disabled]="sortBy === undefined && !selectedCategories().length">Clear Filters</p-button>
-    </div>
-    <p-panel header="Sort Options">
-        <div class="buttons-wrapper">
-            <div class="radio-button">
-                <p-radiobutton inputId="ASCENDING" [value]="sortByEnum.ASC" [(ngModel)]="sortBy" (onClick)="onSortBy()" />
-                <label for="ASCENDING">Price ascending</label>
-            </div>
-            <div class="radio-button">
-                <p-radiobutton inputId="DESCENDING" [value]="sortByEnum.DESC" [(ngModel)]="sortBy" (onClick)="onSortBy()" />
-                <label for="DESCENDING">Price descending</label>
-            </div>
-            <div class="radio-button">
-                <p-radiobutton inputId="REVIEW" [value]="sortByEnum.REVIEW" [(ngModel)]="sortBy" (onClick)="onSortBy()" />
-                <label for="REVIEW">Most reviews</label>
+<div class="filter-panel">
+
+    <!-- Scrollable filter content -->
+    <div class="filter-scrollable">
+
+        <div class="panel-header">
+            <span class="panel-title">Filters</span>
+            @if (activeFilterCount > 0) {
+                <span class="active-badge">{{ activeFilterCount }}</span>
+            }
+        </div>
+
+        <div class="filter-section">
+            <div class="section-label">Sort by</div>
+            <div class="sort-pills">
+                @for (opt of sortOptions; track opt.value) {
+                    <button
+                        class="sort-pill"
+                        [class.active]="sortBy === opt.value"
+                        (click)="onSortSelect(opt.value)">
+                        {{ opt.label }}
+                    </button>
+                }
             </div>
         </div>
-    </p-panel>
 
-    <p-listbox [options]="productCategories()" (onChange)="onSelectionChange()" optionValue="id" [(ngModel)]="selectedCategories" optionLabel="categoryName" multiple="true" metaKeySelection="false" [listStyle]="{ 'max-height': 'fit-content' }">
-        <ng-template pTemplate="header">
-            <div class="category-header">Category Filters</div>
-        </ng-template>
-
-        <ng-template let-category pTemplate="item">
-            <div class="flex align-items-center gap-2">
-                <i class="pi pi-tag text-sm"></i>
-                <div>{{ category.categoryName }}</div>
+        <div class="filter-section">
+            <div class="section-label">Category</div>
+            <div class="category-list">
+                @for (cat of productCategories(); track cat.id) {
+                    <div
+                        class="category-item"
+                        [class.selected]="isCategorySelected(cat.id)"
+                        (click)="toggleCategory(cat.id)">
+                        <span class="check-box">
+                            <i class="pi pi-check"></i>
+                        </span>
+                        <span class="cat-label">{{ cat.categoryName }}</span>
+                    </div>
+                }
             </div>
-        </ng-template>
-    </p-listbox>
+        </div>
+
+    </div>
+
+    <!-- Pinned footer — always visible, never scrolls away -->
+    @if (activeFilterCount > 0) {
+        <div class="filter-footer">
+            <button class="clear-all-btn" (click)="clearFilters()">
+                <i class="pi pi-times-circle"></i>
+                Clear all filters
+            </button>
+        </div>
+    }
+
 </div>

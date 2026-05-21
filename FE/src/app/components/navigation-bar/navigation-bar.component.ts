@@ -1,13 +1,13 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { AuthService } from "../../services/auth.service";
-import { debounceTime, distinctUntilChanged, Subject, takeUntil } from "rxjs";
+import { debounceTime, distinctUntilChanged, filter, Subject, takeUntil } from "rxjs";
 import { RegisterComponent } from "../register/register.component";
 import { LoginComponent } from "../login/login.component";
-import { loggedUser } from "../../models/auth.models";
+import { loggedUser, UserRoles } from "../../models/auth.models";
 import { NO_USER } from "../../constants.ts/constants";
 import { Button } from "primeng/button";
 import { ToastService } from "../../services/toast.service";
-import { Router, RouterLink } from "@angular/router";
+import { NavigationEnd, Router, RouterLink } from "@angular/router";
 import { BadgeModule } from "primeng/badge";
 import { OverlayBadgeModule } from "primeng/overlaybadge";
 import { CartService } from "../../services/cart.service";
@@ -16,12 +16,18 @@ import { IconFieldModule } from "primeng/iconfield";
 import { InputIconModule } from "primeng/inputicon";
 import { InputTextModule } from "primeng/inputtext";
 import { ProductsService } from "../../services/products.service";
-import { UserRoles } from "../../models/auth.models";
 import { FormsModule } from "@angular/forms";
+import { DrawerModule } from "primeng/drawer";
+import { BreakpointObserver } from "@angular/cdk/layout";
+
 @Component({
     selector: "app-navigation-bar",
-    imports: [RegisterComponent, LoginComponent, Button, RouterLink, BadgeModule, OverlayBadgeModule, ToolbarModule, IconFieldModule, InputIconModule, InputTextModule, FormsModule],
-    providers: [],
+    imports: [
+        RegisterComponent, LoginComponent, Button, RouterLink,
+        BadgeModule, OverlayBadgeModule, ToolbarModule,
+        IconFieldModule, InputIconModule, InputTextModule,
+        FormsModule, DrawerModule,
+    ],
     templateUrl: "./navigation-bar.component.html",
     styleUrl: "./navigation-bar.component.scss",
     standalone: true,
@@ -29,37 +35,80 @@ import { FormsModule } from "@angular/forms";
 export class NavigationBarComponent implements OnInit, OnDestroy {
     private destroy$ = new Subject<void>();
     private inputSubject = new Subject<string>();
-    public searchString = "";
 
+    public searchString = "";
     public UserRoles = UserRoles;
     public NO_USER = NO_USER;
     public loggedUser: loggedUser = NO_USER;
-    public cartItems: number = 0;
-    constructor(private authService: AuthService, private toastService: ToastService, private cartService: CartService, private productsService: ProductsService, public router: Router) {}
+    public cartItems = 0;
+    public isMobile = typeof window !== "undefined" && window.innerWidth <= 768;
+    public mobileMenuOpen = false;
+
+    private _mobileSearchOpen = false;
+    get mobileSearchOpen() { return this._mobileSearchOpen; }
+    set mobileSearchOpen(val: boolean) {
+        this._mobileSearchOpen = val;
+        document.documentElement.style.setProperty('--search-bar-offset', val ? '64px' : '0px');
+    }
+
+    constructor(
+        private authService: AuthService,
+        private toastService: ToastService,
+        private cartService: CartService,
+        private productsService: ProductsService,
+        private breakpointObserver: BreakpointObserver,
+        public router: Router,
+    ) {}
 
     ngOnInit() {
+        this.breakpointObserver
+            .observe(["(max-width: 768px)"])
+            .pipe(takeUntil(this.destroy$))
+            .subscribe((result) => {
+                this.isMobile = result.matches;
+                if (!this.isMobile) {
+                    this.mobileMenuOpen = false;
+                    this.mobileSearchOpen = false; // also resets --search-bar-offset via setter
+                }
+            });
+
         this.authService.loggedUserSubject.pipe(takeUntil(this.destroy$)).subscribe((res) => {
             this.loggedUser = res;
         });
+
         this.cartService.cartItemsSubject$.pipe(takeUntil(this.destroy$)).subscribe((res) => {
             this.cartItems = res;
         });
 
-        this.inputSubject.pipe(debounceTime(300), distinctUntilChanged(), takeUntil(this.destroy$)).subscribe((searchString) => {
-            this.searchString = searchString;
-            this.productsService.filtersSubject.next({ ...this.productsService.filtersSubject.getValue(), searchString: searchString });
+        this.router.events.pipe(
+            filter(event => event instanceof NavigationEnd),
+            takeUntil(this.destroy$)
+        ).subscribe(() => {
+            this.mobileSearchOpen = false;
         });
+
+        this.inputSubject
+            .pipe(debounceTime(300), distinctUntilChanged(), takeUntil(this.destroy$))
+            .subscribe((searchString) => {
+                this.searchString = searchString;
+                this.productsService.filtersSubject.next({
+                    ...this.productsService.filtersSubject.getValue(),
+                    searchString,
+                });
+            });
     }
 
     onInputChange(event: Event) {
-        const searchString = (event.target as HTMLInputElement).value;
-        this.inputSubject.next(searchString);
+        this.inputSubject.next((event.target as HTMLInputElement).value);
     }
 
     clearInput() {
         if (!this.searchString) return;
         this.searchString = "";
-        this.productsService.filtersSubject.next({ ...this.productsService.filtersSubject.getValue(), searchString: "" });
+        this.productsService.filtersSubject.next({
+            ...this.productsService.filtersSubject.getValue(),
+            searchString: "",
+        });
     }
 
     logOut() {
@@ -68,6 +117,7 @@ export class NavigationBarComponent implements OnInit, OnDestroy {
         this.cartService.cartItemsSubject$.next(0);
         this.cartService.updateCartBadge();
         this.toastService.show("You have logged out.");
+        this.mobileMenuOpen = false;
     }
 
     ngOnDestroy() {

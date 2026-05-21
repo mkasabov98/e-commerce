@@ -1,12 +1,22 @@
 <div class="cart-page-wrapper">
-    <app-cart-table></app-cart-table>
     @if (paymentComplete) {
-        <div class="payment-success">
-            <i class="pi pi-check-circle"></i>
+        <div class="cart-state-view">
+            <i class="pi pi-check-circle success-icon"></i>
             <h3>Order placed successfully!</h3>
             <p>Your payment was processed. Your order is now being prepared.</p>
+            <p-button label="Continue Shopping" icon="pi pi-arrow-right" iconPos="right" routerLink="/e-com" />
         </div>
-    } @else if (loggedUser.id !== NO_USER.id && showStepper) {
-        <app-process-order (paymentComplete)="onPaymentComplete()"></app-process-order>
+    } @else if (cartItems === 0) {
+        <div class="cart-state-view">
+            <i class="pi pi-shopping-cart empty-icon"></i>
+            <h3>Your cart is empty</h3>
+            <p>Looks like you haven't added anything yet.</p>
+            <p-button label="Browse Products" icon="pi pi-arrow-right" iconPos="right" routerLink="/e-com" />
+        </div>
+    } @else {
+        <app-cart-table></app-cart-table>
+        @if (loggedUser.id !== NO_USER.id && showStepper) {
+            <app-process-order id="checkout-section" (paymentComplete)="onPaymentComplete()"></app-process-order>
+        }
     }
 </div>

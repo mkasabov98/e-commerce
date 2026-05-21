@@ -10,6 +10,7 @@ export class ToastService {
         type: 'success' | 'info' | 'warn' | 'error' = 'info',
         life = 5000
     ) {
+        this.messageService.clear();
         this.messageService.add({
             severity: type,
             summary: type[0].toUpperCase() + type.slice(1),

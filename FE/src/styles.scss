@@ -1,9 +1,73 @@
 @import "primeflex/primeflex.css";
 @import "primeicons/primeicons.css";
 
+:root {
+    --nav-height: 80px;
+    --sidebar-width: 15.5rem;
+    --search-bar-offset: 0px;
+}
+
 body {
-    font-family: Inter var, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
-        Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
-        Segoe UI Symbol;
-    margin: 0px;
+    font-family: Inter var, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+// ── Mobile form drawers (portal — must be global) ──────────────
+.mobile-form-drawer {
+    border-radius: 20px 20px 0 0 !important;
+    height: auto !important;
+    min-height: 50vh !important;
+    max-height: 92vh !important;
+
+    .p-drawer-header {
+        padding: 1.25rem 1.5rem 0.75rem !important;
+        border-bottom: 1px solid var(--p-surface-200);
+    }
+
+    .p-drawer-content {
+        padding: 1.5rem !important;
+        overflow-y: auto;
+    }
+}
+
+.mobile-form-drawer--tall {
+    min-height: 75vh !important;
+}
+
+.drawer-form-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--p-surface-900);
+}
+
+// ── Mobile toast (portal — must be global) ─────────────────────
+@media (max-width: 768px) {
+    .p-toast {
+        width: 92vw !important;
+        left: 50% !important;
+        right: auto !important;
+        top: 1rem !important;
+        bottom: auto !important;
+        transform: translateX(-50%) !important;
+    }
+}
+
+// ── Mobile nav drawer (portal — must be global) ─────────────────
+.mobile-nav-drawer {
+    border-radius: 16px 16px 0 0 !important;
+    height: auto !important;
+    max-height: 80vh !important;
+
+    .p-drawer-header {
+        padding: 1rem 1.25rem 0.5rem !important;
+        border-bottom: 1px solid var(--p-surface-200);
+        flex-shrink: 0;
+    }
+
+    .p-drawer-content {
+        padding: 0.75rem 1.25rem 2rem !important;
+        overflow-y: auto;
+    }
 }

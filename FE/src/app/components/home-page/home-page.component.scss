@@ -1,61 +1,300 @@
+// ── Page shell ─────────────────────────────────────────────────
+
 .home-page-wrapper {
     display: flex;
-    justify-content: center;
-    width: 100%;
-    background-color: var(--p-primary-200);
+    height: calc(100vh - var(--nav-height) - var(--search-bar-offset, 0px));
+    overflow: hidden;
+    background-color: var(--p-surface-50);
+    position: relative;
+    margin-top: var(--search-bar-offset, 0px);
+    transition: height 0.25s ease, margin-top 0.25s ease;
 }
 
-.data-wrapper {
-    width: min(95%, 1600px);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    
-    .cards-wrapper {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
-        gap: 1rem;
+// ── Sidebar ────────────────────────────────────────────────────
 
-        width: 100%;
-        margin: 0 auto;
-        padding: 1rem;
-
-        overflow-y: auto;
-        scrollbar-width: none;
-
-        app-product-card {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-    }
-    .paginator {
-        display: flex;
-        justify-content: center;
-        margin-bottom: 1rem;
-    }
+.mobile-sidebar-header {
+    display: none; // only shown on mobile via the @media block below
 }
 
-.loading-wrapper {
-    grid-column: 1 / -1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 2rem 0;
-}
-
-.side-nav {
-    display: flex;
-    flex-direction: column;
-    padding-left: 2vw;
-    height: 91vh;
-
-    app-sort-menu {
-        width: 15rem;
-    }
+.side-nav-panel {
+    width: 15.5rem;
+    flex-shrink: 0;
+    height: 100%;
+    background: var(--p-content-background);
+    border-right: 1px solid var(--p-surface-200);
+    overflow: hidden;
 
     app-side-nav {
-        width: 15rem;
         display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+}
+
+// ── Main content ───────────────────────────────────────────────
+
+.main-content {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    padding: 0 1.25rem 1.5rem;
+}
+
+// ── Results bar ────────────────────────────────────────────────
+
+.results-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding: 12px 0 10px;
+    min-height: 50px;
+
+    .results-count {
+        font-size: 0.8rem;
+        color: var(--p-text-muted-color);
+        font-weight: 500;
+        margin-right: 2px;
+    }
+}
+
+.active-chips {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--p-surface-200);
+    border-radius: 20px;
+    padding: 4px 10px 4px 12px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s, color 0.15s;
+
+    &:hover {
+        background: var(--p-surface-800);
+        color: var(--p-surface-0);
+    }
+
+    i {
+        font-size: 0.62rem;
+    }
+
+    &.search-chip {
+        cursor: default;
+        background: var(--p-surface-100);
+        border: 1px solid var(--p-surface-200);
+
+        &:hover {
+            background: var(--p-surface-100);
+            color: inherit;
+        }
+    }
+}
+
+// ── Product grid ───────────────────────────────────────────────
+
+.cards-wrapper {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+    gap: 1rem;
+    align-content: start;
+    flex: 1;
+}
+
+// ── Skeleton cards ─────────────────────────────────────────────
+
+.skeleton-card {
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--p-surface-200);
+    background: var(--p-content-background);
+
+    .skeleton-body {
+        padding: 14px 15px 15px;
+        display: flex;
+        flex-direction: column;
+        gap: 9px;
+
+        .skeleton-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 3px;
+        }
+    }
+}
+
+// ── Empty state ────────────────────────────────────────────────
+
+.empty-state {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 5rem 0;
+    color: var(--p-text-muted-color);
+
+    i {
+        font-size: 2.5rem;
+        color: var(--p-surface-300);
+    }
+
+    p {
+        font-size: 1rem;
+        font-weight: 600;
+        margin: 0;
+        color: var(--p-text-color);
+    }
+
+    span {
+        font-size: 0.875rem;
+    }
+}
+
+// ── Paginator ──────────────────────────────────────────────────
+
+.paginator {
+    display: flex;
+    justify-content: center;
+    padding-top: 1.25rem;
+}
+
+// ── Mobile filter FAB ──────────────────────────────────────────
+
+.mobile-filter-btn {
+    display: none;
+}
+
+.mobile-backdrop {
+    display: none;
+}
+
+// ── Responsive ─────────────────────────────────────────────────
+
+@media (max-width: 768px) {
+
+    // Sidebar becomes a fixed full-height drawer
+    .side-nav-panel {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        z-index: 200;
+        transform: translateX(-100%);
+        transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.12);
+
+        &.mobile-open {
+            transform: translateX(0);
+        }
+    }
+
+    // Close button row — only rendered on mobile
+    .mobile-sidebar-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem 1rem 0.75rem;
+        border-bottom: 1px solid var(--p-surface-200);
+        flex-shrink: 0;
+
+        .sidebar-title {
+            font-size: 1rem;
+            font-weight: 700;
+        }
+    }
+
+    .sidebar-close-btn {
+        all: unset;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: var(--p-border-radius-lg);
+        cursor: pointer;
+        color: var(--p-surface-600);
+        transition: background 0.15s;
+
+        i { font-size: 0.9rem; }
+
+        &:hover { background: var(--p-surface-100); }
+    }
+
+    // Backdrop behind the drawer
+    .mobile-backdrop {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.4);
+        z-index: 150;
+    }
+
+    // Tighter grid on mobile — single column
+    .cards-wrapper {
+        grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+    }
+
+    .main-content {
+        padding: 0 0.75rem 5rem; // extra bottom padding so FAB doesn't overlap last card
+    }
+
+    // FAB to open filters
+    .mobile-filter-btn {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        position: fixed;
+        bottom: 1.25rem;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 100;
+        background: var(--p-surface-900);
+        color: var(--p-surface-0);
+        border: none;
+        border-radius: var(--p-border-radius-full);
+        padding: 0.6rem 1.25rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+        white-space: nowrap;
+    }
+
+    .mobile-filter-badge {
+        background: var(--p-primary-500);
+        color: var(--p-surface-0);
+        border-radius: 50%;
+        width: 18px;
+        height: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.65rem;
+        font-weight: 700;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    // Tablet: narrow sidebar, smaller grid cells
+    .side-nav-panel {
+        width: 13rem;
+    }
+
+    .cards-wrapper {
+        grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
     }
 }
