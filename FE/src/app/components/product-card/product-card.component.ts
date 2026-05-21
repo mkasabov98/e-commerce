@@ -1,5 +1,4 @@
 import { Component, Input, OnDestroy, OnInit } from "@angular/core";
-import { CardModule } from "primeng/card";
 import { cardProduct } from "../../models/products.models";
 import { Button } from "primeng/button";
 import { AuthService } from "../../services/auth.service";
@@ -11,7 +10,7 @@ import { CartService } from "../../services/cart.service";
 
 @Component({
     selector: "app-product-card",
-    imports: [CardModule, Button],
+    imports: [Button],
     templateUrl: "./product-card.component.html",
     styleUrl: "./product-card.component.scss",
     standalone: true,
@@ -20,21 +19,25 @@ export class ProductCardComponent implements OnInit, OnDestroy {
     @Input() product!: cardProduct;
 
     private destroy$ = new Subject<void>();
-    
+
     public UserRoles = UserRoles;
     public loggedUser: loggedUser = NO_USER;
     public productStars: string[] = [];
 
-    constructor(private authService: AuthService, private toastService: ToastService, private cartService: CartService) {}
+    constructor(
+        private authService: AuthService,
+        private toastService: ToastService,
+        private cartService: CartService,
+    ) {}
 
     ngOnInit() {
-        this.authService.loggedUserSubject.pipe(takeUntil(this.destroy$)).subscribe((user) => (this.loggedUser = user));
+        this.authService.loggedUserSubject
+            .pipe(takeUntil(this.destroy$))
+            .subscribe((user) => (this.loggedUser = user));
 
-        const filled = Math.round(this.product.starReview!);
-
-        for (let i = 1; i < 6; i++) {
-            if (i <= filled) this.productStars.push(`filledStar${i}`);
-            else this.productStars.push(`emptyStar${i}`);
+        const filled = this.product.starReview ? Math.round(this.product.starReview) : 0;
+        for (let i = 1; i <= 5; i++) {
+            this.productStars.push(i <= filled ? `filledStar${i}` : `emptyStar${i}`);
         }
     }
 
@@ -57,7 +60,9 @@ export class ProductCardComponent implements OnInit, OnDestroy {
 
         if (this.loggedUser.id === NO_USER.id) {
             const cart = localStorage.getItem("localCart");
-            const updatedCart: { productId: number; productQuantity: number }[] = !cart ? [] : JSON.parse(cart);
+            const updatedCart: { productId: number; productQuantity: number }[] = !cart
+                ? []
+                : JSON.parse(cart);
             const indexToUpdate = updatedCart.findIndex((x) => x.productId === this.product.id);
 
             if (indexToUpdate === -1) {
@@ -65,7 +70,10 @@ export class ProductCardComponent implements OnInit, OnDestroy {
             } else {
                 const currentQty = updatedCart[indexToUpdate].productQuantity;
                 if (currentQty >= this.product.stock) {
-                    this.toastService.show(`Only ${this.product.stock} unit(s) of this item are available`, "warn");
+                    this.toastService.show(
+                        `Only ${this.product.stock} unit(s) of this item are available`,
+                        "warn"
+                    );
                     return;
                 }
                 updatedCart[indexToUpdate].productQuantity = currentQty + 1;
@@ -80,7 +88,9 @@ export class ProductCardComponent implements OnInit, OnDestroy {
                 .pipe(take(1))
                 .subscribe({
                     next: () => {
-                        this.cartService.cartItemsSubject$.next(this.cartService.cartItemsSubject$.value + 1);
+                        this.cartService.cartItemsSubject$.next(
+                            this.cartService.cartItemsSubject$.value + 1
+                        );
                         this.toastService.show("Item has been added to cart", "success");
                     },
                     error: (error) => {

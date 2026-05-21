@@ -1,49 +1,92 @@
 .cart-page-wrapper {
-    background-color: var(--p-primary-200);
+    background-color: var(--p-surface-50);
     width: 100%;
-    height: calc(100dvh - 80px);
+    height: calc(100dvh - var(--nav-height));
     display: flex;
     justify-content: space-around;
-
 
     app-cart-table {
         width: 60dvw;
         display: flex;
         padding: 20px 40px;
         height: fit-content;
-        max-height: calc(100dvh - 80px);
+        max-height: calc(100dvh - var(--nav-height));
     }
 
     app-process-order {
         width: 40dvw;
         padding: 20px 40px;
         height: fit-content;
-        max-height: calc(100dvh - 80px);
+        max-height: calc(100dvh - var(--nav-height));
+    }
+}
+
+// Shared full-page state view (empty cart + payment success)
+.cart-state-view {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    text-align: center;
+    padding: 40px 16px;
+
+    i {
+        font-size: 4rem;
     }
 
-    .payment-success {
-        width: 40dvw;
-        padding: 20px 40px;
-        display: flex;
+    .success-icon { color: var(--p-green-500); }
+    .empty-icon   { color: var(--p-primary-300); }
+
+    h3 {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 700;
+    }
+
+    p {
+        margin: 0;
+        color: var(--p-text-muted-color);
+    }
+}
+
+@media (max-width: 768px) {
+    .cart-page-wrapper {
         flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 12px;
-        text-align: center;
+        height: calc(100dvh - var(--nav-height));
+        overflow-y: auto;
+        overflow-x: hidden;
+        scrollbar-width: none;
+        justify-content: flex-start;
 
-        i {
-            font-size: 3rem;
-            color: var(--p-green-500);
+        app-cart-table {
+            width: 100%;
+            padding: 16px;
+            max-height: none;
         }
 
-        h3 {
-            margin: 0;
-            font-size: 1.4rem;
+        app-process-order {
+            width: 100%;
+            padding: 0 16px 24px;
+            max-height: none;
         }
 
-        p {
-            margin: 0;
-            color: var(--p-text-muted-color);
+        .cart-state-view {
+            min-height: 100%;
+        }
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    .cart-page-wrapper {
+        app-cart-table {
+            padding: 16px 20px;
+        }
+
+        app-process-order {
+            padding: 16px 20px;
         }
     }
 }

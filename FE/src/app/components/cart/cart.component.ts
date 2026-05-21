@@ -6,10 +6,12 @@ import { loggedUser } from "../../models/auth.models";
 import { NO_USER } from "../../constants.ts/constants";
 import { Subject, takeUntil } from "rxjs";
 import { CartService } from "../../services/cart.service";
+import { ButtonModule } from "primeng/button";
+import { RouterLink } from "@angular/router";
 
 @Component({
     selector: "app-cart",
-    imports: [CartTableComponent, ProcessOrderComponent],
+    imports: [CartTableComponent, ProcessOrderComponent, ButtonModule, RouterLink],
     templateUrl: "./cart.component.html",
     styleUrl: "./cart.component.scss",
     standalone: true,
@@ -19,6 +21,7 @@ export class CartComponent implements OnInit, OnDestroy {
 
     public NO_USER = NO_USER;
     public loggedUser: loggedUser = NO_USER;
+    public cartItems = 0;
     public showStepper = false;
     public paymentComplete = false;
 
@@ -29,6 +32,7 @@ export class CartComponent implements OnInit, OnDestroy {
             this.loggedUser = res;
         });
         this.cartService.cartItemsSubject$.subscribe((res) => {
+            this.cartItems = res;
             this.showStepper = res > 0;
         });
     }

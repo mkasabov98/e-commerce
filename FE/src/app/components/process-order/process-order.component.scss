@@ -1,43 +1,108 @@
-.panel-step {
-    .content-wrapper {
-        min-height: 14dvh;
+.checkout-card {
+    width: 100%;
+    border: 1px solid var(--p-surface-200);
+    border-radius: var(--p-border-radius-xl);
+    background: var(--p-content-background);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.checkout-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+// Step indicator
+.step-indicator {
+    display: flex;
+    align-items: flex-start;
+
+    .step-item {
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
-        margin: 10px 0 10px 10px;
-        gap: 16px;
-        .step-content {
+        align-items: center;
+        gap: 6px;
+
+        .step-node {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid var(--p-surface-300);
             display: flex;
-            width: 30dvw;
-            justify-content: space-between;
-            gap: 20px;
             align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: var(--p-text-muted-color);
+            background: var(--p-content-background);
+            transition: background 0.2s, border-color 0.2s, color 0.2s;
+
+            &.active {
+                border-color: var(--p-primary-500);
+                color: var(--p-primary-500);
+            }
+
+            &.completed {
+                background: var(--p-primary-500);
+                border-color: var(--p-primary-500);
+                color: #fff;
+            }
         }
-        .card-form-wrapper {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            max-width: 400px;
+
+        .step-label {
+            font-size: 0.78rem;
+            font-weight: 500;
+            color: var(--p-text-muted-color);
+
+            &.active {
+                color: var(--p-primary-600);
+                font-weight: 600;
+            }
         }
+    }
+
+    .step-line {
+        flex: 1;
+        height: 2px;
+        background: var(--p-surface-300);
+        margin-top: 15px;
+        transition: background 0.3s;
+
+        &.filled { background: var(--p-primary-500); }
     }
 }
 
+// Step content
+.step-body {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.step-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+// Stripe card element
 .card-element {
     padding: 12px;
-    border: 1px solid #ced4da;
-    border-radius: 6px;
-    background: white;
-    transition: border-color 0.15s ease-in-out;
+    border: 1px solid var(--p-surface-300);
+    border-radius: var(--p-border-radius-lg);
+    background: var(--p-surface-0);
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+
     &:focus-within {
-        border-color: #86b7fe;
-        outline: 0;
-        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        border-color: var(--p-primary-400);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--p-primary-500) 20%, transparent);
     }
 }
 
 .address-item-content {
-    max-width: 100%;
-
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;

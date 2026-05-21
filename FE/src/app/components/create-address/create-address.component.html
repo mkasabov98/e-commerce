@@ -1,45 +1,59 @@
 <p-button (onClick)="visible = true">Add address</p-button>
 
-<p-dialog header="Add address" (onHide)="resetForm()" [modal]="true" [(visible)]="visible" [style]="{ width: '30dvw' }" [contentStyle]="{ height: '60dvh' }">
+@if (!isMobile) {
+    <p-dialog
+        header="Add address"
+        (onHide)="resetForm()"
+        [modal]="true"
+        [(visible)]="visible"
+        [style]="{ width: '32rem' }"
+        [contentStyle]="{ height: '60dvh' }"
+    >
+        <ng-container *ngTemplateOutlet="addressFormTpl" />
+    </p-dialog>
+}
+
+@if (isMobile) {
+    <p-drawer
+        [(visible)]="visible"
+        position="bottom"
+        styleClass="mobile-form-drawer mobile-form-drawer--tall"
+        (onHide)="resetForm()"
+    >
+        <ng-template #header>
+            <span class="drawer-form-title">Add address</span>
+        </ng-template>
+        <ng-container *ngTemplateOutlet="addressFormTpl" />
+    </p-drawer>
+}
+
+<ng-template #addressFormTpl>
     <form [formGroup]="addressForm" (ngSubmit)="onFormSubmit()" class="address-form">
         <div class="form-body">
-            <p-floatlabel class="w-full md:w-56" variant="on">
-                <p-select [options]="countries" formControlName="country" id="country" optionLabel="name" class="w-full md:w-56"></p-select>
+            <p-floatlabel class="w-full" variant="on">
+                <p-select [options]="countries" formControlName="country" id="country"
+                    optionLabel="name" class="w-full"></p-select>
                 <label for="country">Country</label>
             </p-floatlabel>
-            <p-floatlabel class="w-full md:w-56" variant="on">
-                <p-select
-                    [options]="states"
-                    formControlName="state"
-                    id="state"
-                    optionLabel="name"
-                    [filter]="true"
-                    filterBy="name"
-                    class="w-full md:w-56"
-                ></p-select>
+            <p-floatlabel class="w-full" variant="on">
+                <p-select [options]="states" formControlName="state" id="state"
+                    optionLabel="name" [filter]="true" filterBy="name" class="w-full"></p-select>
                 <label for="state">State / Region</label>
             </p-floatlabel>
-            <p-floatlabel class="w-full md:w-56" variant="on">
-                <p-select
-                    [options]="cities"
-                    [virtualScroll]="true"
-                    [virtualScrollItemSize]="37"
-                    formControlName="city"
-                    id="city"
-                    optionLabel="name"
-                    [filter]="true"
-                    filterBy="name"
-                    class="w-full md:w-56"
-                ></p-select>
+            <p-floatlabel class="w-full" variant="on">
+                <p-select [options]="cities" [virtualScroll]="true" [virtualScrollItemSize]="37"
+                    formControlName="city" id="city" optionLabel="name"
+                    [filter]="true" filterBy="name" class="w-full"></p-select>
                 <label for="city">City</label>
             </p-floatlabel>
-            <p-floatlabel variant="on">
-                <input pInputText id="address" formControlName="address" placeholder="Street Nº, floor Nº, etc" />
+            <p-floatlabel variant="on" class="w-full">
+                <input pInputText id="address" formControlName="address"
+                    placeholder="Street Nº, floor Nº, etc" class="w-full" />
                 <label for="address">Additional information</label>
             </p-floatlabel>
         </div>
         <div class="submit-button">
-            <p-button type="submit-button" [disabled]="disableButton()">Add address</p-button>
+            <p-button type="submit" [disabled]="disableButton()" styleClass="w-full">Add address</p-button>
         </div>
     </form>
-</p-dialog>
+</ng-template>

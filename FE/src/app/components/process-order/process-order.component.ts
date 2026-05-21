@@ -1,7 +1,5 @@
 import { Component, EventEmitter, OnDestroy, OnInit, Output } from "@angular/core";
-import { CommonModule } from "@angular/common";
 import { CreateAddressComponent } from "../create-address/create-address.component";
-import { StepperModule } from "primeng/stepper";
 import { ButtonModule } from "primeng/button";
 import { SelectModule } from "primeng/select";
 import { FloatLabel } from "primeng/floatlabel";
@@ -16,10 +14,8 @@ import { Stripe, StripeCardElement } from "@stripe/stripe-js";
 @Component({
     selector: "app-process-order",
     imports: [
-        CommonModule,
         FormsModule,
         CreateAddressComponent,
-        StepperModule,
         MessageModule,
         ButtonModule,
         SelectModule,
@@ -35,9 +31,11 @@ export class ProcessOrderComponent implements OnInit, OnDestroy {
     private stripe: Stripe | null = null;
     private cardElement: StripeCardElement | null = null;
 
+    public currentStep = 1;
     public addresses: address[] = [];
     public selectedAddress: address | null = null;
     public isProcessing = false;
+    public cardComplete = false;
     public cardError: string | null = null;
 
     constructor(private addressService: AddressService, private cartService: CartService) {}
@@ -66,9 +64,17 @@ export class ProcessOrderComponent implements OnInit, OnDestroy {
         this.fetchAddresses();
     }
 
-    onProceedToPayment(activateCallback: (step: number) => void) {
-        activateCallback(2);
+    onProceedToPayment() {
+        this.currentStep = 2;
         setTimeout(() => this.mountCardElement(), 0);
+    }
+
+    goBack() {
+        this.currentStep = 1;
+        this.cardComplete = false;
+        this.cardError = null;
+        this.cardElement?.destroy();
+        this.cardElement = null;
     }
 
     private mountCardElement() {
@@ -88,6 +94,7 @@ export class ProcessOrderComponent implements OnInit, OnDestroy {
         });
         this.cardElement.mount("#card-element");
         this.cardElement.on("change", (event) => {
+            this.cardComplete = event.complete;
             this.cardError = event.error?.message ?? null;
         });
     }

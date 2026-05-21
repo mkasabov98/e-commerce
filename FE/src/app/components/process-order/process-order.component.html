@@ -1,64 +1,93 @@
-<p-stepper [value]="1" [linear]="true">
-    <p-step-item [value]="1">
-        <p-step>Select an address</p-step>
-        <p-step-panel class="panel-step">
-            <ng-template #content let-activateCallback="activateCallback">
-                <div class="content-wrapper">
-                    <div class="step-content">
-                        <div style="width: 20dvw">
-                            <p-floatlabel class="w-full md:w-56" variant="in">
-                                <p-select
-                                    [(ngModel)]="selectedAddress"
-                                    [options]="addresses"
-                                    [disabled]="!addresses.length"
-                                    id="address"
-                                    class="w-full md:w-56"
-                                    [panelStyle]="{ width: '14rem', 'max-width': '14rem' }"
-                                >
-                                    <ng-template #selectedItem let-selectedOption>
-                                        <div>{{ selectedOption.country + ", " + selectedOption.city + ", " + selectedOption.address }}</div>
-                                    </ng-template>
-                                    <ng-template let-address #item>
-                                        <div class="address-item-content">{{ address.country + ", " + address.city + ", " + address.address }}</div>
-                                    </ng-template>
-                                </p-select>
-                                <label for="address">Address</label>
-                            </p-floatlabel>
-                        </div>
-                        <div>
-                            <app-create-address (onAddressCreate)="onAddressCreate()"></app-create-address>
-                        </div>
-                    </div>
-                    <div>
-                        <p-button label="Next" [disabled]="!selectedAddress" (onClick)="onProceedToPayment(activateCallback)" />
-                    </div>
-                </div>
-            </ng-template>
-        </p-step-panel>
-    </p-step-item>
+<div class="checkout-card">
 
-    <p-step-item [value]="2">
-        <p-step>Process payment</p-step>
-        <p-step-panel class="panel-step">
-            <ng-template #content let-activateCallback="activateCallback">
-                <div class="content-wrapper">
-                    <div class="card-form-wrapper">
-                        <div id="card-element" class="card-element"></div>
-                        @if (cardError) {
-                            <p-message severity="error" size="small" variant="simple">{{ cardError }}</p-message>
-                        }
-                        <p-button
-                            label="Pay Now"
-                            [loading]="isProcessing"
-                            [disabled]="isProcessing"
-                            (onClick)="handlePayment()"
-                        />
-                    </div>
-                    <div>
-                        <p-button label="Back" severity="secondary" [disabled]="isProcessing" (onClick)="activateCallback(1)" />
-                    </div>
-                </div>
-            </ng-template>
-        </p-step-panel>
-    </p-step-item>
-</p-stepper>
+    <span class="checkout-title">Checkout</span>
+
+    <!-- Step indicator -->
+    <div class="step-indicator">
+        <div class="step-item">
+            <div class="step-node" [class.active]="currentStep >= 1" [class.completed]="currentStep > 1">
+                @if (currentStep > 1) {
+                    <i class="pi pi-check"></i>
+                } @else {
+                    <span>1</span>
+                }
+            </div>
+            <span class="step-label" [class.active]="currentStep >= 1">Payment</span>
+        </div>
+        <div class="step-line" [class.filled]="currentStep > 1"></div>
+        <div class="step-item">
+            <div class="step-node" [class.active]="currentStep >= 2">
+                <span>2</span>
+            </div>
+            <span class="step-label" [class.active]="currentStep >= 2">Delivery</span>
+        </div>
+    </div>
+
+    <!-- Step 1: Address -->
+    @if (currentStep === 1) {
+        <div class="step-body">
+            <p-floatlabel variant="in" class="w-full">
+                <p-select
+                    [(ngModel)]="selectedAddress"
+                    [options]="addresses"
+                    [disabled]="!addresses.length"
+                    id="address"
+                    class="w-full"
+                    appendTo="self"
+                    [autoOptionFocus]="false"
+                    [panelStyle]="{ 'min-width': '100%' }"
+                >
+                    <ng-template #selectedItem let-selectedOption>
+                        <div class="address-item-content">
+                            {{ selectedOption.country + ", " + selectedOption.city + ", " + selectedOption.address }}
+                        </div>
+                    </ng-template>
+                    <ng-template let-address #item>
+                        <div class="address-item-content">
+                            {{ address.country + ", " + address.city + ", " + address.address }}
+                        </div>
+                    </ng-template>
+                </p-select>
+                <label for="address">Delivery address</label>
+            </p-floatlabel>
+
+            <app-create-address (onAddressCreate)="onAddressCreate()" />
+
+            <div class="step-actions">
+                <p-button
+                    label="Continue"
+                    icon="pi pi-arrow-right"
+                    iconPos="right"
+                    [disabled]="!selectedAddress"
+                    (onClick)="onProceedToPayment()"
+                />
+            </div>
+        </div>
+    }
+
+    <!-- Step 2: Payment -->
+    @if (currentStep === 2) {
+        <div class="step-body">
+            <div id="card-element" class="card-element"></div>
+            @if (cardError) {
+                <p-message severity="error" size="small" variant="simple">{{ cardError }}</p-message>
+            }
+            <div class="step-actions">
+                <p-button
+                    label="Back"
+                    severity="secondary"
+                    [disabled]="isProcessing"
+                    (onClick)="goBack()"
+                />
+                <p-button
+                    label="Pay Now"
+                    icon="pi pi-lock"
+                    [loading]="isProcessing"
+                    [disabled]="isProcessing || !cardComplete"
+                    (onClick)="handlePayment()"
+                />
+            </div>
+        </div>
+    }
+
+</div>

@@ -82,9 +82,9 @@
                                                 (onClick)="reOrder(order)"
                                             />
                                         </div>
-                                        <p-table [value]="order.products">
+                                        <p-table [value]="order.products" styleClass="order-products-table">
                                             <ng-template #header>
-                                                <tr>
+                                                <tr class="order-table-header">
                                                     <th [style.width.%]="25">Product</th>
                                                     <th [style.width.%]="15">Image</th>
                                                     <th [style.width.%]="20">Unit Price</th>

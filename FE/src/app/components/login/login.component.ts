@@ -1,34 +1,53 @@
-import { Component, inject } from "@angular/core";
+import { Component, EventEmitter, inject, OnInit, OnDestroy, Output } from "@angular/core";
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
 import { Button } from "primeng/button";
 import { DialogModule } from "primeng/dialog";
+import { DrawerModule } from "primeng/drawer";
 import { ToastService } from "../../services/toast.service";
 import { AuthService } from "../../services/auth.service";
 import { FloatLabel } from "primeng/floatlabel";
 import { InputTextModule } from "primeng/inputtext";
-import { concatMap, map, of, take, tap } from "rxjs";
+import { concatMap, map, of, Subject, take, takeUntil, tap } from "rxjs";
 import { PasswordModule } from "primeng/password";
 import { CartService } from "../../services/cart.service";
 import { UserRoles } from "../../models/auth.models";
+import { BreakpointObserver } from "@angular/cdk/layout";
 
 @Component({
     selector: "app-login",
-    imports: [Button, DialogModule, ReactiveFormsModule, FloatLabel, InputTextModule, PasswordModule],
+    imports: [Button, DialogModule, DrawerModule, ReactiveFormsModule, FloatLabel, InputTextModule, PasswordModule],
     providers: [ToastService],
     templateUrl: "./login.component.html",
     styleUrl: "./login.component.scss",
     standalone: true,
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit, OnDestroy {
     private formBuilder = inject(FormBuilder);
-    public visible = false;
+    private destroy$ = new Subject<void>();
 
-    public registerModalVisible = false;
+    @Output() loginSuccess = new EventEmitter<void>();
+
+    public visible = false;
+    public isMobile = typeof window !== "undefined" && window.innerWidth <= 768;
+
     public loginForm: FormGroup = this.formBuilder.group({
         email: ["", Validators.required],
         password: ["", Validators.required],
     });
-    constructor(private authService: AuthService, private toastService: ToastService, private cartService: CartService) {}
+
+    constructor(
+        private authService: AuthService,
+        private toastService: ToastService,
+        private cartService: CartService,
+        private breakpointObserver: BreakpointObserver,
+    ) {}
+
+    ngOnInit() {
+        this.breakpointObserver
+            .observe(["(max-width: 768px)"])
+            .pipe(takeUntil(this.destroy$))
+            .subscribe((result) => (this.isMobile = result.matches));
+    }
 
     onHideDialog() {
         this.loginForm.reset();
@@ -42,25 +61,22 @@ export class LoginComponent {
             })
             .pipe(
                 take(1),
-                tap((res) => {
+                tap(() => {
                     this.visible = false;
+                    this.loginSuccess.emit();
                     this.toastService.show("Successful login", "success");
                 }),
                 concatMap((res) => {
                     const isUser = res.role === UserRoles.User;
                     const localCart = localStorage.getItem("localCart");
-                    if (isUser) {
-                        localStorage.removeItem("localCart");
-                    }
+                    if (isUser) localStorage.removeItem("localCart");
 
                     if (localCart && isUser) {
-                        return this.cartService.updateCart(JSON.parse(localCart)).pipe(map((updateCartRes) => ({ isUser, updated: true, updateCartRes })));
+                        return this.cartService.updateCart(JSON.parse(localCart)).pipe(
+                            map((updateCartRes) => ({ isUser, updated: true, updateCartRes }))
+                        );
                     }
-
-                    if (!localCart && isUser) {
-                        return of({ isUser, updated: false, updateCartRes: null });
-                    }
-
+                    if (!localCart && isUser) return of({ isUser, updated: false, updateCartRes: null });
                     return of({ isUser: false, updated: false, updateCartRes: null });
                 }),
                 concatMap((res) => {
@@ -75,9 +91,7 @@ export class LoginComponent {
                 (res) => {
                     if (res) {
                         this.cartService.cartItemsSubject$.next(
-                            res.items.reduce((acc, curr) => {
-                                return acc + curr.quantity!;
-                            }, 0)
+                            res.items.reduce((acc, curr) => acc + curr.quantity!, 0)
                         );
                     }
                 },
@@ -85,5 +99,9 @@ export class LoginComponent {
                     this.toastService.show(error.error.message, error.error.typeOfToast ?? "error");
                 }
             );
+    }
+
+    ngOnDestroy() {
+        this.destroy$.next();
     }
 }

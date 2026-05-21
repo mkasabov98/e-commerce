@@ -8,7 +8,8 @@
       "Bash(dir src *)",
       "Bash(findstr \"\\\\.scss\")",
       "Bash(node -e \"const p = require\\('./node_modules/primeng/package.json'\\); console.log\\(p.version\\)\")",
-      "mcp__ide__getDiagnostics"
+      "mcp__ide__getDiagnostics",
+      "Bash(node -e \"const a=require\\('./angular.json'\\); const b=a.projects['FE']?.architect?.build?.options; console.log\\(JSON.stringify\\(b?.stylePreprocessorOptions ?? 'none', null, 2\\)\\); console.log\\('styles:', JSON.stringify\\(b?.styles, null, 2\\)\\);\")"
     ]
   }
 }

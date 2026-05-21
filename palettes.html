@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>E-Commerce Palette Proposals</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f4f4f5; padding: 2rem; }
+  h1 { font-size: 1.1rem; font-weight: 700; color: #18181b; margin-bottom: 1.5rem; letter-spacing: -0.02em; }
+  .palette { background: #fff; border-radius: 14px; padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid #e4e4e7; }
+  .palette-title { font-size: 1rem; font-weight: 700; margin-bottom: 0.25rem; color: #18181b; }
+  .palette-desc { font-size: 0.8rem; color: #71717a; margin-bottom: 1rem; }
+  .row { display: flex; gap: 0; margin-bottom: 0.5rem; align-items: center; }
+  .row-label { font-size: 0.72rem; font-weight: 600; color: #71717a; text-transform: uppercase; letter-spacing: 0.05em; width: 70px; flex-shrink: 0; }
+  .swatch { width: 60px; height: 44px; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 4px; }
+  .swatch:first-of-type { border-radius: 8px 0 0 8px; }
+  .swatch:last-of-type { border-radius: 0 8px 8px 0; }
+  .swatch span { font-size: 0.6rem; font-weight: 600; opacity: 0.6; }
+  .current { opacity: 0.55; }
+  .current .palette-title::after { content: ' (current)'; font-size: 0.75rem; font-weight: 500; color: #a1a1aa; }
+  .preview { display: flex; gap: 1rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #f4f4f5; }
+  .mini-app { border-radius: 8px; overflow: hidden; width: 220px; flex-shrink: 0; border: 1px solid #e4e4e7; font-size: 0.7rem; }
+  .mini-nav { height: 28px; display: flex; align-items: center; padding: 0 10px; font-weight: 700; font-size: 0.75rem; border-bottom: 1px solid; }
+  .mini-body { display: flex; height: 80px; }
+  .mini-sidebar { width: 55px; border-right: 1px solid; padding: 6px; display: flex; flex-direction: column; gap: 4px; }
+  .mini-pill { height: 7px; border-radius: 3px; }
+  .mini-content { flex: 1; padding: 6px; display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+  .mini-card { border-radius: 4px; border: 1px solid; }
+</style>
+</head>
+<body>
+<h1>E-Commerce Palette Proposals</h1>
+
+<!-- PALETTE A -->
+<div class="palette">
+  <div class="palette-title">A — Indigo + Zinc</div>
+  <div class="palette-desc">Cool, crisp, professional. Popular with SaaS and tech-adjacent stores. Zinc surfaces feel sharper than slate.</div>
+  <div class="row">
+    <div class="row-label">Primary</div>
+    <div class="swatch" style="background:#eef2ff"><span style="color:#6366f1">50</span></div>
+    <div class="swatch" style="background:#e0e7ff"><span style="color:#6366f1">100</span></div>
+    <div class="swatch" style="background:#c7d2fe"><span style="color:#4f46e5">200</span></div>
+    <div class="swatch" style="background:#a5b4fc"><span style="color:#fff">300</span></div>
+    <div class="swatch" style="background:#818cf8"><span style="color:#fff">400</span></div>
+    <div class="swatch" style="background:#6366f1"><span style="color:#fff">500</span></div>
+    <div class="swatch" style="background:#4f46e5"><span style="color:#fff">600</span></div>
+    <div class="swatch" style="background:#4338ca"><span style="color:#fff">700</span></div>
+    <div class="swatch" style="background:#3730a3"><span style="color:#fff">800</span></div>
+    <div class="swatch" style="background:#312e81"><span style="color:#fff">900</span></div>
+    <div class="swatch" style="background:#1e1b4b"><span style="color:#fff">950</span></div>
+  </div>
+  <div class="row">
+    <div class="row-label">Surface</div>
+    <div class="swatch" style="background:#fafafa"><span style="color:#71717a">50</span></div>
+    <div class="swatch" style="background:#f4f4f5"><span style="color:#71717a">100</span></div>
+    <div class="swatch" style="background:#e4e4e7"><span style="color:#71717a">200</span></div>
+    <div class="swatch" style="background:#d4d4d8"><span style="color:#52525b">300</span></div>
+    <div class="swatch" style="background:#a1a1aa"><span style="color:#fff">400</span></div>
+    <div class="swatch" style="background:#71717a"><span style="color:#fff">500</span></div>
+    <div class="swatch" style="background:#52525b"><span style="color:#fff">600</span></div>
+    <div class="swatch" style="background:#3f3f46"><span style="color:#fff">700</span></div>
+    <div class="swatch" style="background:#27272a"><span style="color:#fff">800</span></div>
+    <div class="swatch" style="background:#18181b"><span style="color:#fff">900</span></div>
+    <div class="swatch" style="background:#09090b"><span style="color:#fff">950</span></div>
+  </div>
+  <!-- Mini preview -->
+  <div class="preview">
+    <div class="mini-app">
+      <div class="mini-nav" style="background:#ffffff; border-color:#e4e4e7; color:#18181b;">Shop</div>
+      <div class="mini-body" style="background:#fafafa;">
+        <div class="mini-sidebar" style="background:#ffffff; border-color:#e4e4e7;">
+          <div class="mini-pill" style="background:#6366f1; width:80%;"></div>
+          <div class="mini-pill" style="background:#e4e4e7; width:90%;"></div>
+          <div class="mini-pill" style="background:#e4e4e7; width:70%;"></div>
+          <div class="mini-pill" style="background:#e4e4e7; width:85%;"></div>
+        </div>
+        <div class="mini-content">
+          <div class="mini-card" style="background:#fff; border-color:#e4e4e7;"></div>
+          <div class="mini-card" style="background:#fff; border-color:#e4e4e7;"></div>
+          <div class="mini-card" style="background:#fff; border-color:#e4e4e7;"></div>
+          <div class="mini-card" style="background:#fff; border-color:#e4e4e7;"></div>
+        </div>
+      </div>
+    </div>
+    <div style="font-size:0.78rem; color:#52525b; line-height:1.6; padding-top: 4px;">
+      <b style="color:#18181b">Key tones in context:</b><br>
+      Navbar bg: <code>#ffffff</code> with zinc-200 border<br>
+      Page bg: <code>#fafafa</code> (zinc-50)<br>
+      Sidebar bg: <code>#ffffff</code><br>
+      Primary action: <code>#6366f1</code><br>
+      Active filter pill: <code>#27272a</code>
+    </div>
+  </div>
+</div>
+
+<!-- PALETTE B -->
+<div class="palette">
+  <div class="palette-title">B — Rose + Stone</div>
+  <div class="palette-desc">Warm, fashion-forward, lifestyle. Stone surfaces feel like warm paper — great for clothing, beauty, or premium goods.</div>
+  <div class="row">
+    <div class="row-label">Primary</div>
+    <div class="swatch" style="background:#fff1f2"><span style="color:#f43f5e">50</span></div>
+    <div class="swatch" style="background:#ffe4e6"><span style="color:#f43f5e">100</span></div>
+    <div class="swatch" style="background:#fecdd3"><span style="color:#e11d48">200</span></div>
+    <div class="swatch" style="background:#fda4af"><span style="color:#be123c">300</span></div>
+    <div class="swatch" style="background:#fb7185"><span style="color:#fff">400</span></div>
+    <div class="swatch" style="background:#f43f5e"><span style="color:#fff">500</span></div>
+    <div class="swatch" style="background:#e11d48"><span style="color:#fff">600</span></div>
+    <div class="swatch" style="background:#be123c"><span style="color:#fff">700</span></div>
+    <div class="swatch" style="background:#9f1239"><span style="color:#fff">800</span></div>
+    <div class="swatch" style="background:#881337"><span style="color:#fff">900</span></div>
+    <div class="swatch" style="background:#4c0519"><span style="color:#fff">950</span></div>
+  </div>
+  <div class="row">
+    <div class="row-label">Surface</div>
+    <div class="swatch" style="background:#fafaf9"><span style="color:#78716c">50</span></div>
+    <div class="swatch" style="background:#f5f5f4"><span style="color:#78716c">100</span></div>
+    <div class="swatch" style="background:#e7e5e4"><span style="color:#78716c">200</span></div>
+    <div class="swatch" style="background:#d6d3d1"><span style="color:#57534e">300</span></div>
+    <div class="swatch" style="background:#a8a29e"><span style="color:#fff">400</span></div>
+    <div class="swatch" style="background:#78716c"><span style="color:#fff">500</span></div>
+    <div class="swatch" style="background:#57534e"><span style="color:#fff">600</span></div>
+    <div class="swatch" style="background:#44403c"><span style="color:#fff">700</span></div>
+    <div class="swatch" style="background:#292524"><span style="color:#fff">800</span></div>
+    <div class="swatch" style="background:#1c1917"><span style="color:#fff">900</span></div>
+    <div class="swatch" style="background:#0c0a09"><span style="color:#fff">950</span></div>
+  </div>
+  <div class="preview">
+    <div class="mini-app">
+      <div class="mini-nav" style="background:#ffffff; border-color:#e7e5e4; color:#1c1917;">Shop</div>
+      <div class="mini-body" style="background:#fafaf9;">
+        <div class="mini-sidebar" style="background:#ffffff; border-color:#e7e5e4;">
+          <div class="mini-pill" style="background:#f43f5e; width:80%;"></div>
+          <div class="mini-pill" style="background:#e7e5e4; width:90%;"></div>
+          <div class="mini-pill" style="background:#e7e5e4; width:70%;"></div>
+          <div class="mini-pill" style="background:#e7e5e4; width:85%;"></div>
+        </div>
+        <div class="mini-content">
+          <div class="mini-card" style="background:#fff; border-color:#e7e5e4;"></div>
+          <div class="mini-card" style="background:#fff; border-color:#e7e5e4;"></div>
+          <div class="mini-card" style="background:#fff; border-color:#e7e5e4;"></div>
+          <div class="mini-card" style="background:#fff; border-color:#e7e5e4;"></div>
+        </div>
+      </div>
+    </div>
+    <div style="font-size:0.78rem; color:#57534e; line-height:1.6; padding-top: 4px;">
+      <b style="color:#1c1917">Key tones in context:</b><br>
+      Navbar bg: <code>#ffffff</code> with stone-200 border<br>
+      Page bg: <code>#fafaf9</code> (stone-50, warm paper)<br>
+      Sidebar bg: <code>#ffffff</code><br>
+      Primary action: <code>#f43f5e</code><br>
+      Active filter pill: <code>#292524</code>
+    </div>
+  </div>
+</div>
+
+<!-- PALETTE C -->
+<div class="palette">
+  <div class="palette-title">C — Teal + Slate</div>
+  <div class="palette-desc">Modern, fresh, tech-forward. Teal reads as trustworthy and clean — works well for electronics, health, or general marketplace.</div>
+  <div class="row">
+    <div class="row-label">Primary</div>
+    <div class="swatch" style="background:#f0fdfa"><span style="color:#14b8a6">50</span></div>
+    <div class="swatch" style="background:#ccfbf1"><span style="color:#0d9488">100</span></div>
+    <div class="swatch" style="background:#99f6e4"><span style="color:#0f766e">200</span></div>
+    <div class="swatch" style="background:#5eead4"><span style="color:#115e59">300</span></div>
+    <div class="swatch" style="background:#2dd4bf"><span style="color:#fff">400</span></div>
+    <div class="swatch" style="background:#14b8a6"><span style="color:#fff">500</span></div>
+    <div class="swatch" style="background:#0d9488"><span style="color:#fff">600</span></div>
+    <div class="swatch" style="background:#0f766e"><span style="color:#fff">700</span></div>
+    <div class="swatch" style="background:#115e59"><span style="color:#fff">800</span></div>
+    <div class="swatch" style="background:#134e4a"><span style="color:#fff">900</span></div>
+    <div class="swatch" style="background:#042f2e"><span style="color:#fff">950</span></div>
+  </div>
+  <div class="row">
+    <div class="row-label">Surface</div>
+    <div class="swatch" style="background:#f8fafc"><span style="color:#64748b">50</span></div>
+    <div class="swatch" style="background:#f1f5f9"><span style="color:#64748b">100</span></div>
+    <div class="swatch" style="background:#e2e8f0"><span style="color:#475569">200</span></div>
+    <div class="swatch" style="background:#cbd5e1"><span style="color:#334155">300</span></div>
+    <div class="swatch" style="background:#94a3b8"><span style="color:#fff">400</span></div>
+    <div class="swatch" style="background:#64748b"><span style="color:#fff">500</span></div>
+    <div class="swatch" style="background:#475569"><span style="color:#fff">600</span></div>
+    <div class="swatch" style="background:#334155"><span style="color:#fff">700</span></div>
+    <div class="swatch" style="background:#1e293b"><span style="color:#fff">800</span></div>
+    <div class="swatch" style="background:#0f172a"><span style="color:#fff">900</span></div>
+    <div class="swatch" style="background:#020617"><span style="color:#fff">950</span></div>
+  </div>
+  <div class="preview">
+    <div class="mini-app">
+      <div class="mini-nav" style="background:#ffffff; border-color:#e2e8f0; color:#0f172a;">Shop</div>
+      <div class="mini-body" style="background:#f8fafc;">
+        <div class="mini-sidebar" style="background:#ffffff; border-color:#e2e8f0;">
+          <div class="mini-pill" style="background:#14b8a6; width:80%;"></div>
+          <div class="mini-pill" style="background:#e2e8f0; width:90%;"></div>
+          <div class="mini-pill" style="background:#e2e8f0; width:70%;"></div>
+          <div class="mini-pill" style="background:#e2e8f0; width:85%;"></div>
+        </div>
+        <div class="mini-content">
+          <div class="mini-card" style="background:#fff; border-color:#e2e8f0;"></div>
+          <div class="mini-card" style="background:#fff; border-color:#e2e8f0;"></div>
+          <div class="mini-card" style="background:#fff; border-color:#e2e8f0;"></div>
+          <div class="mini-card" style="background:#fff; border-color:#e2e8f0;"></div>
+        </div>
+      </div>
+    </div>
+    <div style="font-size:0.78rem; color:#475569; line-height:1.6; padding-top: 4px;">
+      <b style="color:#0f172a">Key tones in context:</b><br>
+      Navbar bg: <code>#ffffff</code> with slate-200 border<br>
+      Page bg: <code>#f8fafc</code> (slate-50)<br>
+      Sidebar bg: <code>#ffffff</code><br>
+      Primary action: <code>#14b8a6</code><br>
+      Active filter pill: <code>#1e293b</code>
+    </div>
+  </div>
+</div>
+
+<!-- CURRENT -->
+<div class="palette current">
+  <div class="palette-title">Violet + Slate</div>
+  <div class="palette-desc">Current palette for reference.</div>
+  <div class="row">
+    <div class="row-label">Primary</div>
+    <div class="swatch" style="background:#f5f3ff"><span style="color:#8b5cf6">50</span></div>
+    <div class="swatch" style="background:#ede9fe"><span style="color:#7c3aed">100</span></div>
+    <div class="swatch" style="background:#ddd6fe"><span style="color:#6d28d9">200</span></div>
+    <div class="swatch" style="background:#c4b5fd"><span style="color:#5b21b6">300</span></div>
+    <div class="swatch" style="background:#a78bfa"><span style="color:#fff">400</span></div>
+    <div class="swatch" style="background:#8b5cf6"><span style="color:#fff">500</span></div>
+    <div class="swatch" style="background:#7c3aed"><span style="color:#fff">600</span></div>
+    <div class="swatch" style="background:#6d28d9"><span style="color:#fff">700</span></div>
+    <div class="swatch" style="background:#5b21b6"><span style="color:#fff">800</span></div>
+    <div class="swatch" style="background:#4c1d95"><span style="color:#fff">900</span></div>
+    <div class="swatch" style="background:#2e1065"><span style="color:#fff">950</span></div>
+  </div>
+  <div class="row">
+    <div class="row-label">Surface</div>
+    <div class="swatch" style="background:#f8fafc"><span style="color:#64748b">50</span></div>
+    <div class="swatch" style="background:#f1f5f9"><span style="color:#64748b">100</span></div>
+    <div class="swatch" style="background:#e2e8f0"><span style="color:#475569">200</span></div>
+    <div class="swatch" style="background:#cbd5e1"><span style="color:#334155">300</span></div>
+    <div class="swatch" style="background:#94a3b8"><span style="color:#fff">400</span></div>
+    <div class="swatch" style="background:#64748b"><span style="color:#fff">500</span></div>
+    <div class="swatch" style="background:#475569"><span style="color:#fff">600</span></div>
+    <div class="swatch" style="background:#334155"><span style="color:#fff">700</span></div>
+    <div class="swatch" style="background:#1e293b"><span style="color:#fff">800</span></div>
+    <div class="swatch" style="background:#0f172a"><span style="color:#fff">900</span></div>
+    <div class="swatch" style="background:#020617"><span style="color:#fff">950</span></div>
+  </div>
+</div>
+
+</body>
+</html>

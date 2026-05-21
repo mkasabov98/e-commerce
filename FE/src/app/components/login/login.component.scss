@@ -24,3 +24,28 @@
     justify-content: flex-end;
     padding: 0 2rem 1rem;
 }
+
+@media (max-width: 768px) {
+    .form-body {
+        height: auto;
+        padding: 1rem 0;
+        gap: 1.5rem;
+        flex-wrap: nowrap;
+
+        input { width: 100%; }
+
+        ::ng-deep p-password,
+        ::ng-deep .p-password {
+            width: 100%;
+
+            input { width: 100%; }
+        }
+    }
+
+    .submit-button {
+        padding: 1rem 0 0;
+        justify-content: stretch;
+
+        p-button { width: 100%; }
+    }
+}
