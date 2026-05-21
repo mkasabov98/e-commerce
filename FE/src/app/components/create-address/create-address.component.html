@@ -51,6 +51,10 @@
                     placeholder="Street Nº, floor Nº, etc" class="w-full" />
                 <label for="address">Additional information</label>
             </p-floatlabel>
+            <div class="default-checkbox">
+                <p-checkbox formControlName="isDefault" [binary]="true" inputId="isDefault" />
+                <label for="isDefault">Set as default address</label>
+            </div>
         </div>
         <div class="submit-button">
             <p-button type="submit" [disabled]="disableButton()" styleClass="w-full">Add address</p-button>

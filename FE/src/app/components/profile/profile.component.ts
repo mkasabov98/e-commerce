@@ -93,6 +93,16 @@ export class ProfileComponent implements OnInit {
         });
     }
 
+    setDefaultAddress(id: number) {
+        this.addressService.setDefaultAddress(id).pipe(take(1)).subscribe({
+            next: () => {
+                this.addresses = this.addresses.map((a) => ({ ...a, isDefault: a.id === id }));
+                this.toastService.show("Default address updated.", "success");
+            },
+            error: (err) => this.toastService.show(err.error?.message ?? "Failed to update default address", "warn"),
+        });
+    }
+
     reOrder(order: Order) {
         if (this.reOrderingId !== null) return;
         this.reOrderingId = order.id;

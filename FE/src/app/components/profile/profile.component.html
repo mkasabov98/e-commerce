@@ -148,16 +148,33 @@
                                     <div class="address-info">
                                         <i class="pi pi-map-marker"></i>
                                         <div class="address-text">
-                                            <span class="address-main">{{ addr.address }}</span>
+                                            <span class="address-main">
+                                                {{ addr.address }}
+                                                @if (addr.isDefault) {
+                                                    <p-tag value="Default" severity="success" />
+                                                }
+                                            </span>
                                             <span class="address-sub">{{ addr.city }}, {{ addr.country }}</span>
                                         </div>
                                     </div>
-                                    <p-button
-                                        icon="pi pi-trash"
-                                        severity="danger"
-                                        [text]="true"
-                                        (onClick)="confirmDeleteAddress(addr.id!)"
-                                    />
+                                    <div class="address-actions">
+                                        @if (!addr.isDefault) {
+                                            <p-button
+                                                label="Make default"
+                                                icon="pi pi-star"
+                                                size="small"
+                                                severity="secondary"
+                                                [text]="true"
+                                                (onClick)="setDefaultAddress(addr.id!)"
+                                            />
+                                        }
+                                        <p-button
+                                            icon="pi pi-trash"
+                                            severity="danger"
+                                            [text]="true"
+                                            (onClick)="confirmDeleteAddress(addr.id!)"
+                                        />
+                                    </div>
                                 </div>
                             }
                         </div>

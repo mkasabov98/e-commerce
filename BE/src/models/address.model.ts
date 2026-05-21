@@ -7,6 +7,7 @@ interface AddressAttributes {
     country: string;
     city: string;
     address: string;
+    isDefault: boolean;
 }
 
 interface AddressCreationAttributes extends Optional<AddressAttributes, "id"> {}
@@ -17,6 +18,7 @@ export class Address extends Model<AddressAttributes, AddressCreationAttributes>
     public country!: string;
     public city!: string;
     public address!: string;
+    public isDefault!: boolean;
 
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
@@ -44,6 +46,11 @@ Address.init(
         address: {
             type: DataTypes.STRING,
             allowNull: false,
+        },
+        isDefault: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false,
         },
     },
     {

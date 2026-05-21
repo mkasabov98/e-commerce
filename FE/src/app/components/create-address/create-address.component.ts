@@ -1,7 +1,8 @@
 import { Component, EventEmitter, inject, OnInit, OnDestroy, Output } from "@angular/core";
 import { NgTemplateOutlet } from "@angular/common";
-import { FormBuilder, ReactiveFormsModule } from "@angular/forms";
+import { FormBuilder, ReactiveFormsModule, FormsModule } from "@angular/forms";
 import { Button } from "primeng/button";
+import { CheckboxModule } from "primeng/checkbox";
 import { DialogModule } from "primeng/dialog";
 import { DrawerModule } from "primeng/drawer";
 import { FloatLabel } from "primeng/floatlabel";
@@ -16,7 +17,18 @@ import { BreakpointObserver } from "@angular/cdk/layout";
 
 @Component({
     selector: "app-create-address",
-    imports: [Button, DialogModule, DrawerModule, ReactiveFormsModule, InputTextModule, FloatLabel, SelectModule, NgTemplateOutlet],
+    imports: [
+        Button,
+        CheckboxModule,
+        DialogModule,
+        DrawerModule,
+        FormsModule,
+        ReactiveFormsModule,
+        InputTextModule,
+        FloatLabel,
+        SelectModule,
+        NgTemplateOutlet,
+    ],
     providers: [ToastService],
     templateUrl: "./create-address.component.html",
     styleUrl: "./create-address.component.scss",
@@ -33,6 +45,7 @@ export class CreateAddressComponent implements OnInit, OnDestroy {
         state: [{ value: null, disabled: true }],
         city: [{ value: null, disabled: true }],
         address: [{ value: null, disabled: true }],
+        isDefault: [false],
     });
 
     public visible = false;
@@ -132,18 +145,17 @@ export class CreateAddressComponent implements OnInit, OnDestroy {
         const country = this.addressForm.value.country as unknown as { name: string; code: string };
         const city = this.addressForm.value.city as unknown as { name: string; id: number };
         const address = this.addressForm.value.address!;
+        const isDefault = this.addressForm.value.isDefault ?? false;
 
-        this.addressService
-            .createAddress({ country: country.name, city: city.name, address })
-            .subscribe({
-                next: () => {
-                    this.toastService.show("Address has been created!", "success");
-                    this.onAddressCreate.emit();
-                    this.visible = false;
-                    this.resetForm();
-                },
-                error: (err) => this.toastService.show(err.error?.message ?? "Failed to create address", "warn"),
-            });
+        this.addressService.createAddress({ country: country.name, city: city.name, address, isDefault }).subscribe({
+            next: () => {
+                this.toastService.show("Address has been created!", "success");
+                this.onAddressCreate.emit();
+                this.visible = false;
+                this.resetForm();
+            },
+            error: (err) => this.toastService.show(err.error?.message ?? "Failed to create address", "warn"),
+        });
     }
 
     resetForm() {
