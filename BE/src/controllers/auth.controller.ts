@@ -3,6 +3,7 @@ import { User } from "../models/user.model";
 import { Cart } from "../models/cart.model";
 import { UserRoles } from "../enums/user-enums.enum";
 import jwt from "jsonwebtoken"
+import { sendWelcomeEmail } from "../services/email.service";
 
 //POST /app/auth/registerUser body: {email, password};
 export const registerUser = async (req: Request, res: Response, next: NextFunction) => {
@@ -17,6 +18,9 @@ export const registerUser = async (req: Request, res: Response, next: NextFuncti
             const newUser = await User.create({...body, role: UserRoles.User});
             const { password, ...userData } = newUser.get();
             await Cart.findOrCreate({where: {userId: newUser.id}});
+            sendWelcomeEmail(newUser.email).catch((err) =>
+                console.error("Failed to send welcome email:", err)
+            );
             return res.status(201).json(userData);
         }
         throw {

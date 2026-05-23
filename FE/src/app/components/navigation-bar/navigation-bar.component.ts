@@ -4,7 +4,7 @@ import { debounceTime, distinctUntilChanged, filter, Subject, takeUntil } from "
 import { RegisterComponent } from "../register/register.component";
 import { LoginComponent } from "../login/login.component";
 import { loggedUser, UserRoles } from "../../models/auth.models";
-import { NO_USER } from "../../constants.ts/constants";
+import { NO_USER } from "../../constants/constants";
 import { Button } from "primeng/button";
 import { ToastService } from "../../services/toast.service";
 import { NavigationEnd, Router, RouterLink } from "@angular/router";

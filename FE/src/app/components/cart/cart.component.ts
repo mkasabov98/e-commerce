@@ -3,7 +3,7 @@ import { CartTableComponent } from "../cart-table/cart-table.component";
 import { ProcessOrderComponent } from "../process-order/process-order.component";
 import { AuthService } from "../../services/auth.service";
 import { loggedUser } from "../../models/auth.models";
-import { NO_USER } from "../../constants.ts/constants";
+import { NO_USER } from "../../constants/constants";
 import { Subject, takeUntil } from "rxjs";
 import { CartService } from "../../services/cart.service";
 import { ButtonModule } from "primeng/button";

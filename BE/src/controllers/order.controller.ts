@@ -12,6 +12,8 @@ import { OrderProduct } from "../models/orderProduct.model";
 import { Address } from "../models/address.model";
 import stripe from "../config/stripe";
 import Stripe from "stripe";
+import { User } from "../models/user.model";
+import { sendOrderConfirmationEmail, sendOrderShippedEmail, sendOrderDeliveredEmail } from "../services/email.service";
 
 interface WebhookRequest extends Request {
     rawBody: Buffer;
@@ -45,7 +47,11 @@ export const handleStripeWebhook = async (req: WebhookRequest, res, next: NextFu
                 return res.sendStatus(200);
             }
 
-            const orderProducts = await OrderProduct.findAll({ where: { orderId: order.id }, transaction });
+            const orderProducts = await OrderProduct.findAll({
+                where: { orderId: order.id },
+                include: [{ model: Product, attributes: ["name"] }],
+                transaction,
+            });
 
             // Lock each product row and validate stock before committing anything
             for (const x of orderProducts) {
@@ -86,6 +92,50 @@ export const handleStripeWebhook = async (req: WebhookRequest, res, next: NextFu
 
             await transaction.commit();
             console.log(`Order ${order.id} fulfilled for user ${userId} — payment intent ${paymentIntent.id}`);
+
+            const user = await User.findByPk(userId, { attributes: ["email"] });
+
+            if (user) {
+                const items = orderProducts.map((x: any) => ({
+                    name: x.Product?.name ?? "Unknown product",
+                    quantity: x.quantity,
+                    priceAtPurchase: x.priceAtPurchase,
+                }));
+
+                sendOrderConfirmationEmail(
+                    user.email,
+                    order.id,
+                    items,
+                    order.totalAmount,
+                    order.shippingAddress
+                ).catch((err) => console.error("Failed to send order confirmation email:", err));
+
+                const THREE_MINUTES = 3 * 60 * 1000;
+                const orderId = order.id;
+                const userEmail = user.email;
+
+                setTimeout(async () => {
+                    try {
+                        await Order.update({ status: OrderStatuses.Shipped }, { where: { id: orderId } });
+                        sendOrderShippedEmail(userEmail, orderId).catch((err) =>
+                            console.error("Failed to send order shipped email:", err)
+                        );
+                    } catch (err) {
+                        console.error(`Failed to update order ${orderId} to Shipped:`, err);
+                    }
+                }, THREE_MINUTES);
+
+                setTimeout(async () => {
+                    try {
+                        await Order.update({ status: OrderStatuses.Delivered }, { where: { id: orderId } });
+                        sendOrderDeliveredEmail(userEmail, orderId).catch((err) =>
+                            console.error("Failed to send order delivered email:", err)
+                        );
+                    } catch (err) {
+                        console.error(`Failed to update order ${orderId} to Delivered:`, err);
+                    }
+                }, THREE_MINUTES * 2);
+            }
         } catch (error) {
             console.error("Error during webhook fulfillment:", error);
             await transaction.rollback();

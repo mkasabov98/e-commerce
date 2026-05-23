@@ -9,6 +9,7 @@ import { OrderProduct } from "./models/orderProduct.model";
 import { Review } from "./models/review.model";
 import { Cart } from "./models/cart.model";
 import { CartProduct } from "./models/cartProduct.model";
+import { Address } from "./models/address.model";
 import { UserRoles } from "./enums/user-enums.enum";
 import { OrderStatuses } from "./enums/order-enums.enum";
 
@@ -30,20 +31,43 @@ async function seed() {
     const [, userUser, alice, bob, carol] = users;
     console.log("Users seeded.");
 
+    // ── Addresses ─────────────────────────────────────────────────────────
+    await Address.bulkCreate([
+        { userId: userUser.id, country: "Spain",          city: "Madrid",     address: "Gran Vía 32",         isDefault: true  },
+        { userId: userUser.id, country: "Spain",          city: "Barcelona",  address: "La Rambla 55",        isDefault: false },
+        { userId: alice.id,    country: "United Kingdom", city: "London",     address: "12 Baker Street",     isDefault: true  },
+        { userId: alice.id,    country: "United Kingdom", city: "Manchester", address: "5 Deansgate",         isDefault: false },
+        { userId: bob.id,      country: "Germany",        city: "Berlin",     address: "Unter den Linden 77", isDefault: true  },
+        { userId: bob.id,      country: "Germany",        city: "Munich",     address: "Marienplatz 1",       isDefault: false },
+        { userId: carol.id,    country: "France",         city: "Paris",      address: "14 Rue de Rivoli",    isDefault: true  },
+        { userId: carol.id,    country: "France",         city: "Lyon",       address: "Place Bellecour 3",   isDefault: false },
+    ]);
+    console.log("Addresses seeded.");
+
     // ── Categories ─────────────────────────────────────────────────────────
-    const [electronics, clothing, footwear, homeAndKitchen, sports] =
-        await ProductCategory.bulkCreate([
-            { categoryName: "Electronics"     },
-            { categoryName: "Clothing"        },
-            { categoryName: "Footwear"        },
-            { categoryName: "Home & Kitchen"  },
-            { categoryName: "Sports"          },
-        ]);
+    const [
+        electronics, clothing, footwear, homeAndKitchen, sports,
+        booksMedia, beauty, toysGames, gardenOutdoors, healthWellness,
+        officeSupplies, gaming,
+    ] = await ProductCategory.bulkCreate([
+        { categoryName: "Electronics"            },
+        { categoryName: "Clothing"               },
+        { categoryName: "Footwear"               },
+        { categoryName: "Home & Kitchen"         },
+        { categoryName: "Sports"                 },
+        { categoryName: "Books & Media"          },
+        { categoryName: "Beauty & Personal Care" },
+        { categoryName: "Toys & Games"           },
+        { categoryName: "Garden & Outdoors"      },
+        { categoryName: "Health & Wellness"      },
+        { categoryName: "Office Supplies"        },
+        { categoryName: "Gaming"                 },
+    ]);
     console.log("Categories seeded.");
 
     // ── Products ───────────────────────────────────────────────────────────
     const products = await Product.bulkCreate([
-        // ── Electronics ──
+        // ── Electronics (0–9) ──────────────────────────────────────────────
         {
             name: "Wireless Noise-Cancelling Headphones",
             description: "Over-ear Bluetooth headphones with active noise cancellation and 30-hour battery life.",
@@ -86,7 +110,36 @@ async function seed() {
             productCategoryId: electronics.id, stock: 45, reviewsCount: 0,
             imageUrl: "https://images.unsplash.com/photo-1625895197185-efcec01cffe0?w=400",
         },
-        // ── Clothing ──
+        {
+            name: "10\" Android Tablet",
+            description: "Octa-core tablet with 10.1\" FHD display, 4 GB RAM, 64 GB storage and stylus support.",
+            supplyPrice: 130, margin: 40, finalPrice: fp(130, 40),
+            productCategoryId: electronics.id, stock: 35, reviewsCount: 0,
+            imageUrl: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400",
+        },
+        {
+            name: "External SSD 1TB",
+            description: "USB 3.2 Gen 2 portable SSD with read speeds up to 1050 MB/s in a rugged aluminium shell.",
+            supplyPrice: 70, margin: 50, finalPrice: fp(70, 50),
+            productCategoryId: electronics.id, stock: 55, reviewsCount: 0,
+            imageUrl: "https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?w=400",
+        },
+        {
+            name: "Wireless Charging Pad 15W",
+            description: "Fast-charge Qi pad compatible with all Qi-enabled devices, with LED status indicator.",
+            supplyPrice: 18, margin: 110, finalPrice: fp(18, 110),
+            productCategoryId: electronics.id, stock: 80, reviewsCount: 0,
+            imageUrl: "https://images.unsplash.com/photo-1591370874773-6702e8f12fd8?w=400",
+        },
+        {
+            name: "Smart Home Hub",
+            description: "Central hub compatible with Zigbee, Z-Wave and Matter devices for a unified smart home.",
+            supplyPrice: 55, margin: 65, finalPrice: fp(55, 65),
+            productCategoryId: electronics.id, stock: 20, reviewsCount: 0,
+            imageUrl: "https://images.unsplash.com/photo-1558002038-1055907df827?w=400",
+        },
+
+        // ── Clothing (10–17) ───────────────────────────────────────────────
         {
             name: "Classic Crewneck Sweatshirt",
             description: "100% cotton heavyweight crewneck sweatshirt available in multiple colours.",
@@ -122,7 +175,29 @@ async function seed() {
             productCategoryId: clothing.id, stock: 40, reviewsCount: 0,
             imageUrl: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=400",
         },
-        // ── Footwear ──
+        {
+            name: "Waterproof Rain Jacket",
+            description: "Lightweight packable rain jacket with sealed seams, adjustable hood and zippered pockets.",
+            supplyPrice: 45, margin: 80, finalPrice: fp(45, 80),
+            productCategoryId: clothing.id, stock: 45, reviewsCount: 0,
+            imageUrl: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400",
+        },
+        {
+            name: "Tapered Jogger Pants",
+            description: "French terry joggers with an adjustable drawstring waist, tapered leg and side pockets.",
+            supplyPrice: 20, margin: 110, finalPrice: fp(20, 110),
+            productCategoryId: clothing.id, stock: 70, reviewsCount: 0,
+            imageUrl: "https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=400",
+        },
+        {
+            name: "Graphic Print T-Shirt",
+            description: "Heavyweight 220 GSM cotton tee with a bold front graphic print and ribbed crew neck.",
+            supplyPrice: 12, margin: 150, finalPrice: fp(12, 150),
+            productCategoryId: clothing.id, stock: 120, reviewsCount: 0,
+            imageUrl: "https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=400",
+        },
+
+        // ── Footwear (18–22) ───────────────────────────────────────────────
         {
             name: "Running Sneakers",
             description: "Lightweight foam-sole running shoes with breathable mesh upper and cushioned insole.",
@@ -144,7 +219,22 @@ async function seed() {
             productCategoryId: footwear.id, stock: 90, reviewsCount: 0,
             imageUrl: "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=400",
         },
-        // ── Home & Kitchen ──
+        {
+            name: "Waterproof Hiking Boots",
+            description: "Gore-Tex lined hiking boots with Vibram outsole, ankle support and steel toe cap.",
+            supplyPrice: 80, margin: 65, finalPrice: fp(80, 65),
+            productCategoryId: footwear.id, stock: 30, reviewsCount: 0,
+            imageUrl: "https://images.unsplash.com/photo-1520219306100-ec4afee2b2e8?w=400",
+        },
+        {
+            name: "Leather Sandals",
+            description: "Handcrafted full-grain leather sandals with an adjustable buckle strap and cork footbed.",
+            supplyPrice: 25, margin: 100, finalPrice: fp(25, 100),
+            productCategoryId: footwear.id, stock: 50, reviewsCount: 0,
+            imageUrl: "https://images.unsplash.com/photo-1603487742131-4160ec999306?w=400",
+        },
+
+        // ── Home & Kitchen (23–30) ─────────────────────────────────────────
         {
             name: "Pour-Over Coffee Maker",
             description: "Borosilicate glass pour-over with a stainless steel reusable filter.",
@@ -180,7 +270,29 @@ async function seed() {
             productCategoryId: homeAndKitchen.id, stock: 65, reviewsCount: 0,
             imageUrl: "https://images.unsplash.com/photo-1603198388954-5e00cdde2db1?w=400",
         },
-        // ── Sports ──
+        {
+            name: "HEPA Air Purifier",
+            description: "True HEPA air purifier covering 40 m² with 3-stage filtration and whisper-quiet mode.",
+            supplyPrice: 75, margin: 55, finalPrice: fp(75, 55),
+            productCategoryId: homeAndKitchen.id, stock: 25, reviewsCount: 0,
+            imageUrl: "https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=400",
+        },
+        {
+            name: "Non-Stick Cookware Set 8-Piece",
+            description: "Granite-coated aluminium pots and pans set with glass lids, PFOA-free and induction ready.",
+            supplyPrice: 55, margin: 65, finalPrice: fp(55, 65),
+            productCategoryId: homeAndKitchen.id, stock: 30, reviewsCount: 0,
+            imageUrl: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400",
+        },
+        {
+            name: "Instant-Read Meat Thermometer",
+            description: "Waterproof digital thermometer with 3-second read, fold-out probe and magnet mount.",
+            supplyPrice: 12, margin: 130, finalPrice: fp(12, 130),
+            productCategoryId: homeAndKitchen.id, stock: 90, reviewsCount: 0,
+            imageUrl: "https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400",
+        },
+
+        // ── Sports (31–38) ─────────────────────────────────────────────────
         {
             name: "Adjustable Dumbbell Set",
             description: "Pair of adjustable dumbbells from 2–24 kg with quick-change weight selector.",
@@ -216,143 +328,640 @@ async function seed() {
             productCategoryId: sports.id, stock: 75, reviewsCount: 0,
             imageUrl: "https://images.unsplash.com/photo-1534367610401-9f5ed68180aa?w=400",
         },
+        {
+            name: "Doorway Pull-Up Bar",
+            description: "No-screw doorway pull-up bar that holds up to 150 kg with padded multi-grip handles.",
+            supplyPrice: 22, margin: 100, finalPrice: fp(22, 100),
+            productCategoryId: sports.id, stock: 50, reviewsCount: 0,
+            imageUrl: "https://images.unsplash.com/photo-1598971639058-fab3c3109a73?w=400",
+        },
+        {
+            name: "Adjustable Flat Weight Bench",
+            description: "Heavy-duty steel bench with 7-position back adjustment, leg roller pad and 300 kg capacity.",
+            supplyPrice: 90, margin: 45, finalPrice: fp(90, 45),
+            productCategoryId: sports.id, stock: 15, reviewsCount: 0,
+            imageUrl: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400",
+        },
+        {
+            name: "Padded Cycling Gloves",
+            description: "Breathable half-finger cycling gloves with gel palm padding and anti-slip silicone grip.",
+            supplyPrice: 9, margin: 165, finalPrice: fp(9, 165),
+            productCategoryId: sports.id, stock: 95, reviewsCount: 0,
+            imageUrl: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400",
+        },
+
+        // ── Books & Media (39–43) ──────────────────────────────────────────
+        {
+            name: "E-Reader 8\" 32GB",
+            description: "Glare-free e-ink display with adjustable warm light, 32 GB storage and weeks of battery.",
+            supplyPrice: 80, margin: 55, finalPrice: fp(80, 55),
+            productCategoryId: booksMedia.id, stock: 35, reviewsCount: 0,
+            imageUrl: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400",
+        },
+        {
+            name: "Vinyl Record Player",
+            description: "3-speed belt-drive turntable with built-in stereo speakers and RCA line output.",
+            supplyPrice: 65, margin: 60, finalPrice: fp(65, 60),
+            productCategoryId: booksMedia.id, stock: 20, reviewsCount: 0,
+            imageUrl: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400",
+        },
+        {
+            name: "Podcast Microphone Kit",
+            description: "Cardioid USB condenser mic with scissor arm stand, pop filter and shock mount.",
+            supplyPrice: 45, margin: 75, finalPrice: fp(45, 75),
+            productCategoryId: booksMedia.id, stock: 40, reviewsCount: 0,
+            imageUrl: "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?w=400",
+        },
+        {
+            name: "Portable Book Light",
+            description: "USB rechargeable LED reading light with flexible neck, clip mount and 3 brightness levels.",
+            supplyPrice: 7, margin: 185, finalPrice: fp(7, 185),
+            productCategoryId: booksMedia.id, stock: 150, reviewsCount: 0,
+            imageUrl: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400",
+        },
+        {
+            name: "True Wireless Earbuds",
+            description: "Active noise-cancelling earbuds with 8-hour battery, 24-hour charging case and IPX4 rating.",
+            supplyPrice: 55, margin: 65, finalPrice: fp(55, 65),
+            productCategoryId: booksMedia.id, stock: 60, reviewsCount: 0,
+            imageUrl: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=400",
+        },
+
+        // ── Beauty & Personal Care (44–48) ────────────────────────────────
+        {
+            name: "Electric Facial Cleanser",
+            description: "Sonic silicone face brush with 3 cleansing modes, waterproof and USB rechargeable.",
+            supplyPrice: 25, margin: 100, finalPrice: fp(25, 100),
+            productCategoryId: beauty.id, stock: 60, reviewsCount: 0,
+            imageUrl: "https://images.unsplash.com/photo-1556228453-efd6c1ff04f6?w=400",
+        },
+        {
+            name: "Vitamin C Brightening Serum",
+            description: "20% vitamin C face serum with hyaluronic acid and vitamin E for visibly radiant skin.",
+            supplyPrice: 12, margin: 160, finalPrice: fp(12, 160),
+            productCategoryId: beauty.id, stock: 100, reviewsCount: 0,
+            imageUrl: "https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?w=400",
+        },
+        {
+            name: "Professional Hair Dryer 2200W",
+            description: "Ionic technology hair dryer with 3 heat settings, 2 speed levels and a cool-shot button.",
+            supplyPrice: 30, margin: 110, finalPrice: fp(30, 110),
+            productCategoryId: beauty.id, stock: 45, reviewsCount: 0,
+            imageUrl: "https://images.unsplash.com/photo-1522338242992-e1a54906a8da?w=400",
+        },
+        {
+            name: "Precision Beard Trimmer Kit",
+            description: "Cordless trimmer with 20 length settings, self-sharpening stainless blades and USB charge.",
+            supplyPrice: 28, margin: 115, finalPrice: fp(28, 115),
+            productCategoryId: beauty.id, stock: 55, reviewsCount: 0,
+            imageUrl: "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400",
+        },
+        {
+            name: "Jade Facial Roller & Gua Sha Set",
+            description: "100% natural jade dual-ended roller and gua sha board for lifting and de-puffing.",
+            supplyPrice: 8, margin: 200, finalPrice: fp(8, 200),
+            productCategoryId: beauty.id, stock: 120, reviewsCount: 0,
+            imageUrl: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400",
+        },
+
+        // ── Toys & Games (49–53) ──────────────────────────────────────────
+        {
+            name: "Classic Building Blocks 1000 pcs",
+            description: "1000-piece compatible building block set with instructions for 5 different display models.",
+            supplyPrice: 22, margin: 115, finalPrice: fp(22, 115),
+            productCategoryId: toysGames.id, stock: 60, reviewsCount: 0,
+            imageUrl: "https://images.unsplash.com/photo-1587654780291-39c9404d746b?w=400",
+        },
+        {
+            name: "Remote Control Racing Car",
+            description: "1:16 scale RC car with 2.4 GHz control, 25 km/h top speed and rechargeable battery.",
+            supplyPrice: 20, margin: 130, finalPrice: fp(20, 130),
+            productCategoryId: toysGames.id, stock: 45, reviewsCount: 0,
+            imageUrl: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400",
+        },
+        {
+            name: "1000-Piece Landscape Puzzle",
+            description: "Premium-cut 1000-piece jigsaw puzzle printed on thick cardstock with a linen finish.",
+            supplyPrice: 10, margin: 150, finalPrice: fp(10, 150),
+            productCategoryId: toysGames.id, stock: 80, reviewsCount: 0,
+            imageUrl: "https://images.unsplash.com/photo-1611996575749-79a3a250f948?w=400",
+        },
+        {
+            name: "Family Board Game Bundle",
+            description: "Bundle of 4 classic board games: Catan, Ticket to Ride, Pandemic and Codenames.",
+            supplyPrice: 55, margin: 60, finalPrice: fp(55, 60),
+            productCategoryId: toysGames.id, stock: 25, reviewsCount: 0,
+            imageUrl: "https://images.unsplash.com/photo-1543512214-318c7553f230?w=400",
+        },
+        {
+            name: "Plush Animal Toy Set",
+            description: "Set of 6 soft plush animals — lion, elephant, giraffe, penguin, bear and rabbit, 20 cm each.",
+            supplyPrice: 18, margin: 130, finalPrice: fp(18, 130),
+            productCategoryId: toysGames.id, stock: 70, reviewsCount: 0,
+            imageUrl: "https://images.unsplash.com/photo-1559715541-5daf8a0296d0?w=400",
+        },
+
+        // ── Garden & Outdoors (54–58) ──────────────────────────────────────
+        {
+            name: "Stainless Steel Garden Tool Set",
+            description: "7-piece tool set including trowel, fork, pruner, gloves and a durable canvas carry bag.",
+            supplyPrice: 24, margin: 105, finalPrice: fp(24, 105),
+            productCategoryId: gardenOutdoors.id, stock: 40, reviewsCount: 0,
+            imageUrl: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400",
+        },
+        {
+            name: "Solar Pathway Lights Set of 8",
+            description: "Auto on/off solar LED garden lights with stainless steel stakes and IP65 waterproofing.",
+            supplyPrice: 20, margin: 120, finalPrice: fp(20, 120),
+            productCategoryId: gardenOutdoors.id, stock: 55, reviewsCount: 0,
+            imageUrl: "https://images.unsplash.com/photo-1558618047-3c8c76ca3cec?w=400",
+        },
+        {
+            name: "Portable Folding Camping Chair",
+            description: "Lightweight aluminium chair with cup holder, side pocket and carry bag, holds 120 kg.",
+            supplyPrice: 22, margin: 110, finalPrice: fp(22, 110),
+            productCategoryId: gardenOutdoors.id, stock: 50, reviewsCount: 0,
+            imageUrl: "https://images.unsplash.com/photo-1537225228614-56cc3556d7ed?w=400",
+        },
+        {
+            name: "Double Hammock with Carrying Bag",
+            description: "Nylon parachute hammock supporting up to 400 kg — includes tree straps and carabiners.",
+            supplyPrice: 25, margin: 120, finalPrice: fp(25, 120),
+            productCategoryId: gardenOutdoors.id, stock: 35, reviewsCount: 0,
+            imageUrl: "https://images.unsplash.com/photo-1531592937781-344ad608fabf?w=400",
+        },
+        {
+            name: "2-Gallon Copper Watering Can",
+            description: "Classic long-spout copper-finish watering can with a detachable rose sprinkler head.",
+            supplyPrice: 18, margin: 130, finalPrice: fp(18, 130),
+            productCategoryId: gardenOutdoors.id, stock: 60, reviewsCount: 0,
+            imageUrl: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400",
+        },
+
+        // ── Health & Wellness (59–63) ──────────────────────────────────────
+        {
+            name: "Smart Bathroom Scale",
+            description: "Bluetooth body-composition scale tracking weight, BMI, body fat, muscle mass and more.",
+            supplyPrice: 22, margin: 120, finalPrice: fp(22, 120),
+            productCategoryId: healthWellness.id, stock: 65, reviewsCount: 0,
+            imageUrl: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400",
+        },
+        {
+            name: "Adjustable Posture Corrector",
+            description: "Breathable neoprene back brace with adjustable straps to gently correct slouching.",
+            supplyPrice: 14, margin: 160, finalPrice: fp(14, 160),
+            productCategoryId: healthWellness.id, stock: 80, reviewsCount: 0,
+            imageUrl: "https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=400",
+        },
+        {
+            name: "Percussion Massage Gun",
+            description: "Deep-tissue massage gun with 6 attachments, 5 speed levels and a 6-hour battery.",
+            supplyPrice: 55, margin: 70, finalPrice: fp(55, 70),
+            productCategoryId: healthWellness.id, stock: 30, reviewsCount: 0,
+            imageUrl: "https://images.unsplash.com/photo-1599058917212-d750089bc07e?w=400",
+        },
+        {
+            name: "White Noise Sleep Machine",
+            description: "Portable sound machine with 30 non-looping sounds, auto-off timer and USB power.",
+            supplyPrice: 20, margin: 125, finalPrice: fp(20, 125),
+            productCategoryId: healthWellness.id, stock: 55, reviewsCount: 0,
+            imageUrl: "https://images.unsplash.com/photo-1467987506553-8f3916508521?w=400",
+        },
+        {
+            name: "Vitamin D3 + K2 Supplement",
+            description: "180 softgels providing 5000 IU D3 and 100 mcg K2 MK-7 for bone and immune support.",
+            supplyPrice: 10, margin: 150, finalPrice: fp(10, 150),
+            productCategoryId: healthWellness.id, stock: 200, reviewsCount: 0,
+            imageUrl: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400",
+        },
+
+        // ── Office Supplies (64–68) ────────────────────────────────────────
+        {
+            name: "Standing Desk Riser Converter",
+            description: "Height-adjustable sit-stand converter with keyboard tray, monitor shelf and cable clip.",
+            supplyPrice: 90, margin: 50, finalPrice: fp(90, 50),
+            productCategoryId: officeSupplies.id, stock: 20, reviewsCount: 0,
+            imageUrl: "https://images.unsplash.com/photo-1593642634524-b40b5baae6bb?w=400",
+        },
+        {
+            name: "XXL Extended Mouse Pad",
+            description: "900×400mm desk mat with anti-slip rubber base, stitched edges and waterproof coating.",
+            supplyPrice: 12, margin: 165, finalPrice: fp(12, 165),
+            productCategoryId: officeSupplies.id, stock: 100, reviewsCount: 0,
+            imageUrl: "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=400",
+        },
+        {
+            name: "Bamboo Desk Organizer Set",
+            description: "6-compartment bamboo organizer with pen holder, phone slot and document tray.",
+            supplyPrice: 16, margin: 140, finalPrice: fp(16, 140),
+            productCategoryId: officeSupplies.id, stock: 75, reviewsCount: 0,
+            imageUrl: "https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=400",
+        },
+        {
+            name: "LED Architect Desk Lamp",
+            description: "Eye-care LED lamp with 5 colour temperatures, 10 brightness levels and a USB charging port.",
+            supplyPrice: 28, margin: 110, finalPrice: fp(28, 110),
+            productCategoryId: officeSupplies.id, stock: 50, reviewsCount: 0,
+            imageUrl: "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=400",
+        },
+        {
+            name: "Magnetic Dry-Erase Whiteboard",
+            description: "60×90cm aluminium-framed magnetic whiteboard with pen tray and wall-mounting hardware.",
+            supplyPrice: 30, margin: 100, finalPrice: fp(30, 100),
+            productCategoryId: officeSupplies.id, stock: 35, reviewsCount: 0,
+            imageUrl: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400",
+        },
+
+        // ── Gaming (69–73) ─────────────────────────────────────────────────
+        {
+            name: "7.1 Surround Gaming Headset",
+            description: "Virtual 7.1 surround headset with retractable noise-cancelling mic, RGB and USB + 3.5mm.",
+            supplyPrice: 40, margin: 85, finalPrice: fp(40, 85),
+            productCategoryId: gaming.id, stock: 45, reviewsCount: 0,
+            imageUrl: "https://images.unsplash.com/photo-1599669454699-248893623440?w=400",
+        },
+        {
+            name: "Wireless Gaming Mouse",
+            description: "16000 DPI optical sensor, 6 programmable buttons, 70-hour battery life and RGB lighting.",
+            supplyPrice: 35, margin: 90, finalPrice: fp(35, 90),
+            productCategoryId: gaming.id, stock: 60, reviewsCount: 0,
+            imageUrl: "https://images.unsplash.com/photo-1612886218060-e5c37eebfcf8?w=400",
+        },
+        {
+            name: "Dual Controller Charging Station",
+            description: "Charges 2 controllers simultaneously with LED charge indicators and integrated cable clips.",
+            supplyPrice: 20, margin: 130, finalPrice: fp(20, 130),
+            productCategoryId: gaming.id, stock: 70, reviewsCount: 0,
+            imageUrl: "https://images.unsplash.com/photo-1593305841991-05c297ba4575?w=400",
+        },
+        {
+            name: "Ergonomic Racing Gaming Chair",
+            description: "PU leather gaming chair with adjustable lumbar cushion, headrest pillow and 180° recline.",
+            supplyPrice: 120, margin: 50, finalPrice: fp(120, 50),
+            productCategoryId: gaming.id, stock: 15, reviewsCount: 0,
+            imageUrl: "https://images.unsplash.com/photo-1616588589676-62b3bd4ff6d2?w=400",
+        },
+        {
+            name: "USB Monitor Light Bar",
+            description: "Asymmetric optical design prevents screen glare, with touch dimmer and colour temperature control.",
+            supplyPrice: 22, margin: 130, finalPrice: fp(22, 130),
+            productCategoryId: gaming.id, stock: 80, reviewsCount: 0,
+            imageUrl: "https://images.unsplash.com/photo-1547394765-185e1e68f34e?w=400",
+        },
     ], { individualHooks: true });
     console.log("Products seeded.");
 
-    // Index aliases for readability
+    // Index aliases ──────────────────────────────────────────────────────────
     const [
-        headphones, smartWatch, keyboard, webcam, speaker, usbHub,   // 0-5 electronics
-        sweatshirt, chinos, linenShirt, denimJacket, merino,          // 6-10 clothing
-        sneakers, chelseaBoots, slipOns,                              // 11-13 footwear
-        coffeeMaker, skillet, cuttingBoard, kettle, containers,       // 14-18 home
-        dumbbells, yogaMat, resistanceBands, jumpRope, foamRoller,    // 19-23 sports
+        headphones, smartWatch, keyboard, webcam, speaker, usbHub,           // 0-5
+        tablet, externalSSD, wirelessCharger, smartHomeHub,                  // 6-9  electronics extra
+        sweatshirt, chinos, linenShirt, denimJacket, merino,                 // 10-14
+        rainJacket, joggers, graphicTee,                                     // 15-17 clothing extra
+        sneakers, chelseaBoots, slipOns,                                     // 18-20
+        hikingBoots, sandals,                                                // 21-22 footwear extra
+        coffeeMaker, skillet, cuttingBoard, kettle, containers,             // 23-27
+        airPurifier, cookwareSet, thermometer,                              // 28-30 home extra
+        dumbbells, yogaMat, resistanceBands, jumpRope, foamRoller,          // 31-35
+        pullUpBar, weightBench, cyclingGloves,                              // 36-38 sports extra
+        eReader, vinylPlayer, podcastMic, bookLight, earbuds,              // 39-43 books & media
+        facialCleanser, vitaminCSerum, hairDryer, beardTrimmer, jadeRoller,// 44-48 beauty
+        buildingBlocks, rcCar, puzzle, boardGames, plushToys,              // 49-53 toys & games
+        gardenTools, solarLights, campingChair, hammock, wateringCan,      // 54-58 garden
+        bathroomScale, postureCorrector, massageGun, sleepMachine, vitamins,// 59-63 health
+        standingDesk, mousePad, deskOrganizer, deskLamp, whiteboard,       // 64-68 office
+        gamingHeadset, gamingMouse, controllerStation, gamingChair, monitorLight, // 69-73 gaming
     ] = products;
 
-    // ── Orders ─────────────────────────────────────────────────────────────
-    const [order1, order2, order3, order4, order5, order6] =
-        await Order.bulkCreate([
-            {
-                userId: alice.id,
-                shippingCountry: "United Kingdom", shippingCity: "London",
-                shippingAddress: "12 Baker Street", totalAmount: 0,
-                status: OrderStatuses.Delivered, stripePaymentIntentId: "pi_seed_001",
-            },
-            {
-                userId: bob.id,
-                shippingCountry: "Germany", shippingCity: "Berlin",
-                shippingAddress: "Unter den Linden 77", totalAmount: 0,
-                status: OrderStatuses.Delivered, stripePaymentIntentId: "pi_seed_002",
-            },
-            {
-                userId: carol.id,
-                shippingCountry: "France", shippingCity: "Paris",
-                shippingAddress: "14 Rue de Rivoli", totalAmount: 0,
-                status: OrderStatuses.Delivered, stripePaymentIntentId: "pi_seed_003",
-            },
-            {
-                userId: userUser.id,
-                shippingCountry: "Spain", shippingCity: "Madrid",
-                shippingAddress: "Gran Vía 32", totalAmount: 0,
-                status: OrderStatuses.Delivered, stripePaymentIntentId: "pi_seed_004",
-            },
-            {
-                userId: alice.id,
-                shippingCountry: "United Kingdom", shippingCity: "Manchester",
-                shippingAddress: "5 Deansgate", totalAmount: 0,
-                status: OrderStatuses.Delivered, stripePaymentIntentId: "pi_seed_005",
-            },
-            {
-                userId: bob.id,
-                shippingCountry: "Germany", shippingCity: "Munich",
-                shippingAddress: "Marienplatz 1", totalAmount: 0,
-                status: OrderStatuses.Delivered, stripePaymentIntentId: "pi_seed_006",
-            },
-        ]);
+    // ── Orders (all Delivered so reviews are possible) ─────────────────────
+    const orders = await Order.bulkCreate([
+        // ── alice ──
+        {
+            userId: alice.id, shippingCountry: "United Kingdom", shippingCity: "London",
+            shippingAddress: "12 Baker Street", totalAmount: 0,
+            status: OrderStatuses.Delivered, stripePaymentIntentId: "pi_seed_001",
+        },
+        {
+            userId: alice.id, shippingCountry: "United Kingdom", shippingCity: "Manchester",
+            shippingAddress: "5 Deansgate", totalAmount: 0,
+            status: OrderStatuses.Delivered, stripePaymentIntentId: "pi_seed_002",
+        },
+        {
+            userId: alice.id, shippingCountry: "United Kingdom", shippingCity: "London",
+            shippingAddress: "12 Baker Street", totalAmount: 0,
+            status: OrderStatuses.Delivered, stripePaymentIntentId: "pi_seed_003",
+        },
+        {
+            userId: alice.id, shippingCountry: "United Kingdom", shippingCity: "Edinburgh",
+            shippingAddress: "Royal Mile 7", totalAmount: 0,
+            status: OrderStatuses.Delivered, stripePaymentIntentId: "pi_seed_004",
+        },
+        // ── bob ──
+        {
+            userId: bob.id, shippingCountry: "Germany", shippingCity: "Berlin",
+            shippingAddress: "Unter den Linden 77", totalAmount: 0,
+            status: OrderStatuses.Delivered, stripePaymentIntentId: "pi_seed_005",
+        },
+        {
+            userId: bob.id, shippingCountry: "Germany", shippingCity: "Munich",
+            shippingAddress: "Marienplatz 1", totalAmount: 0,
+            status: OrderStatuses.Delivered, stripePaymentIntentId: "pi_seed_006",
+        },
+        {
+            userId: bob.id, shippingCountry: "Germany", shippingCity: "Hamburg",
+            shippingAddress: "Jungfernstieg 10", totalAmount: 0,
+            status: OrderStatuses.Delivered, stripePaymentIntentId: "pi_seed_007",
+        },
+        {
+            userId: bob.id, shippingCountry: "Germany", shippingCity: "Frankfurt",
+            shippingAddress: "Zeil 106", totalAmount: 0,
+            status: OrderStatuses.Delivered, stripePaymentIntentId: "pi_seed_008",
+        },
+        // ── carol ──
+        {
+            userId: carol.id, shippingCountry: "France", shippingCity: "Paris",
+            shippingAddress: "14 Rue de Rivoli", totalAmount: 0,
+            status: OrderStatuses.Delivered, stripePaymentIntentId: "pi_seed_009",
+        },
+        {
+            userId: carol.id, shippingCountry: "France", shippingCity: "Lyon",
+            shippingAddress: "Place Bellecour 3", totalAmount: 0,
+            status: OrderStatuses.Delivered, stripePaymentIntentId: "pi_seed_010",
+        },
+        {
+            userId: carol.id, shippingCountry: "France", shippingCity: "Paris",
+            shippingAddress: "14 Rue de Rivoli", totalAmount: 0,
+            status: OrderStatuses.Delivered, stripePaymentIntentId: "pi_seed_011",
+        },
+        {
+            userId: carol.id, shippingCountry: "France", shippingCity: "Nice",
+            shippingAddress: "Promenade des Anglais 1", totalAmount: 0,
+            status: OrderStatuses.Delivered, stripePaymentIntentId: "pi_seed_012",
+        },
+        // ── user ──
+        {
+            userId: userUser.id, shippingCountry: "Spain", shippingCity: "Madrid",
+            shippingAddress: "Gran Vía 32", totalAmount: 0,
+            status: OrderStatuses.Delivered, stripePaymentIntentId: "pi_seed_013",
+        },
+        {
+            userId: userUser.id, shippingCountry: "Spain", shippingCity: "Barcelona",
+            shippingAddress: "La Rambla 55", totalAmount: 0,
+            status: OrderStatuses.Delivered, stripePaymentIntentId: "pi_seed_014",
+        },
+        {
+            userId: userUser.id, shippingCountry: "Spain", shippingCity: "Madrid",
+            shippingAddress: "Gran Vía 32", totalAmount: 0,
+            status: OrderStatuses.Delivered, stripePaymentIntentId: "pi_seed_015",
+        },
+        {
+            userId: userUser.id, shippingCountry: "Spain", shippingCity: "Valencia",
+            shippingAddress: "Calle Colón 20", totalAmount: 0,
+            status: OrderStatuses.Delivered, stripePaymentIntentId: "pi_seed_016",
+        },
+    ]);
+
+    const [
+        aliceO1, aliceO2, aliceO3, aliceO4,
+        bobO1, bobO2, bobO3, bobO4,
+        carolO1, carolO2, carolO3, carolO4,
+        userO1, userO2, userO3, userO4,
+    ] = orders;
     console.log("Orders seeded.");
 
     // ── Order Products ─────────────────────────────────────────────────────
     await OrderProduct.bulkCreate([
-        // Order 1 – alice: headphones, smart watch, yoga mat
-        { orderId: order1.id, productId: headphones.id,     priceAtPurchase: headphones.finalPrice,     quantity: 1 },
-        { orderId: order1.id, productId: smartWatch.id,     priceAtPurchase: smartWatch.finalPrice,     quantity: 1 },
-        { orderId: order1.id, productId: yogaMat.id,        priceAtPurchase: yogaMat.finalPrice,        quantity: 1 },
-        // Order 2 – bob: keyboard, sneakers, dumbbells
-        { orderId: order2.id, productId: keyboard.id,       priceAtPurchase: keyboard.finalPrice,       quantity: 1 },
-        { orderId: order2.id, productId: sneakers.id,       priceAtPurchase: sneakers.finalPrice,       quantity: 1 },
-        { orderId: order2.id, productId: dumbbells.id,      priceAtPurchase: dumbbells.finalPrice,      quantity: 1 },
-        // Order 3 – carol: sweatshirt, chelsea boots, coffee maker
-        { orderId: order3.id, productId: sweatshirt.id,     priceAtPurchase: sweatshirt.finalPrice,     quantity: 1 },
-        { orderId: order3.id, productId: chelseaBoots.id,   priceAtPurchase: chelseaBoots.finalPrice,   quantity: 1 },
-        { orderId: order3.id, productId: coffeeMaker.id,    priceAtPurchase: coffeeMaker.finalPrice,    quantity: 1 },
-        // Order 4 – user: webcam, cutting board, resistance bands
-        { orderId: order4.id, productId: webcam.id,         priceAtPurchase: webcam.finalPrice,         quantity: 1 },
-        { orderId: order4.id, productId: cuttingBoard.id,   priceAtPurchase: cuttingBoard.finalPrice,   quantity: 1 },
-        { orderId: order4.id, productId: resistanceBands.id,priceAtPurchase: resistanceBands.finalPrice,quantity: 1 },
-        // Order 5 – alice: bluetooth speaker, denim jacket, jump rope
-        { orderId: order5.id, productId: speaker.id,        priceAtPurchase: speaker.finalPrice,        quantity: 1 },
-        { orderId: order5.id, productId: denimJacket.id,    priceAtPurchase: denimJacket.finalPrice,    quantity: 1 },
-        { orderId: order5.id, productId: jumpRope.id,       priceAtPurchase: jumpRope.finalPrice,       quantity: 1 },
-        // Order 6 – bob: usb hub, electric kettle, foam roller
-        { orderId: order6.id, productId: usbHub.id,         priceAtPurchase: usbHub.finalPrice,         quantity: 1 },
-        { orderId: order6.id, productId: kettle.id,         priceAtPurchase: kettle.finalPrice,         quantity: 1 },
-        { orderId: order6.id, productId: foamRoller.id,     priceAtPurchase: foamRoller.finalPrice,     quantity: 1 },
+        // alice order 1 — electronics + sports
+        { orderId: aliceO1.id, productId: headphones.id,    priceAtPurchase: headphones.finalPrice,    quantity: 1 },
+        { orderId: aliceO1.id, productId: smartWatch.id,    priceAtPurchase: smartWatch.finalPrice,    quantity: 1 },
+        { orderId: aliceO1.id, productId: yogaMat.id,       priceAtPurchase: yogaMat.finalPrice,       quantity: 1 },
+        { orderId: aliceO1.id, productId: foamRoller.id,    priceAtPurchase: foamRoller.finalPrice,    quantity: 1 },
+        // alice order 2 — clothing + footwear
+        { orderId: aliceO2.id, productId: speaker.id,       priceAtPurchase: speaker.finalPrice,       quantity: 1 },
+        { orderId: aliceO2.id, productId: denimJacket.id,   priceAtPurchase: denimJacket.finalPrice,   quantity: 1 },
+        { orderId: aliceO2.id, productId: jumpRope.id,      priceAtPurchase: jumpRope.finalPrice,      quantity: 1 },
+        { orderId: aliceO2.id, productId: sneakers.id,      priceAtPurchase: sneakers.finalPrice,      quantity: 1 },
+        // alice order 3 — garden + home
+        { orderId: aliceO3.id, productId: gardenTools.id,   priceAtPurchase: gardenTools.finalPrice,   quantity: 1 },
+        { orderId: aliceO3.id, productId: solarLights.id,   priceAtPurchase: solarLights.finalPrice,   quantity: 1 },
+        { orderId: aliceO3.id, productId: hammock.id,       priceAtPurchase: hammock.finalPrice,       quantity: 1 },
+        { orderId: aliceO3.id, productId: coffeeMaker.id,   priceAtPurchase: coffeeMaker.finalPrice,   quantity: 1 },
+        // alice order 4 — electronics extra + books
+        { orderId: aliceO4.id, productId: tablet.id,        priceAtPurchase: tablet.finalPrice,        quantity: 1 },
+        { orderId: aliceO4.id, productId: externalSSD.id,   priceAtPurchase: externalSSD.finalPrice,   quantity: 1 },
+        { orderId: aliceO4.id, productId: eReader.id,       priceAtPurchase: eReader.finalPrice,       quantity: 1 },
+        { orderId: aliceO4.id, productId: earbuds.id,       priceAtPurchase: earbuds.finalPrice,       quantity: 1 },
+        // bob order 1 — electronics + sports
+        { orderId: bobO1.id, productId: keyboard.id,        priceAtPurchase: keyboard.finalPrice,      quantity: 1 },
+        { orderId: bobO1.id, productId: dumbbells.id,       priceAtPurchase: dumbbells.finalPrice,     quantity: 1 },
+        { orderId: bobO1.id, productId: resistanceBands.id, priceAtPurchase: resistanceBands.finalPrice,quantity: 1 },
+        { orderId: bobO1.id, productId: pullUpBar.id,       priceAtPurchase: pullUpBar.finalPrice,     quantity: 1 },
+        // bob order 2 — home & kitchen
+        { orderId: bobO2.id, productId: usbHub.id,          priceAtPurchase: usbHub.finalPrice,        quantity: 1 },
+        { orderId: bobO2.id, productId: kettle.id,          priceAtPurchase: kettle.finalPrice,        quantity: 1 },
+        { orderId: bobO2.id, productId: skillet.id,         priceAtPurchase: skillet.finalPrice,       quantity: 1 },
+        { orderId: bobO2.id, productId: cookwareSet.id,     priceAtPurchase: cookwareSet.finalPrice,   quantity: 1 },
+        // bob order 3 — health + toys
+        { orderId: bobO3.id, productId: bathroomScale.id,   priceAtPurchase: bathroomScale.finalPrice, quantity: 1 },
+        { orderId: bobO3.id, productId: massageGun.id,      priceAtPurchase: massageGun.finalPrice,    quantity: 1 },
+        { orderId: bobO3.id, productId: buildingBlocks.id,  priceAtPurchase: buildingBlocks.finalPrice,quantity: 1 },
+        { orderId: bobO3.id, productId: boardGames.id,      priceAtPurchase: boardGames.finalPrice,    quantity: 1 },
+        // bob order 4 — beauty + office
+        { orderId: bobO4.id, productId: beardTrimmer.id,    priceAtPurchase: beardTrimmer.finalPrice,  quantity: 1 },
+        { orderId: bobO4.id, productId: vitaminCSerum.id,   priceAtPurchase: vitaminCSerum.finalPrice, quantity: 1 },
+        { orderId: bobO4.id, productId: deskLamp.id,        priceAtPurchase: deskLamp.finalPrice,      quantity: 1 },
+        { orderId: bobO4.id, productId: mousePad.id,        priceAtPurchase: mousePad.finalPrice,      quantity: 1 },
+        // carol order 1 — clothing + footwear
+        { orderId: carolO1.id, productId: sweatshirt.id,    priceAtPurchase: sweatshirt.finalPrice,    quantity: 1 },
+        { orderId: carolO1.id, productId: chelseaBoots.id,  priceAtPurchase: chelseaBoots.finalPrice,  quantity: 1 },
+        { orderId: carolO1.id, productId: merino.id,        priceAtPurchase: merino.finalPrice,        quantity: 1 },
+        { orderId: carolO1.id, productId: hikingBoots.id,   priceAtPurchase: hikingBoots.finalPrice,   quantity: 1 },
+        // carol order 2 — gaming
+        { orderId: carolO2.id, productId: gamingHeadset.id, priceAtPurchase: gamingHeadset.finalPrice, quantity: 1 },
+        { orderId: carolO2.id, productId: gamingMouse.id,   priceAtPurchase: gamingMouse.finalPrice,   quantity: 1 },
+        { orderId: carolO2.id, productId: gamingChair.id,   priceAtPurchase: gamingChair.finalPrice,   quantity: 1 },
+        { orderId: carolO2.id, productId: monitorLight.id,  priceAtPurchase: monitorLight.finalPrice,  quantity: 1 },
+        // carol order 3 — home extra + garden
+        { orderId: carolO3.id, productId: airPurifier.id,   priceAtPurchase: airPurifier.finalPrice,   quantity: 1 },
+        { orderId: carolO3.id, productId: thermometer.id,   priceAtPurchase: thermometer.finalPrice,   quantity: 1 },
+        { orderId: carolO3.id, productId: campingChair.id,  priceAtPurchase: campingChair.finalPrice,  quantity: 1 },
+        { orderId: carolO3.id, productId: wateringCan.id,   priceAtPurchase: wateringCan.finalPrice,   quantity: 1 },
+        // carol order 4 — beauty + books
+        { orderId: carolO4.id, productId: facialCleanser.id,priceAtPurchase: facialCleanser.finalPrice,quantity: 1 },
+        { orderId: carolO4.id, productId: hairDryer.id,     priceAtPurchase: hairDryer.finalPrice,     quantity: 1 },
+        { orderId: carolO4.id, productId: jadeRoller.id,    priceAtPurchase: jadeRoller.finalPrice,    quantity: 1 },
+        { orderId: carolO4.id, productId: vinylPlayer.id,   priceAtPurchase: vinylPlayer.finalPrice,   quantity: 1 },
+        // user order 1 — electronics + home
+        { orderId: userO1.id, productId: webcam.id,         priceAtPurchase: webcam.finalPrice,        quantity: 1 },
+        { orderId: userO1.id, productId: cuttingBoard.id,   priceAtPurchase: cuttingBoard.finalPrice,  quantity: 1 },
+        { orderId: userO1.id, productId: containers.id,     priceAtPurchase: containers.finalPrice,    quantity: 1 },
+        { orderId: userO1.id, productId: smartHomeHub.id,   priceAtPurchase: smartHomeHub.finalPrice,  quantity: 1 },
+        // user order 2 — beauty + health
+        { orderId: userO2.id, productId: vitaminCSerum.id,  priceAtPurchase: vitaminCSerum.finalPrice, quantity: 2 },
+        { orderId: userO2.id, productId: sleepMachine.id,   priceAtPurchase: sleepMachine.finalPrice,  quantity: 1 },
+        { orderId: userO2.id, productId: vitamins.id,       priceAtPurchase: vitamins.finalPrice,      quantity: 2 },
+        { orderId: userO2.id, productId: postureCorrector.id,priceAtPurchase: postureCorrector.finalPrice,quantity: 1 },
+        // user order 3 — books + office
+        { orderId: userO3.id, productId: eReader.id,        priceAtPurchase: eReader.finalPrice,       quantity: 1 },
+        { orderId: userO3.id, productId: bookLight.id,      priceAtPurchase: bookLight.finalPrice,     quantity: 2 },
+        { orderId: userO3.id, productId: podcastMic.id,     priceAtPurchase: podcastMic.finalPrice,    quantity: 1 },
+        { orderId: userO3.id, productId: standingDesk.id,   priceAtPurchase: standingDesk.finalPrice,  quantity: 1 },
+        // user order 4 — toys + clothing + footwear
+        { orderId: userO4.id, productId: rcCar.id,          priceAtPurchase: rcCar.finalPrice,         quantity: 1 },
+        { orderId: userO4.id, productId: puzzle.id,         priceAtPurchase: puzzle.finalPrice,        quantity: 1 },
+        { orderId: userO4.id, productId: rainJacket.id,     priceAtPurchase: rainJacket.finalPrice,    quantity: 1 },
+        { orderId: userO4.id, productId: sandals.id,        priceAtPurchase: sandals.finalPrice,       quantity: 1 },
     ]);
     console.log("Order products seeded.");
 
     // ── Reviews ────────────────────────────────────────────────────────────
     await Review.bulkCreate([
-        // Order 1 – alice
-        { userId: alice.id, orderId: order1.id, productId: headphones.id,    starReview: 5, review: "Incredible noise cancellation and comfort — perfect for long listening sessions." },
-        { userId: alice.id, orderId: order1.id, productId: smartWatch.id,    starReview: 4, review: "Great fitness tracking features, but the GPS is a bit slow to lock on." },
-        { userId: alice.id, orderId: order1.id, productId: yogaMat.id,       starReview: 5, review: "Perfect thickness and grip — doesn't slip even in hot yoga." },
-        // Order 2 – bob
-        { userId: bob.id,   orderId: order2.id, productId: keyboard.id,      starReview: 5, review: "Typing on this is an absolute joy. The RGB lighting is stunning." },
-        { userId: bob.id,   orderId: order2.id, productId: sneakers.id,      starReview: 4, review: "Very lightweight and breathable, true to size. Great for daily runs." },
-        { userId: bob.id,   orderId: order2.id, productId: dumbbells.id,     starReview: 5, review: "Incredible value — the weight selector mechanism is smooth and fast." },
-        // Order 3 – carol
-        { userId: carol.id, orderId: order3.id, productId: sweatshirt.id,    starReview: 4, review: "Really cosy, washes well and keeps its shape perfectly." },
-        { userId: carol.id, orderId: order3.id, productId: chelseaBoots.id,  starReview: 3, review: "Good quality leather but they took a while to break in." },
-        { userId: carol.id, orderId: order3.id, productId: coffeeMaker.id,   starReview: 5, review: "Makes the cleanest pour-over I have ever had at home. Beautifully designed." },
-        // Order 4 – user
-        { userId: userUser.id, orderId: order4.id, productId: webcam.id,         starReview: 4, review: "Sharp 4K image, plug and play with no driver issues whatsoever." },
-        { userId: userUser.id, orderId: order4.id, productId: cuttingBoard.id,   starReview: 5, review: "Beautiful boards, easy to clean and very sturdy. The set of three is ideal." },
-        { userId: userUser.id, orderId: order4.id, productId: resistanceBands.id,starReview: 4, review: "Good variety of tensions and the carry bag is a nice bonus." },
-        // Order 5 – alice
-        { userId: alice.id, orderId: order5.id, productId: speaker.id,       starReview: 5, review: "Rich, room-filling sound in such a compact package. Battery life is excellent." },
-        { userId: alice.id, orderId: order5.id, productId: denimJacket.id,   starReview: 4, review: "Great fit and solid construction, feels like it will last for years." },
-        { userId: alice.id, orderId: order5.id, productId: jumpRope.id,      starReview: 5, review: "Spins so smoothly — a huge upgrade from my old rope. Great for HIIT." },
-        // Order 6 – bob
-        { userId: bob.id,   orderId: order6.id, productId: usbHub.id,        starReview: 4, review: "Does exactly what it says — all ports worked immediately on both Mac and Windows." },
-        { userId: bob.id,   orderId: order6.id, productId: kettle.id,        starReview: 5, review: "Heats up incredibly fast and the temperature display is really handy." },
-        { userId: bob.id,   orderId: order6.id, productId: foamRoller.id,    starReview: 4, review: "Good density for muscle recovery. Noticeably eases DOMS after leg day." },
+        // ── alice order 1 ──
+        { userId: alice.id, orderId: aliceO1.id, productId: headphones.id,  starReview: 5, review: "Incredible noise cancellation and comfort — perfect for long listening sessions." },
+        { userId: alice.id, orderId: aliceO1.id, productId: smartWatch.id,  starReview: 4, review: "Great fitness tracking features, but the GPS can be slow to lock on." },
+        { userId: alice.id, orderId: aliceO1.id, productId: yogaMat.id,     starReview: 5, review: "Perfect thickness and grip — doesn't slip even during hot yoga." },
+        { userId: alice.id, orderId: aliceO1.id, productId: foamRoller.id,  starReview: 4, review: "Good density for daily recovery. Noticeably reduces muscle soreness." },
+        // ── alice order 2 ──
+        { userId: alice.id, orderId: aliceO2.id, productId: speaker.id,     starReview: 5, review: "Rich, room-filling sound in such a compact package. Battery life is excellent." },
+        { userId: alice.id, orderId: aliceO2.id, productId: denimJacket.id, starReview: 4, review: "Great fit and solid construction — feels like it will last for years." },
+        { userId: alice.id, orderId: aliceO2.id, productId: jumpRope.id,    starReview: 5, review: "Spins so smoothly. Huge upgrade from my old rope and perfect for HIIT." },
+        { userId: alice.id, orderId: aliceO2.id, productId: sneakers.id,    starReview: 4, review: "Very lightweight and breathable — true to size, great for daily runs." },
+        // ── alice order 3 ──
+        { userId: alice.id, orderId: aliceO3.id, productId: gardenTools.id, starReview: 5, review: "Solid stainless steel tools, comfortable to use and the carry bag is a great touch." },
+        { userId: alice.id, orderId: aliceO3.id, productId: solarLights.id, starReview: 5, review: "Turned on the first night and they are still going strong three months later." },
+        { userId: alice.id, orderId: aliceO3.id, productId: hammock.id,     starReview: 5, review: "Set it up between two trees in under 10 minutes. Incredibly comfortable." },
+        { userId: alice.id, orderId: aliceO3.id, productId: coffeeMaker.id, starReview: 5, review: "Makes the cleanest pour-over I have ever had at home. Beautifully designed." },
+        // ── alice order 4 ──
+        { userId: alice.id, orderId: aliceO4.id, productId: tablet.id,      starReview: 4, review: "Great value for the price. Snappy performance for browsing and streaming." },
+        { userId: alice.id, orderId: aliceO4.id, productId: externalSSD.id, starReview: 5, review: "Blazing fast transfers and the rugged shell gives real peace of mind." },
+        { userId: alice.id, orderId: aliceO4.id, productId: eReader.id,     starReview: 5, review: "Crystal-clear display and weeks of battery. The warm light is perfect for night reading." },
+        { userId: alice.id, orderId: aliceO4.id, productId: earbuds.id,     starReview: 5, review: "Stellar noise cancellation and the fit is incredibly secure even during runs." },
+        // ── bob order 1 ──
+        { userId: bob.id, orderId: bobO1.id, productId: keyboard.id,        starReview: 5, review: "Typing on this is an absolute joy. The tactile feedback and RGB are both excellent." },
+        { userId: bob.id, orderId: bobO1.id, productId: dumbbells.id,       starReview: 5, review: "Incredible value — the weight selector mechanism is smooth and fast." },
+        { userId: bob.id, orderId: bobO1.id, productId: resistanceBands.id, starReview: 4, review: "Good variety of tension levels and the carry bag is a practical bonus." },
+        { userId: bob.id, orderId: bobO1.id, productId: pullUpBar.id,       starReview: 5, review: "Fits the door frame perfectly and feels very stable under full bodyweight." },
+        // ── bob order 2 ──
+        { userId: bob.id, orderId: bobO2.id, productId: usbHub.id,          starReview: 4, review: "All ports work immediately on both Mac and Windows — exactly what it promises." },
+        { userId: bob.id, orderId: bobO2.id, productId: kettle.id,          starReview: 5, review: "Heats up incredibly fast and the temperature presets are really convenient." },
+        { userId: bob.id, orderId: bobO2.id, productId: skillet.id,         starReview: 5, review: "Even heat distribution and the seasoning built up beautifully within a few uses." },
+        { userId: bob.id, orderId: bobO2.id, productId: cookwareSet.id,     starReview: 4, review: "The non-stick coating is working great so far and the glass lids fit snugly." },
+        // ── bob order 3 ──
+        { userId: bob.id, orderId: bobO3.id, productId: bathroomScale.id,   starReview: 4, review: "Accurate and syncs to the app instantly. A solid body metrics tracker." },
+        { userId: bob.id, orderId: bobO3.id, productId: massageGun.id,      starReview: 5, review: "The deepest muscle massage I have had outside a professional setting." },
+        { userId: bob.id, orderId: bobO3.id, productId: buildingBlocks.id,  starReview: 5, review: "Kids were occupied for hours. The different model builds keep them coming back." },
+        { userId: bob.id, orderId: bobO3.id, productId: boardGames.id,      starReview: 5, review: "Four great games in one bundle — Catan alone is worth the price. Excellent value." },
+        // ── bob order 4 ──
+        { userId: bob.id, orderId: bobO4.id, productId: beardTrimmer.id,    starReview: 4, review: "Sharp blades and the 20 length settings give really precise results." },
+        { userId: bob.id, orderId: bobO4.id, productId: vitaminCSerum.id,   starReview: 4, review: "Visible improvement in skin tone after two weeks. Goes on smoothly without stickiness." },
+        { userId: bob.id, orderId: bobO4.id, productId: deskLamp.id,        starReview: 5, review: "Perfect brightness range and the colour temperature options are fantastic." },
+        { userId: bob.id, orderId: bobO4.id, productId: mousePad.id,        starReview: 4, review: "Covers the whole desk and the stitched edges show no signs of fraying." },
+        // ── carol order 1 ──
+        { userId: carol.id, orderId: carolO1.id, productId: sweatshirt.id,  starReview: 4, review: "Really cosy, washes well and keeps its shape after multiple cycles." },
+        { userId: carol.id, orderId: carolO1.id, productId: chelseaBoots.id,starReview: 3, review: "Good quality leather but they took a while to break in." },
+        { userId: carol.id, orderId: carolO1.id, productId: merino.id,      starReview: 5, review: "Incredibly soft and regulates temperature perfectly. Worth every penny." },
+        { userId: carol.id, orderId: carolO1.id, productId: hikingBoots.id, starReview: 5, review: "Kept my feet bone dry through a full day of wet-weather hiking." },
+        // ── carol order 2 ──
+        { userId: carol.id, orderId: carolO2.id, productId: gamingHeadset.id,starReview: 5, review: "Immersive surround sound and comfortable enough for all-day gaming sessions." },
+        { userId: carol.id, orderId: carolO2.id, productId: gamingMouse.id, starReview: 5, review: "Zero noticeable lag over wireless and the sensor tracks on any surface." },
+        { userId: carol.id, orderId: carolO2.id, productId: gamingChair.id, starReview: 4, review: "Very comfortable for long sits. Assembly took 40 minutes but worth it." },
+        { userId: carol.id, orderId: carolO2.id, productId: monitorLight.id,starReview: 5, review: "Eliminated all glare on my screen — the touch dimmer is really intuitive." },
+        // ── carol order 3 ──
+        { userId: carol.id, orderId: carolO3.id, productId: airPurifier.id, starReview: 5, review: "Air quality improved noticeably within hours. The silent mode is genuinely silent." },
+        { userId: carol.id, orderId: carolO3.id, productId: thermometer.id, starReview: 5, review: "Reads in under 3 seconds and is spot on every time. Brilliant kitchen tool." },
+        { userId: carol.id, orderId: carolO3.id, productId: campingChair.id,starReview: 4, review: "Lightweight but feels sturdy. Folds down to almost nothing for easy transport." },
+        { userId: carol.id, orderId: carolO3.id, productId: wateringCan.id, starReview: 4, review: "Looks beautiful and the long spout makes reaching pots at the back easy." },
+        // ── carol order 4 ──
+        { userId: carol.id, orderId: carolO4.id, productId: facialCleanser.id,starReview: 5, review: "My skin has never felt cleaner — pores look visibly smaller after two weeks." },
+        { userId: carol.id, orderId: carolO4.id, productId: hairDryer.id,   starReview: 5, review: "Dries hair in half the time with zero frizz. The ionic technology really works." },
+        { userId: carol.id, orderId: carolO4.id, productId: jadeRoller.id,  starReview: 4, review: "Lovely quality jade. Keeps cool well when refrigerated and the de-puffing is real." },
+        { userId: carol.id, orderId: carolO4.id, productId: vinylPlayer.id, starReview: 5, review: "Warm, rich sound from the built-in speakers and it looks stunning on a shelf." },
+        // ── user order 1 ──
+        { userId: userUser.id, orderId: userO1.id, productId: webcam.id,         starReview: 4, review: "Sharp 4K image and plug-and-play with no driver issues whatsoever." },
+        { userId: userUser.id, orderId: userO1.id, productId: cuttingBoard.id,   starReview: 5, review: "Beautiful boards, easy to clean and very sturdy. The set of three is ideal." },
+        { userId: userUser.id, orderId: userO1.id, productId: containers.id,     starReview: 4, review: "Click-lock lids make a satisfying seal and the sizes cover all my needs." },
+        { userId: userUser.id, orderId: userO1.id, productId: smartHomeHub.id,   starReview: 4, review: "Paired with all my Zigbee devices immediately and the app is intuitive." },
+        // ── user order 2 ──
+        { userId: userUser.id, orderId: userO2.id, productId: vitaminCSerum.id,  starReview: 5, review: "Noticeable glow after consistent use. The texture is light and absorbs instantly." },
+        { userId: userUser.id, orderId: userO2.id, productId: sleepMachine.id,   starReview: 5, review: "Genuinely transformed my sleep quality. The rain sound is incredibly soothing." },
+        { userId: userUser.id, orderId: userO2.id, productId: vitamins.id,       starReview: 4, review: "Easy to swallow and no aftertaste. Levels improved on my next blood panel." },
+        { userId: userUser.id, orderId: userO2.id, productId: postureCorrector.id,starReview: 3, review: "Helps with awareness but takes some getting used to. Sizing runs a bit small." },
+        // ── user order 3 ──
+        { userId: userUser.id, orderId: userO3.id, productId: eReader.id,        starReview: 5, review: "The best reading device I have owned. The page turn speed is impressive." },
+        { userId: userUser.id, orderId: userO3.id, productId: bookLight.id,      starReview: 3, review: "Works fine but the clip is a bit flimsy. Decent value for the price." },
+        { userId: userUser.id, orderId: userO3.id, productId: podcastMic.id,     starReview: 5, review: "Crystal-clear recording straight out of the box. The arm stand is very sturdy." },
+        { userId: userUser.id, orderId: userO3.id, productId: standingDesk.id,   starReview: 5, review: "Transformed my home office setup. Height adjustment is smooth and very stable." },
+        // ── user order 4 ──
+        { userId: userUser.id, orderId: userO4.id, productId: rcCar.id,          starReview: 4, review: "Kids love it. Fast enough to be exciting and the battery lasts a good while." },
+        { userId: userUser.id, orderId: userO4.id, productId: puzzle.id,         starReview: 4, review: "Great cardstock quality and the pieces fit together perfectly. Good challenge." },
+        { userId: userUser.id, orderId: userO4.id, productId: rainJacket.id,     starReview: 5, review: "Absolutely waterproof in heavy rain and packs down to nothing. Great jacket." },
+        { userId: userUser.id, orderId: userO4.id, productId: sandals.id,        starReview: 4, review: "Comfortable from day one and the leather is softening nicely with wear." },
     ]);
     console.log("Reviews seeded.");
 
     // ── Update product star ratings & review counts ────────────────────────
-    const reviewedProducts: Array<{ product: Product; starReview: number; reviewsCount: number }> = [
-        { product: headphones,    starReview: 5,   reviewsCount: 1 },
-        { product: smartWatch,    starReview: 4,   reviewsCount: 1 },
-        { product: keyboard,      starReview: 5,   reviewsCount: 1 },
-        { product: webcam,        starReview: 4,   reviewsCount: 1 },
-        { product: speaker,       starReview: 5,   reviewsCount: 1 },
-        { product: usbHub,        starReview: 4,   reviewsCount: 1 },
-        { product: sweatshirt,    starReview: 4,   reviewsCount: 1 },
-        { product: denimJacket,   starReview: 4,   reviewsCount: 1 },
-        { product: sneakers,      starReview: 4,   reviewsCount: 1 },
-        { product: chelseaBoots,  starReview: 3,   reviewsCount: 1 },
-        { product: coffeeMaker,   starReview: 5,   reviewsCount: 1 },
-        { product: cuttingBoard,  starReview: 5,   reviewsCount: 1 },
-        { product: kettle,        starReview: 5,   reviewsCount: 1 },
-        { product: dumbbells,     starReview: 5,   reviewsCount: 1 },
-        { product: yogaMat,       starReview: 5,   reviewsCount: 1 },
-        { product: resistanceBands, starReview: 4, reviewsCount: 1 },
-        { product: jumpRope,      starReview: 5,   reviewsCount: 1 },
-        { product: foamRoller,    starReview: 4,   reviewsCount: 1 },
+    const reviewAccum = new Map<number, { total: number; count: number }>();
+    const allReviewData: { id: number; star: number }[] = [
+        // alice O1
+        { id: headphones.id, star: 5 }, { id: smartWatch.id, star: 4 },
+        { id: yogaMat.id, star: 5 },    { id: foamRoller.id, star: 4 },
+        // alice O2
+        { id: speaker.id, star: 5 },    { id: denimJacket.id, star: 4 },
+        { id: jumpRope.id, star: 5 },   { id: sneakers.id, star: 4 },
+        // alice O3
+        { id: gardenTools.id, star: 5 },{ id: solarLights.id, star: 5 },
+        { id: hammock.id, star: 5 },    { id: coffeeMaker.id, star: 5 },
+        // alice O4
+        { id: tablet.id, star: 4 },     { id: externalSSD.id, star: 5 },
+        { id: eReader.id, star: 5 },    { id: earbuds.id, star: 5 },
+        // bob O1
+        { id: keyboard.id, star: 5 },   { id: dumbbells.id, star: 5 },
+        { id: resistanceBands.id, star: 4 }, { id: pullUpBar.id, star: 5 },
+        // bob O2
+        { id: usbHub.id, star: 4 },     { id: kettle.id, star: 5 },
+        { id: skillet.id, star: 5 },    { id: cookwareSet.id, star: 4 },
+        // bob O3
+        { id: bathroomScale.id, star: 4 }, { id: massageGun.id, star: 5 },
+        { id: buildingBlocks.id, star: 5 },{ id: boardGames.id, star: 5 },
+        // bob O4
+        { id: beardTrimmer.id, star: 4 }, { id: vitaminCSerum.id, star: 4 },
+        { id: deskLamp.id, star: 5 },     { id: mousePad.id, star: 4 },
+        // carol O1
+        { id: sweatshirt.id, star: 4 }, { id: chelseaBoots.id, star: 3 },
+        { id: merino.id, star: 5 },     { id: hikingBoots.id, star: 5 },
+        // carol O2
+        { id: gamingHeadset.id, star: 5 }, { id: gamingMouse.id, star: 5 },
+        { id: gamingChair.id, star: 4 },   { id: monitorLight.id, star: 5 },
+        // carol O3
+        { id: airPurifier.id, star: 5 }, { id: thermometer.id, star: 5 },
+        { id: campingChair.id, star: 4 }, { id: wateringCan.id, star: 4 },
+        // carol O4
+        { id: facialCleanser.id, star: 5 }, { id: hairDryer.id, star: 5 },
+        { id: jadeRoller.id, star: 4 },     { id: vinylPlayer.id, star: 5 },
+        // user O1
+        { id: webcam.id, star: 4 },       { id: cuttingBoard.id, star: 5 },
+        { id: containers.id, star: 4 },   { id: smartHomeHub.id, star: 4 },
+        // user O2
+        { id: vitaminCSerum.id, star: 5 }, { id: sleepMachine.id, star: 5 },
+        { id: vitamins.id, star: 4 },      { id: postureCorrector.id, star: 3 },
+        // user O3
+        { id: eReader.id, star: 5 },     { id: bookLight.id, star: 3 },
+        { id: podcastMic.id, star: 5 },  { id: standingDesk.id, star: 5 },
+        // user O4
+        { id: rcCar.id, star: 4 },       { id: puzzle.id, star: 4 },
+        { id: rainJacket.id, star: 5 },  { id: sandals.id, star: 4 },
     ];
 
+    for (const { id, star } of allReviewData) {
+        const cur = reviewAccum.get(id) ?? { total: 0, count: 0 };
+        reviewAccum.set(id, { total: cur.total + star, count: cur.count + 1 });
+    }
+
     await Promise.all(
-        reviewedProducts.map(({ product, starReview, reviewsCount }) =>
-            Product.update({ starReview, reviewsCount }, { where: { id: product.id } })
+        Array.from(reviewAccum.entries()).map(([id, { total, count }]) =>
+            Product.update(
+                { starReview: parseFloat((total / count).toFixed(2)), reviewsCount: count },
+                { where: { id } }
+            )
         )
     );
     console.log("Product ratings updated.");
@@ -366,19 +975,20 @@ async function seed() {
     ]);
 
     await CartProduct.bulkCreate([
-        // user's cart: smart watch + linen shirt
-        { cartId: cartUser.id,  productId: smartWatch.id,     quantity: 1 },
-        { cartId: cartUser.id,  productId: linenShirt.id,     quantity: 2 },
-        // alice's cart: keyboard + yoga mat
-        { cartId: cartAlice.id, productId: keyboard.id,       quantity: 1 },
-        { cartId: cartAlice.id, productId: yogaMat.id,        quantity: 1 },
-        // bob's cart: speaker + jump rope + foam roller
-        { cartId: cartBob.id,   productId: speaker.id,        quantity: 1 },
-        { cartId: cartBob.id,   productId: jumpRope.id,       quantity: 1 },
-        { cartId: cartBob.id,   productId: foamRoller.id,     quantity: 2 },
-        // carol's cart: kettle + cutting board
-        { cartId: cartCarol.id, productId: kettle.id,         quantity: 1 },
-        { cartId: cartCarol.id, productId: cuttingBoard.id,   quantity: 1 },
+        // user: weight bench + cycling gloves
+        { cartId: cartUser.id,  productId: weightBench.id,    quantity: 1 },
+        { cartId: cartUser.id,  productId: cyclingGloves.id,  quantity: 1 },
+        // alice: wireless charger + plush toys + deskOrganizer
+        { cartId: cartAlice.id, productId: wirelessCharger.id,quantity: 2 },
+        { cartId: cartAlice.id, productId: plushToys.id,      quantity: 1 },
+        { cartId: cartAlice.id, productId: deskOrganizer.id,  quantity: 1 },
+        // bob: graphicTee + joggers + slipOns
+        { cartId: cartBob.id,   productId: graphicTee.id,     quantity: 2 },
+        { cartId: cartBob.id,   productId: joggers.id,        quantity: 1 },
+        { cartId: cartBob.id,   productId: slipOns.id,        quantity: 1 },
+        // carol: controllerStation + whiteboard
+        { cartId: cartCarol.id, productId: controllerStation.id, quantity: 1 },
+        { cartId: cartCarol.id, productId: whiteboard.id,        quantity: 1 },
     ]);
     console.log("Carts seeded.");
 

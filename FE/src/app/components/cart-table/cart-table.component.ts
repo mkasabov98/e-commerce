@@ -5,7 +5,7 @@ import { AuthService } from "../../services/auth.service";
 import { ToastService } from "../../services/toast.service";
 import { map, Subject, take, takeUntil } from "rxjs";
 import { loggedUser } from "../../models/auth.models";
-import { NO_USER } from "../../constants.ts/constants";
+import { NO_USER } from "../../constants/constants";
 import { CartService } from "../../services/cart.service";
 import { ConfirmDialogModule } from "primeng/confirmdialog";
 import { ConfirmationService } from "primeng/api";

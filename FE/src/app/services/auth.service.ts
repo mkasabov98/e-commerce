@@ -3,7 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject, map, MonoTypeOperatorFunction, Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { loggedUser } from '../models/auth.models';
-import { NO_USER } from '../constants.ts/constants';
+import { NO_USER } from '../constants/constants';
 import { ToastService } from './toast.service';
 // import jwt from ''
 

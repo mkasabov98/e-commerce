@@ -4,7 +4,7 @@ import { Button } from "primeng/button";
 import { AuthService } from "../../services/auth.service";
 import { Subject, take, takeUntil } from "rxjs";
 import { loggedUser, UserRoles } from "../../models/auth.models";
-import { NO_USER } from "../../constants.ts/constants";
+import { NO_USER } from "../../constants/constants";
 import { CartService } from "../../services/cart.service";
 import { Router } from "@angular/router";
 

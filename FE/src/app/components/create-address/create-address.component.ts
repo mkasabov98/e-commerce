@@ -9,7 +9,7 @@ import { FloatLabel } from "primeng/floatlabel";
 import { InputTextModule } from "primeng/inputtext";
 import { ToastService } from "../../services/toast.service";
 import { SelectModule } from "primeng/select";
-import { COUNTRIES } from "../../constants.ts/constants";
+import { COUNTRIES } from "../../constants/constants";
 import { Subject, take, takeUntil } from "rxjs";
 import { AddressService } from "../../services/address.service";
 import { city, state } from "../../models/address.models";

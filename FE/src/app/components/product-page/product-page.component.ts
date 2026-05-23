@@ -28,7 +28,7 @@ import { ToastService } from "../../services/toast.service";
 import { productDetail } from "../../models/products.models";
 import { productReview } from "../../models/review.models";
 import { loggedUser, UserRoles } from "../../models/auth.models";
-import { NO_USER } from "../../constants.ts/constants";
+import { NO_USER } from "../../constants/constants";
 import { getInventoryStatus, getInventorySeverity, InventoryStatus, InventorySeverity } from "../../utils/stock.utils";
 
 @Component({
