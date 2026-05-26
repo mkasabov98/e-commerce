@@ -11,9 +11,11 @@ interface OrderAttributes {
     totalAmount: number;
     status: OrderStatuses;
     stripePaymentIntentId: string;
+    discountCodeId: number | null;
+    discountAmount: number | null;
 }
 
-interface OrderCreationAttributes extends Optional<OrderAttributes, "id"> {}
+interface OrderCreationAttributes extends Optional<OrderAttributes, "id" | "discountCodeId" | "discountAmount"> {}
 
 export class Order extends Model<OrderAttributes, OrderCreationAttributes> implements OrderAttributes {
     public id!: number;
@@ -24,6 +26,8 @@ export class Order extends Model<OrderAttributes, OrderCreationAttributes> imple
     public totalAmount!: number;
     public status!: OrderStatuses;
     public stripePaymentIntentId!: string;
+    public discountCodeId!: number | null;
+    public discountAmount!: number | null;
 
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
@@ -65,6 +69,17 @@ Order.init(
         stripePaymentIntentId: {
             type: DataTypes.STRING,
             allowNull: false,
+        },
+        discountCodeId: {
+            type: DataTypes.INTEGER.UNSIGNED,
+            allowNull: true,
+            defaultValue: null,
+            references: { model: "DiscountCodes", key: "id" },
+        },
+        discountAmount: {
+            type: DataTypes.DECIMAL(10, 2),
+            allowNull: true,
+            defaultValue: null,
         },
     },
     {

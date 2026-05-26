@@ -4,6 +4,7 @@ import cors from "cors";
 import sequelize from "./config/database";
 
 import "./models/index";
+import { DiscountCode } from "./models/discountCode.model";
 //Routes
 import productRoutes from "./routes/products.routes";
 import userRoutes from "./routes/user.routes";
@@ -36,8 +37,10 @@ app.use("/app/review", reviewRoutes);
 
 app.use(errorHandler);
 
-sequelize
-    .sync({ alter: true })
+// DiscountCodes must exist before sequelize.sync() alters Carts and Orders,
+// both of which have discountCodeId FK columns referencing this table.
+DiscountCode.sync({ alter: true })
+    .then(() => sequelize.sync({ alter: true }))
     .catch((err) => console.error("Sequelize sync error:", err.message));
 
 export default app;

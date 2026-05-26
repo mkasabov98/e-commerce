@@ -6,7 +6,7 @@ interface OrderItem {
     priceAtPurchase: number;
 }
 
-export const sendWelcomeEmail = async (to: string): Promise<void> => {
+export const sendWelcomeEmail = async (to: string, discountCode: string): Promise<void> => {
     await transporter.sendMail({
         from: `"Shop" <${process.env.GMAIL_USER}>`,
         to,
@@ -18,6 +18,11 @@ export const sendWelcomeEmail = async (to: string): Promise<void> => {
                     Your account has been created successfully. You can now browse products,
                     save addresses, and place orders.
                 </p>
+                <div style="background: #f9f9f9; border-radius: 8px; padding: 20px 24px; margin-bottom: 24px; text-align: center;">
+                    <p style="margin: 0 0 8px; font-size: 13px; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Your welcome discount</p>
+                    <p style="margin: 0 0 12px; font-size: 28px; font-weight: bold; letter-spacing: 4px; color: #1a1a1a;">${discountCode}</p>
+                    <p style="margin: 0; font-size: 14px; color: #555;">10% off your first order — valid for 30 days</p>
+                </div>
                 <p style="margin: 0; color: #999; font-size: 13px;">
                     If you didn't create this account, you can safely ignore this email.
                 </p>
@@ -77,7 +82,8 @@ export const sendOrderConfirmationEmail = async (
     orderId: number,
     items: OrderItem[],
     total: number,
-    shippingAddress: string
+    shippingAddress: string,
+    discountAmount?: number
 ): Promise<void> => {
     const itemRows = items
         .map(
@@ -118,6 +124,7 @@ export const sendOrderConfirmationEmail = async (
                 </table>
 
                 <div style="margin-top: 16px; text-align: right;">
+                    ${discountAmount ? `<p style="margin: 0 0 4px; color: #22a35a; font-size: 14px;">Discount applied: -$${Number(discountAmount).toFixed(2)}</p>` : ""}
                     <span style="font-size: 16px; font-weight: bold; color: #1a1a1a;">Total: $${Number(total).toFixed(2)}</span>
                 </div>
 

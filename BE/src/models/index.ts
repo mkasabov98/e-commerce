@@ -7,6 +7,7 @@ import { CartProduct } from "./cartProduct.model";
 import { Address } from "./address.model";
 import { Review } from "./review.model";
 import { ProductCategory } from "./category.model";
+import { DiscountCode } from "./discountCode.model";
 
 void Product;
 void User;
@@ -17,6 +18,7 @@ void OrderProduct;
 void Address;
 void Review;
 void ProductCategory;
+void DiscountCode;
 
 CartProduct.belongsTo(Cart, { foreignKey: "cartId", onUpdate: "CASCADE" });
 Cart.hasMany(CartProduct, { foreignKey: "cartId", onDelete: "CASCADE" });
@@ -53,3 +55,10 @@ Order.hasMany(Review, { foreignKey: "orderId" });
 
 Product.belongsTo(ProductCategory, { foreignKey: "productCategoryId", as: "ProductCategory" });
 ProductCategory.hasMany(Product, { foreignKey: "productCategoryId", as: "Products" });
+
+DiscountCode.belongsTo(User, { foreignKey: "userId" });
+User.hasMany(DiscountCode, { foreignKey: "userId", onDelete: "CASCADE" });
+
+Order.belongsTo(DiscountCode, { foreignKey: "discountCodeId", as: "DiscountCode" });
+
+Cart.belongsTo(DiscountCode, { foreignKey: "discountCodeId", as: "CartDiscount" });

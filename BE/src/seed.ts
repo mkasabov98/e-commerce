@@ -10,8 +10,10 @@ import { Review } from "./models/review.model";
 import { Cart } from "./models/cart.model";
 import { CartProduct } from "./models/cartProduct.model";
 import { Address } from "./models/address.model";
+import { DiscountCode } from "./models/discountCode.model";
 import { UserRoles } from "./enums/user-enums.enum";
 import { OrderStatuses } from "./enums/order-enums.enum";
+import crypto from "crypto";
 
 const fp = (supplyPrice: number, margin: number) =>
     supplyPrice + supplyPrice * (margin / 100);
@@ -992,12 +994,30 @@ async function seed() {
     ]);
     console.log("Carts seeded.");
 
+    // ── Discount Codes ─────────────────────────────────────────────────────
+    const discountExpiry = new Date();
+    discountExpiry.setDate(discountExpiry.getDate() + 30);
+
+    const discountCodes = await DiscountCode.bulkCreate([
+        { code: "WELCOME-" + crypto.randomBytes(4).toString("hex").toUpperCase(), userId: userUser.id, discountPercentage: 10, expirationDate: discountExpiry },
+        { code: "WELCOME-" + crypto.randomBytes(4).toString("hex").toUpperCase(), userId: alice.id,    discountPercentage: 10, expirationDate: discountExpiry },
+        { code: "WELCOME-" + crypto.randomBytes(4).toString("hex").toUpperCase(), userId: bob.id,      discountPercentage: 10, expirationDate: discountExpiry },
+        { code: "WELCOME-" + crypto.randomBytes(4).toString("hex").toUpperCase(), userId: carol.id,    discountPercentage: 10, expirationDate: discountExpiry },
+    ]);
+    const [codeUser, codeAlice, codeBob, codeCarol] = discountCodes;
+    console.log("Discount codes seeded.");
+
     console.log("\nDone! Seeded accounts:");
     console.log("  Admin → admin@shop.com  / Admin1234!");
     console.log("  User  → user@shop.com   / User1234!");
     console.log("  User  → alice@shop.com  / Alice1234!");
     console.log("  User  → bob@shop.com    / Bob1234!");
     console.log("  User  → carol@shop.com  / Carol1234!");
+    console.log("\nDiscount codes (10% off, valid 30 days):");
+    console.log(`  user@shop.com  → ${codeUser.code}`);
+    console.log(`  alice@shop.com → ${codeAlice.code}`);
+    console.log(`  bob@shop.com   → ${codeBob.code}`);
+    console.log(`  carol@shop.com → ${codeCarol.code}`);
 
     await sequelize.close();
 }
