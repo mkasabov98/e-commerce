@@ -5,6 +5,7 @@ import { User } from "../models/user.model";
 import { Cart } from "../models/cart.model";
 import { CartProduct } from "../models/cartProduct.model";
 import { Product } from "../models/product.model";
+import { DiscountCode } from "../models/discountCode.model";
 import sequelize from "../config/database";
 import { ProductCategory } from "../models/category.model";
 
@@ -147,17 +148,13 @@ export const getAllProductsInCart = async (req: AuthRequest, res: Response, next
         }
 
         const userCart = await Cart.findOne({
-            where: {
-                userId: userId,
-            },
-        });
+            where: { userId },
+            include: [{ model: DiscountCode, as: "CartDiscount" }],
+        }) as Cart & { CartDiscount: DiscountCode | null };
         if (!userCart) throw { status: 404, message: "There is no cart associated with that userId" };
 
-        const userCartId = userCart.get().id;
         const cartProducts = await CartProduct.findAll({
-            where: {
-                cartId: userCartId,
-            },
+            where: { cartId: userCart.id },
             include: [
                 {
                     model: Product,
@@ -189,7 +186,48 @@ export const getAllProductsInCart = async (req: AuthRequest, res: Response, next
             category: x.Product!.ProductCategory.categoryName,
         }));
 
-        res.status(200).json({ items: cartItems, totalPrice });
+        const dc = userCart.CartDiscount;
+        const discount =
+            dc && !dc.used && new Date(dc.expirationDate) >= new Date()
+                ? { code: dc.code, percentage: Number(dc.discountPercentage) }
+                : null;
+
+        res.status(200).json({ items: cartItems, totalPrice, discount });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// POST /app/cart/validate-discount
+export const validateDiscountCode = async (req: AuthRequest, res: Response, next: NextFunction) => {
+    const { code } = req.body;
+
+    try {
+        if (req.user?.role !== UserRoles.User) throw { status: 401, message: "Unauthorized" };
+
+        const discountCode = await DiscountCode.findOne({ where: { code } });
+
+        if (!discountCode) throw { status: 400, message: "Invalid discount code" };
+        if (discountCode.userId !== req.user.id) throw { status: 400, message: "Invalid discount code" };
+        if (discountCode.used) throw { status: 400, message: "This discount code has already been used" };
+        if (new Date(discountCode.expirationDate) < new Date()) throw { status: 400, message: "This discount code has expired" };
+
+        await Cart.update({ discountCodeId: discountCode.id }, { where: { userId: req.user.id } });
+
+        res.status(200).json({ valid: true, discountPercentage: Number(discountCode.discountPercentage), code: discountCode.code });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// DELETE /app/cart/discount
+export const removeDiscountCode = async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+        if (req.user?.role !== UserRoles.User) throw { status: 401, message: "Unauthorized" };
+
+        await Cart.update({ discountCodeId: null }, { where: { userId: req.user.id } });
+
+        res.status(200).json({ message: "Discount code removed" });
     } catch (error) {
         next(error);
     }

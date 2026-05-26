@@ -51,6 +51,58 @@
                 <label for="address">Delivery address</label>
             </p-floatlabel>
 
+            <!-- Discount code -->
+            @if (!appliedDiscount) {
+                <div class="discount-row">
+                    <input
+                        pInputText
+                        id="discountCode"
+                        [(ngModel)]="discountCodeInput"
+                        placeholder="Discount code"
+                        class="discount-input"
+                        (keydown.enter)="applyDiscountCode()"
+                    />
+                    <p-button
+                        label="Apply"
+                        severity="secondary"
+                        [loading]="isValidatingCode"
+                        [disabled]="!discountCodeInput.trim() || isValidatingCode"
+                        (onClick)="applyDiscountCode()"
+                    />
+                </div>
+                @if (discountError) {
+                    <p-message severity="error" size="small" variant="simple">{{ discountError }}</p-message>
+                }
+            } @else {
+                <div class="discount-applied">
+                    <div class="discount-applied-info">
+                        <i class="pi pi-tag"></i>
+                        <span><strong>{{ appliedDiscount.code }}</strong> — {{ appliedDiscount.percentage }}% off</span>
+                    </div>
+                    <p-button icon="pi pi-times" severity="secondary" [text]="true" size="small" (onClick)="removeDiscount()" />
+                </div>
+            }
+
+            <!-- Order summary -->
+            @if (cartSubtotal > 0) {
+                <div class="order-summary">
+                    <div class="summary-row">
+                        <span>Subtotal</span>
+                        <span>{{ "$" + cartSubtotal.toFixed(2) }}</span>
+                    </div>
+                    @if (appliedDiscount) {
+                        <div class="summary-row discount">
+                            <span>Discount ({{ appliedDiscount.percentage }}%)</span>
+                            <span>-{{ "$" + discountAmount.toFixed(2) }}</span>
+                        </div>
+                    }
+                    <div class="summary-row total">
+                        <span>Total</span>
+                        <span>{{ "$" + cartTotal.toFixed(2) }}</span>
+                    </div>
+                </div>
+            }
+
             <div class="step-actions">
                 <app-create-address (onAddressCreate)="onAddressCreate()" />
                 <p-button

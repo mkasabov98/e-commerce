@@ -13,6 +13,7 @@ import { Address } from "../models/address.model";
 import stripe from "../config/stripe";
 import Stripe from "stripe";
 import { User } from "../models/user.model";
+import { DiscountCode } from "../models/discountCode.model";
 import { sendOrderConfirmationEmail, sendOrderShippedEmail, sendOrderDeliveredEmail } from "../services/email.service";
 
 interface WebhookRequest extends Request {
@@ -88,6 +89,14 @@ export const handleStripeWebhook = async (req: WebhookRequest, res, next: NextFu
             const userCart = await Cart.findOne({ where: { userId }, transaction });
             if (userCart) {
                 await CartProduct.destroy({ where: { cartId: userCart.id }, transaction });
+                await userCart.update({ discountCodeId: null }, { transaction });
+            }
+
+            if (order.discountCodeId) {
+                await DiscountCode.update(
+                    { used: true, orderId: order.id },
+                    { where: { id: order.discountCodeId }, transaction }
+                );
             }
 
             await transaction.commit();
@@ -107,7 +116,8 @@ export const handleStripeWebhook = async (req: WebhookRequest, res, next: NextFu
                     order.id,
                     items,
                     order.totalAmount,
-                    order.shippingAddress
+                    order.shippingAddress,
+                    order.discountAmount ?? undefined
                 ).catch((err) => console.error("Failed to send order confirmation email:", err));
 
                 const THREE_MINUTES = 3 * 60 * 1000;
@@ -201,7 +211,10 @@ export const createPaymentIntent = async (req: AuthRequest, res: Response, next:
     try {
         if (req.user?.role !== UserRoles.User) throw { status: 401, message: "Unauthorized" };
 
-        const userCart = await Cart.findOne({ where: { userId: user.id } });
+        const userCart = await Cart.findOne({
+            where: { userId: user.id },
+            include: [{ model: DiscountCode, as: "CartDiscount" }],
+        }) as Cart & { CartDiscount: DiscountCode | null };
         if (!userCart) throw { status: 400, message: "No cart found." };
 
         const address = await Address.findOne({ where: { id: addressId, userId: user.id } });
@@ -220,7 +233,7 @@ export const createPaymentIntent = async (req: AuthRequest, res: Response, next:
 
         if (productsInCart.length === 0) throw { status: 400, message: "Cart is empty" };
 
-        const totalAmount = productsInCart.reduce((acc, x) => acc + x.quantity * x.Product.finalPrice, 0);
+        const subtotal = productsInCart.reduce((acc, x) => acc + x.quantity * x.Product.finalPrice, 0);
 
         const errors: string[] = [];
         productsInCart.forEach((x) => {
@@ -234,7 +247,20 @@ export const createPaymentIntent = async (req: AuthRequest, res: Response, next:
             return res.status(400).json({ errors });
         }
 
+        let discountCode: DiscountCode | null = userCart.CartDiscount ?? null;
+        let discountAmount = 0;
+
+        if (discountCode) {
+            if (discountCode.used || new Date(discountCode.expirationDate) < new Date()) {
+                await Cart.update({ discountCodeId: null }, { where: { id: userCart.id } });
+                throw { status: 400, message: "Your discount code has expired and has been removed." };
+            }
+            discountAmount = subtotal * (Number(discountCode.discountPercentage) / 100);
+        }
+
+        const totalAmount = subtotal - discountAmount;
         const stripeAmount = Math.round(totalAmount * 100);
+
         const paymentIntent = await stripe.paymentIntents.create({
             amount: stripeAmount,
             currency: "usd",
@@ -255,6 +281,8 @@ export const createPaymentIntent = async (req: AuthRequest, res: Response, next:
                     shippingCity: address.city,
                     shippingAddress: address.country + ", " + address.city + ", " + address.address,
                     stripePaymentIntentId: paymentIntent.id,
+                    discountCodeId: discountCode?.id ?? null,
+                    discountAmount: discountAmount > 0 ? discountAmount : null,
                 },
                 { transaction }
             );

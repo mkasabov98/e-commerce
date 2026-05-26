@@ -23,14 +23,28 @@
     }
 
     .footer-wrapper {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        padding: 12px;
+        border-top: 1px solid var(--p-surface-200);
+        margin-top: 4px;
 
-        .footer {
-            font-size: 1.25rem;
-            font-weight: 600;
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 14px;
+            font-size: 0.9rem;
+            border-bottom: 1px solid var(--p-surface-100);
+
+            &:last-child { border-bottom: none; }
+
+            &.discount {
+                color: var(--p-green-700);
+            }
+
+            &.total {
+                font-weight: 700;
+                font-size: 1rem;
+                background: var(--p-surface-50);
+            }
         }
     }
 
@@ -75,10 +89,12 @@ td.col-total { text-align: right; }
     }
 
     .col-product {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-        align-items: flex-start;
+        .product-content {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            align-items: flex-start;
+        }
 
         .product-name { font-weight: 600; }
 

@@ -25,10 +25,12 @@
                         <img [src]="product.imageUrl" [alt]="product.name" (error)="onImageError($event)" />
                     </td>
                     <td class="col-product">
-                        <span class="product-name">{{ product.name }}</span>
-                        <div class="product-meta">
-                            <span class="product-unit-price">${{ product.price }} each</span>
-                            <p-tag [value]="product.inventoryStatus" [severity]="product.severityStatus" />
+                        <div class="product-content">
+                            <span class="product-name">{{ product.name }}</span>
+                            <div class="product-meta">
+                                <span class="product-unit-price">${{ product.price }} each</span>
+                                <p-tag [value]="product.inventoryStatus" [severity]="product.severityStatus" />
+                            </div>
                         </div>
                     </td>
                     <td class="col-qty">
@@ -50,8 +52,20 @@
         </p-table>
     </div>
     <div class="footer-wrapper">
-        <span class="footer">Products price:</span>
-        <span class="footer">{{ "$" + cartTotalPrice }}</span>
+        <div class="summary-row">
+            <span>Subtotal</span>
+            <span>{{ "$" + cartSubtotal.toFixed(2) }}</span>
+        </div>
+        @if (discount) {
+            <div class="summary-row discount">
+                <span>Discount ({{ discount.percentage }}%)</span>
+                <span>-{{ "$" + discountAmount }}</span>
+            </div>
+        }
+        <div class="summary-row total">
+            <span>Total</span>
+            <span>{{ "$" + cartFinalPrice }}</span>
+        </div>
     </div>
 </div>
 

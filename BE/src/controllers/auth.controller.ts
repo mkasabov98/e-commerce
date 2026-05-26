@@ -1,8 +1,10 @@
 import { NextFunction, Request, Response } from "express"
 import { User } from "../models/user.model";
 import { Cart } from "../models/cart.model";
+import { DiscountCode } from "../models/discountCode.model";
 import { UserRoles } from "../enums/user-enums.enum";
 import jwt from "jsonwebtoken"
+import crypto from "crypto";
 import { sendWelcomeEmail } from "../services/email.service";
 
 //POST /app/auth/registerUser body: {email, password};
@@ -18,7 +20,13 @@ export const registerUser = async (req: Request, res: Response, next: NextFuncti
             const newUser = await User.create({...body, role: UserRoles.User});
             const { password, ...userData } = newUser.get();
             await Cart.findOrCreate({where: {userId: newUser.id}});
-            sendWelcomeEmail(newUser.email).catch((err) =>
+
+            const code = "WELCOME-" + crypto.randomBytes(4).toString("hex").toUpperCase();
+            const expirationDate = new Date();
+            expirationDate.setDate(expirationDate.getDate() + 30);
+            await DiscountCode.create({ code, userId: newUser.id, discountPercentage: 10, expirationDate });
+
+            sendWelcomeEmail(newUser.email, code).catch((err) =>
                 console.error("Failed to send welcome email:", err)
             );
             return res.status(201).json(userData);

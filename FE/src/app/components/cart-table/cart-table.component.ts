@@ -27,12 +27,23 @@ export class CartTableComponent implements OnInit, OnDestroy {
     private destroy$ = new Subject<void>();
 
     public products: cartProduct[] = [];
+    public discount: { code: string; percentage: number } | null = null;
 
     private loggedUser: loggedUser = NO_USER;
 
-    get cartTotalPrice() {
+    get cartSubtotal(): number {
         if (!this.products || !this.products.length) return 0;
-        return this.products.reduce((acc, curr) => acc + curr.quantity! * curr.price, 0).toFixed(2);
+        return this.products.reduce((acc, curr) => acc + curr.quantity! * curr.price, 0);
+    }
+
+    get discountAmount(): string {
+        if (!this.discount) return "0.00";
+        return (this.cartSubtotal * (this.discount.percentage / 100)).toFixed(2);
+    }
+
+    get cartFinalPrice(): string {
+        if (!this.discount) return this.cartSubtotal.toFixed(2);
+        return (this.cartSubtotal - this.cartSubtotal * (this.discount.percentage / 100)).toFixed(2);
     }
     constructor(private authService: AuthService, private toastService: ToastService, private cartService: CartService, private confirmationService: ConfirmationService, private productsService: ProductsService, private router: Router) {}
 
@@ -44,6 +55,10 @@ export class CartTableComponent implements OnInit, OnDestroy {
 
         this.cartService.cartItemsSubject$.pipe(takeUntil(this.destroy$)).subscribe((count) => {
             if (count === 0) this.products = [];
+        });
+
+        this.cartService.discountSubject$.pipe(takeUntil(this.destroy$)).subscribe((discount) => {
+            this.discount = discount;
         });
     }
 

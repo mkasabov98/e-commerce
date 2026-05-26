@@ -142,6 +142,7 @@ export class NavigationBarComponent implements OnInit, OnDestroy {
         this.cartService.updateCartBadge();
         this.toastService.show("You have logged out.");
         this.mobileMenuOpen = false;
+        this.router.navigate(["/"]);
     }
 
     ngOnDestroy() {

@@ -4,6 +4,7 @@ import { ButtonModule } from "primeng/button";
 import { SelectModule } from "primeng/select";
 import { FloatLabel } from "primeng/floatlabel";
 import { MessageModule } from "primeng/message";
+import { InputTextModule } from "primeng/inputtext";
 import { address } from "../../models/address.models";
 import { AddressService } from "../../services/address.service";
 import { firstValueFrom, take } from "rxjs";
@@ -20,6 +21,7 @@ import { Stripe, StripeCardElement } from "@stripe/stripe-js";
         ButtonModule,
         SelectModule,
         FloatLabel,
+        InputTextModule,
     ],
     templateUrl: "./process-order.component.html",
     styleUrl: "./process-order.component.scss",
@@ -38,6 +40,21 @@ export class ProcessOrderComponent implements OnInit, OnDestroy {
     public cardComplete = false;
     public cardError: string | null = null;
 
+    public cartSubtotal = 0;
+    public discountCodeInput = "";
+    public appliedDiscount: { code: string; percentage: number } | null = null;
+    public discountError: string | null = null;
+    public isValidatingCode = false;
+
+    get discountAmount(): number {
+        if (!this.appliedDiscount) return 0;
+        return this.cartSubtotal * (this.appliedDiscount.percentage / 100);
+    }
+
+    get cartTotal(): number {
+        return this.cartSubtotal - this.discountAmount;
+    }
+
     constructor(private addressService: AddressService, private cartService: CartService) {}
 
     ngOnInit(): void {
@@ -45,6 +62,14 @@ export class ProcessOrderComponent implements OnInit, OnDestroy {
             this.stripe = stripe;
         });
         this.fetchAddresses();
+        this.cartService.getCartProducts().pipe(take(1)).subscribe((res) => {
+            this.cartSubtotal = res.totalPrice ?? 0;
+            if (res.discount) {
+                this.appliedDiscount = { code: res.discount.code, percentage: res.discount.percentage };
+                this.discountCodeInput = res.discount.code;
+            }
+            this.cartService.discountSubject$.next(res.discount ?? null);
+        });
     }
 
     ngOnDestroy(): void {
@@ -63,6 +88,41 @@ export class ProcessOrderComponent implements OnInit, OnDestroy {
 
     onAddressCreate() {
         this.fetchAddresses();
+    }
+
+    applyDiscountCode() {
+        const code = this.discountCodeInput.trim().toUpperCase();
+        if (!code) return;
+
+        this.isValidatingCode = true;
+        this.discountError = null;
+        this.appliedDiscount = null;
+
+        this.cartService.validateDiscountCode(code).pipe(take(1)).subscribe({
+            next: (res) => {
+                this.appliedDiscount = { code: res.code, percentage: res.discountPercentage };
+                this.cartService.discountSubject$.next(this.appliedDiscount);
+                this.isValidatingCode = false;
+            },
+            error: (err) => {
+                this.discountError = err.error?.message ?? "Invalid discount code";
+                this.isValidatingCode = false;
+            },
+        });
+    }
+
+    removeDiscount() {
+        this.cartService.removeDiscountCode().pipe(take(1)).subscribe({
+            next: () => {
+                this.appliedDiscount = null;
+                this.discountCodeInput = "";
+                this.discountError = null;
+                this.cartService.discountSubject$.next(null);
+            },
+            error: (err) => {
+                this.discountError = err?.error?.message ?? "Failed to remove discount code. Please try again.";
+            },
+        });
     }
 
     onProceedToPayment() {
@@ -122,7 +182,13 @@ export class ProcessOrderComponent implements OnInit, OnDestroy {
             }
         } catch (err: any) {
             const errors: string[] | undefined = err?.error?.errors;
-            this.cardError = errors?.length ? errors.join(" ") : (err?.error?.message ?? "An unexpected error occurred");
+            const message = errors?.length ? errors.join(" ") : (err?.error?.message ?? "An unexpected error occurred");
+            if (err?.error?.message === "Your discount code has expired and has been removed.") {
+                this.appliedDiscount = null;
+                this.discountCodeInput = "";
+                this.cartService.discountSubject$.next(null);
+            }
+            this.cardError = message;
         } finally {
             this.isProcessing = false;
         }

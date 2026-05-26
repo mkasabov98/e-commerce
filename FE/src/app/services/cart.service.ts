@@ -12,6 +12,7 @@ import { loadStripe, Stripe } from "@stripe/stripe-js";
 })
 export class CartService {
     public cartItemsSubject$ = new BehaviorSubject<number>(0);
+    public discountSubject$ = new BehaviorSubject<{ code: string; percentage: number } | null>(null);
     private stripePromise: Promise<Stripe | null>;
 
     constructor(private http: HttpClient, private toastService: ToastService) {
@@ -28,6 +29,18 @@ export class CartService {
             { addressId },
             { observe: "body" }
         );
+    }
+
+    public validateDiscountCode(code: string): Observable<{ valid: boolean; discountPercentage: number; code: string }> {
+        return this.http.post<{ valid: boolean; discountPercentage: number; code: string }>(
+            `${environment.apiUrl}/cart/validate-discount`,
+            { code },
+            { observe: "body" }
+        );
+    }
+
+    public removeDiscountCode(): Observable<{ message: string }> {
+        return this.http.delete<{ message: string }>(`${environment.apiUrl}/cart/discount`, { observe: "body" });
     }
 
     public updateLocalCart(productId: number, quantity: number) {

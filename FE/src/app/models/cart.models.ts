@@ -18,4 +18,5 @@ export interface cartProduct {
 export interface getCartProductsResponse {
     items: cartProduct[];
     totalPrice?: number;
+    discount: { code: string; percentage: number } | null;
 }
