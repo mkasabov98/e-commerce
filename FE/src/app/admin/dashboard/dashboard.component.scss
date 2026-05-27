@@ -1,0 +1,322 @@
+.dashboard-wrapper {
+    padding: 28px 32px 48px;
+    min-height: 100%;
+}
+
+// ── Header ─────────────────────────────────────────────────────
+
+.dashboard-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    gap: 16px;
+}
+
+.page-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--p-surface-900);
+    margin: 0;
+    letter-spacing: -0.02em;
+}
+
+.filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.filter-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding-left: 10px;
+    border-left: 1px solid var(--p-surface-200);
+    margin-left: 2px;
+}
+
+// ── Stat cards ─────────────────────────────────────────────────
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.stat-card {
+    background: var(--p-content-background);
+    border: 1px solid var(--p-surface-200);
+    border-radius: var(--p-border-radius-xl);
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    transition: box-shadow 0.15s;
+
+    &:hover {
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    }
+}
+
+.stat-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    i { font-size: 1.2rem; }
+
+    &.revenue  { background: #d1fae5; i { color: #059669; } }
+    &.profit   { background: #fef3c7; i { color: #d97706; } }
+    &.orders   { background: #dbeafe; i { color: #2563eb; } }
+    &.avg      { background: #ede9fe; i { color: #7c3aed; } }
+    &.products { background: #ffedd5; i { color: #ea580c; } }
+    &.users    { background: var(--p-primary-100); i { color: var(--p-primary-600); } }
+}
+
+.stat-info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+}
+
+.stat-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--p-surface-900);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.2;
+}
+
+.stat-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--p-text-muted-color);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+// ── Dashboard two-column row ────────────────────────────────────
+
+.dashboard-row {
+    display: grid;
+    grid-template-columns: 1fr 1.6fr;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+// ── Shared card ────────────────────────────────────────────────
+
+.dash-card {
+    background: var(--p-content-background);
+    border: 1px solid var(--p-surface-200);
+    border-radius: var(--p-border-radius-xl);
+    padding: 22px 24px;
+}
+
+.card-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--p-surface-800);
+    margin: 0 0 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.warning-icon {
+    color: var(--p-orange-500);
+}
+
+// ── Orders by status ───────────────────────────────────────────
+
+.status-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.status-bar-row {
+    display: grid;
+    grid-template-columns: 86px 1fr 36px;
+    align-items: center;
+    gap: 10px;
+}
+
+.status-name {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--p-text-color);
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+
+    &.pending   { background: #f97316; }
+    &.paid      { background: #3b82f6; }
+    &.shipped   { background: var(--p-primary-500); }
+    &.delivered { background: #22c55e; }
+    &.cancelled { background: #ef4444; }
+}
+
+.bar-track {
+    height: 7px;
+    background: var(--p-surface-100);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.4s ease;
+
+    &.pending   { background: #f97316; }
+    &.paid      { background: #3b82f6; }
+    &.shipped   { background: var(--p-primary-500); }
+    &.delivered { background: #22c55e; }
+    &.cancelled { background: #ef4444; }
+}
+
+.bar-count {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--p-text-muted-color);
+    text-align: right;
+}
+
+// ── Tables ─────────────────────────────────────────────────────
+
+::ng-deep .top-products-table,
+::ng-deep .low-stock-table {
+    th, td {
+        padding: 10px 8px !important;
+        border-color: var(--p-surface-100) !important;
+        font-size: 0.875rem;
+    }
+
+    th {
+        background: transparent !important;
+        color: var(--p-text-muted-color) !important;
+        font-weight: 600;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding-bottom: 8px !important;
+    }
+
+    tr:last-child td {
+        border-bottom: none !important;
+    }
+}
+
+.rank-cell {
+    font-weight: 700;
+    color: var(--p-text-muted-color);
+    font-size: 0.8rem;
+    min-width: 24px;
+}
+
+.name-cell {
+    font-weight: 600;
+    color: var(--p-surface-800);
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.num-cell {
+    font-weight: 600;
+    color: var(--p-surface-700);
+    text-align: right;
+}
+
+.profit-cell {
+    color: #d97706;
+}
+
+.col-rank { width: 32px; }
+.col-num  { text-align: right; }
+
+.cat-chip {
+    display: inline-block;
+    background: var(--p-primary-50);
+    color: var(--p-primary-700);
+    border: 1px solid var(--p-primary-100);
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 2px 8px;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+// ── Empty / all-stock states ────────────────────────────────────
+
+.empty-table-state {
+    padding: 24px 0;
+    text-align: center;
+    color: var(--p-text-muted-color);
+    font-size: 0.875rem;
+}
+
+.no-low-stock {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #16a34a;
+    font-weight: 600;
+    font-size: 0.9rem;
+
+    i { font-size: 1.2rem; }
+}
+
+// ── Responsive ─────────────────────────────────────────────────
+
+@media (max-width: 1400px) {
+    .stats-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 960px) {
+    .dashboard-row {
+        grid-template-columns: 1fr;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .dashboard-wrapper {
+        padding: 16px 16px 40px;
+    }
+
+    .dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}

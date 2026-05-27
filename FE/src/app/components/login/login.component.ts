@@ -1,5 +1,6 @@
 import { Component, EventEmitter, inject, OnInit, OnDestroy, Output } from "@angular/core";
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
+import { Router } from "@angular/router";
 import { Button } from "primeng/button";
 import { DialogModule } from "primeng/dialog";
 import { DrawerModule } from "primeng/drawer";
@@ -40,6 +41,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         private toastService: ToastService,
         private cartService: CartService,
         private breakpointObserver: BreakpointObserver,
+        private router: Router,
     ) {}
 
     ngOnInit() {
@@ -61,10 +63,13 @@ export class LoginComponent implements OnInit, OnDestroy {
             })
             .pipe(
                 take(1),
-                tap(() => {
+                tap((res) => {
                     this.visible = false;
                     this.loginSuccess.emit();
                     this.toastService.show("Successful login", "success");
+                    if (res.role === UserRoles.Admin) {
+                        this.router.navigate(['/admin/dashboard']);
+                    }
                 }),
                 concatMap((res) => {
                     const isUser = res.role === UserRoles.User;

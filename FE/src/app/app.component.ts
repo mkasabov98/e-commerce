@@ -28,7 +28,7 @@ export class AppComponent implements OnInit {
                 .pipe(
                     take(1),
                     concatMap((res) => {
-                        if (res.id !== UserRoles.Admin) {
+                        if (res.role !== UserRoles.Admin) {
                             return this.cartService.getCartProducts();
                         }
                         return of({ items: [], totalPrice: 0 });
