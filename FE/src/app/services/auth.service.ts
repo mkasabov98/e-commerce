@@ -57,6 +57,22 @@ export class AuthService {
         });
     }
 
+    public restoreSessionFromStorage(): void {
+        if (this.loggedUserSubject.getValue().role !== NO_USER.role) return;
+        const raw = localStorage.getItem('jwt');
+        if (!raw) return;
+        try {
+            const payload = JSON.parse(atob(raw.split('.')[1]));
+            if (payload.exp > Math.floor(Date.now() / 1000)) {
+                this.loggedUserSubject.next({ id: payload.id, email: payload.email, role: payload.role });
+            } else {
+                localStorage.removeItem('jwt');
+            }
+        } catch {
+            localStorage.removeItem('jwt');
+        }
+    }
+
     public checkJWT (): [isJwt: boolean, expired: boolean] {
         const jwt = localStorage.getItem('jwt');
 

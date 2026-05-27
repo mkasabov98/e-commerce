@@ -1,0 +1,49 @@
+<div class="admin-shell">
+    <aside class="admin-sidebar">
+        <div class="sidebar-logo">
+            <i class="pi pi-shopping-bag"></i>
+            <span>Admin Panel</span>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a class="nav-item" routerLink="/admin/dashboard" routerLinkActive="active">
+                <i class="pi pi-chart-bar"></i>
+                <span>Dashboard</span>
+            </a>
+            <a class="nav-item disabled" routerLink="/admin/products" routerLinkActive="active">
+                <i class="pi pi-box"></i>
+                <span>Products</span>
+            </a>
+            <a class="nav-item disabled" routerLink="/admin/categories" routerLinkActive="active">
+                <i class="pi pi-tag"></i>
+                <span>Categories</span>
+            </a>
+            <a class="nav-item disabled" routerLink="/admin/orders" routerLinkActive="active">
+                <i class="pi pi-receipt"></i>
+                <span>Orders</span>
+            </a>
+            <a class="nav-item disabled" routerLink="/admin/users" routerLinkActive="active">
+                <i class="pi pi-users"></i>
+                <span>Users</span>
+            </a>
+        </nav>
+
+        <button class="sidebar-logout" (click)="logout()">
+            <i class="pi pi-sign-out"></i>
+            <span>Logout</span>
+        </button>
+    </aside>
+
+    <div class="admin-main">
+        <header class="admin-topbar">
+            <span class="topbar-brand">e-commerce</span>
+            <span class="topbar-user">
+                <i class="pi pi-user-circle"></i>
+                {{ userEmail }}
+            </span>
+        </header>
+        <main class="admin-content">
+            <router-outlet></router-outlet>
+        </main>
+    </div>
+</div>

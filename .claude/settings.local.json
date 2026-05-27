@@ -1,5 +1,4 @@
 {
-  "enableAllProjectMcpServers": true,
   "permissions": {
     "allow": [
       "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\User\\\\Desktop\\\\e-commerce\" -Recurse -Force | Where-Object {-not $_.PSIsContainer} | Select-Object -ExpandProperty FullName | ForEach-Object { $_.Replace\\('C:\\\\Users\\\\User\\\\Desktop\\\\e-commerce\\\\', ''\\) } | Sort-Object)",
@@ -24,7 +23,19 @@
       "Bash(Select-Object FullName)",
       "Bash(pip --version)",
       "Bash(pip3 --version)",
-      "Bash(pip install *)"
+      "Bash(pip install *)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\User\\\\Desktop\\\\e-commerce\" -Recurse -File)",
+      "Bash(node *)",
+      "Bash(git checkout *)",
+      "Bash(git clean *)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\User\\\\Desktop\\\\e-commerce\" -Recurse -Depth 2)",
+      "Bash(Select-Object FullName, PSIsContainer)",
+      "Bash(Format-Table -AutoSize)",
+      "Bash(Get-ChildItem \"C:\\\\Users\\\\User\\\\Desktop\\\\e-commerce\\\\BE\\\\src\\\\controllers\")",
+      "Bash(Select-Object Name)",
+      "Bash(Get-ChildItem \"C:\\\\Users\\\\User\\\\Desktop\\\\e-commerce\\\\BE\\\\src\\\\routes\")",
+      "Bash(Get-ChildItem \"C:\\\\Users\\\\User\\\\Desktop\\\\e-commerce\\\\FE\\\\src\\\\app\\\\guards\")"
     ]
-  }
+  },
+  "enableAllProjectMcpServers": true
 }
