@@ -7,7 +7,8 @@ import { SelectModule } from 'primeng/select';
 import { TableModule } from 'primeng/table';
 import { SkeletonModule } from 'primeng/skeleton';
 import { TagModule } from 'primeng/tag';
-import { AdminService, DashboardStats } from '../../services/admin.service';
+import { DashboardService } from '../services/dashboard.service';
+import { DashboardStats } from '../models/dashboard.models';
 import { ProductsService } from '../../services/products.service';
 import { ToastService } from '../../services/toast.service';
 import { productCategory } from '../../models/products.models';
@@ -57,7 +58,7 @@ export class DashboardComponent implements OnInit {
     };
 
     constructor(
-        private adminService: AdminService,
+        private dashboardService: DashboardService,
         private productsService: ProductsService,
         private toastService: ToastService,
     ) {}
@@ -74,8 +75,8 @@ export class DashboardComponent implements OnInit {
 
     loadStats() {
         this.loading = true;
-        this.adminService
-            .getDashboardStats({ timeframe: this.timeframe, categoryId: this.categoryId, status: this.status })
+        this.dashboardService
+            .getStats({ timeframe: this.timeframe, categoryId: this.categoryId, status: this.status })
             .pipe(take(1))
             .subscribe({
                 next: (data) => {
